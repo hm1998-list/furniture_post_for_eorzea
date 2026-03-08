@@ -213,10 +213,7 @@
                     <img src="${fImg}" class="slide-img active" id="f-${index}" onerror="this.src='https://placehold.jp/24/cccccc/ffffff/200x200.png?text=No%20Image'">
                     <img src="${btImg}" class="slide-img" id="b-${index}" onerror="this.style.display='none'">
                 </div>
-                <div class="slider-controls">
-                    <button class="slide-btn" onclick="event.stopPropagation(); changeImg(${index}, 'f')">Front</button>
-                    <button class="slide-btn" onclick="event.stopPropagation(); changeImg(${index}, 'b')">Bottom</button>
-                </div>
+
                 <p class="item-name" onclick="openModal(${index})">${item['アイテム名（日）'] || item.name}</p>
             `;
             grid.appendChild(card);
@@ -256,6 +253,7 @@
 </script>
 </body>
 </html>
+
 
 
 
