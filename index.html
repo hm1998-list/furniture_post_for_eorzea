@@ -237,8 +237,14 @@
         const item = displayList[index];
         const itemId = item['アイテムID']; // IDを取得
         
-        document.getElementById('modalTitle').innerText = item['アイテム名（日）'] || item.name;
-        document.getElementById('modalCategory').innerText = item.category;
+        document.getElementById('modalTitle').innerText = item.name || "-";
+        document.getElementById('modalPatch').innerText = "Patch " + (item.patch || "-");
+        document.getElementById('modalCategory').innerText = item.category || "-";
+        document.getElementById('modalGenre').innerText = item.genre || "-";
+        document.getElementById('modalDye').innerText = item.dyeable || "不可";
+        document.getElementById('modalMarket').innerText = item.market || "不可";
+        document.getElementById('modalRecipe').innerText = "レシピ詳細：" + (item.recipe || "なし");
+        document.getElementById('modalMaterial').innerText = "材質：" + (item.material || "-");
         document.getElementById('modalComment').innerText = item.remarks || "備考なし";
         
         // 画像をID版に変更！
@@ -253,6 +259,7 @@
 </script>
 </body>
 </html>
+
 
 
 
