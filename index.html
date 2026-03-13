@@ -73,7 +73,7 @@
         .cat-card:hover { transform: translateY(-5px); box-shadow: var(--shadow); }
         .cat-card i { font-size: 2.2rem; color: var(--primary-color); margin-bottom: 15px; display: block; }
 
-        /* --- カタログ画面 --- */
+        /* --- カタログ表示画面 --- */
         #catalog-view { display: none; }
         .sticky-header {
             position: sticky; top: 0; background: var(--bg-color); z-index: 500;
@@ -178,13 +178,11 @@
 <script>
     const GAS_URL = "https://script.google.com/macros/s/AKfycbxW6Gx_zg8upPU10cK2gS9acqg_YRdc79lUzq2qUB0DsMJv0hV2OkCcttbIHoa1AqSemw/exec";
     
-    // 【メインカテゴリーの順序】
     const CATEGORY_ORDER = [
         "調度品(一般)", "調度品(台座)", "調度品(卓上)", 
         "調度品(壁掛)", "調度品(敷物)", "内装建材", "庭具"
     ];
 
-    // 【サブカテゴリーの順序】 ★ここを自由に書き換えてください★
     const SUB_CATEGORY_ORDER = [
         "机",
         "椅子/ソファ",
@@ -199,7 +197,7 @@
         "置物",
         "風呂",
         "旗/額縁/ポスター",
-        "窓",
+        "窓","内壁","床材","天井照明",
         "機能家具",
         "その他"
         // リストにないものはこの後ろに自動で並びます
@@ -216,6 +214,14 @@
         buildHome();
     };
 
+    // --- パッチ表示用の整形関数 ---
+    function formatPatch(p) {
+        if (!p) return "";
+        const strP = p.toString();
+        // すでに「Patch」という文字が含まれていればそのまま、なければ「Patch 」を付与
+        return strP.includes("Patch") ? strP : `Patch ${strP}`;
+    }
+
     function sortCategories(cats) {
         return cats.sort((a, b) => {
             let indexA = CATEGORY_ORDER.indexOf(a);
@@ -226,14 +232,12 @@
         });
     }
 
-    // サブカテゴリー用のソート関数
     function sortSubCategories(subs) {
         return subs.sort((a, b) => {
             let indexA = SUB_CATEGORY_ORDER.indexOf(a);
             let indexB = SUB_CATEGORY_ORDER.indexOf(b);
             if (indexA === -1) indexA = 999;
             if (indexB === -1) indexB = 999;
-            // 指定順が同じ（リスト外同士）なら五十音順
             if (indexA === indexB) return a.localeCompare(b, 'ja');
             return indexA - indexB;
         });
@@ -246,8 +250,7 @@
         const sideCatList = document.getElementById('side-cat-list');
         sideCatList.innerHTML = cats.map(c => {
             let subs = [...new Set(allData.filter(i => i.category === c).map(i => i['FF14サブカテゴリー']))].filter(Boolean);
-            subs = sortSubCategories(subs); // ソート適用
-            
+            subs = sortSubCategories(subs);
             return `
                 <div class="nav-item-container">
                     <button class="nav-item-parent" onclick="toggleSubMenu(this, '${c}')">
@@ -264,7 +267,7 @@
 
         const patches = [...new Set(allData.map(i => i.patch))].sort((a,b) => b-a);
         document.getElementById('side-patch-list').innerHTML = patches.map(p => 
-            `<button class="nav-item-parent" onclick="filterBy('patch', '${p}')"><span><i class="fa-solid fa-tag"></i> Patch ${p}</span></button>`
+            `<button class="nav-item-parent" onclick="filterBy('patch', '${p}')"><span><i class="fa-solid fa-tag"></i> ${formatPatch(p)}</span></button>`
         ).join('');
     }
 
@@ -299,7 +302,10 @@
         currentFilter = { type, value, subValue };
         document.getElementById('home-view').style.display = 'none';
         document.getElementById('catalog-view').style.display = 'block';
-        document.getElementById('view-title').innerText = type === 'patch' ? `Patch ${value}` : value;
+        
+        // --- 見出しの修正：ここでも formatPatch を使う ---
+        document.getElementById('view-title').innerText = type === 'patch' ? formatPatch(value) : value;
+        
         updateTopTags(); 
         render();
         window.scrollTo(0, 0);
@@ -314,7 +320,7 @@
             .filter(i => i.category === currentFilter.value)
             .map(i => i['FF14サブカテゴリー']) 
         )].filter(Boolean);
-        subCats = sortSubCategories(subCats); // ソート適用
+        subCats = sortSubCategories(subCats);
 
         if (subCats.length === 0) return;
 
@@ -357,10 +363,11 @@
         });
 
         filtered.forEach((item, index) => {
+            // --- 区切り線の修正：ここでも formatPatch を使う ---
             if (currentFilter.type === 'patch' && item.patch !== lastPatch) {
                 const div = document.createElement('div');
                 div.className = 'patch-divider';
-                div.innerText = `Patch ${item.patch}`;
+                div.innerText = formatPatch(item.patch);
                 grid.appendChild(div);
                 lastPatch = item.patch;
             }
