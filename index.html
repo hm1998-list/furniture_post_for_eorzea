@@ -4,232 +4,259 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Furniture Post for Eorzea</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
     <style>
         :root {
-            --bg-color: #f0e1bd;
+            --bg-color: #fdfaf3;
+            --sidebar-bg: #f0e1bd;
+            --primary-color: #7d6b5d;
+            --text-main: #555555;
             --card-bg: #f5f5f5;
             --card-hover-bg: #ffffff;
-            --text-main: #555555;
-            --text-accent: #7d6b5d;
-            --text-light: #888888;
-            --color-new: #a4343a;
             --shadow: 0 8px 18px rgba(90, 70, 50, 0.15);
         }
 
         * { box-sizing: border-box; }
-
         body {
-            background-color: var(--bg-color);
-            margin: 0;
-            padding-top: 170px;
-            font-family: "Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN", sans-serif;
-            color: var(--text-main);
-            overflow-x: hidden;
-            scroll-behavior: smooth;
+            margin: 0; font-family: 'Noto Sans JP', sans-serif;
+            background-color: var(--bg-color); color: var(--text-main);
+            display: flex; min-height: 100vh;
         }
 
-        /* --- ヘッダー・コントロール --- */
-        header {
-            position: fixed; top: 0; left: 0; width: 100%;
-            background-color: rgba(240, 225, 189, 0.96);
-            backdrop-filter: blur(8px); z-index: 1000;
-            padding: 10px 15px; box-shadow: 0 2px 10px rgba(90, 70, 50, 0.05);
-            text-align: center;
+        /* --- サイドバー --- */
+        #sidebar {
+            width: 260px; background-color: var(--sidebar-bg);
+            padding: 25px 15px; position: sticky; top: 0; height: 100vh;
+            overflow-y: auto; box-shadow: 2px 0 10px rgba(0,0,0,0.05);
+            z-index: 100;
         }
-        header h1 { font-size: 1.1rem; color: var(--text-accent); margin: 0 0 8px 0; letter-spacing: 1px; }
+        #sidebar h1 { font-size: 1.2rem; color: var(--primary-color); margin-bottom: 30px; text-align: center; }
+        .nav-group { margin-bottom: 25px; }
+        .nav-label { font-size: 0.75rem; font-weight: bold; color: rgba(125,107,93,0.6); margin-bottom: 10px; display: block; border-bottom: 1px solid rgba(0,0,0,0.05); }
+        .nav-item {
+            display: block; width: 100%; padding: 10px; border: none; background: none;
+            text-align: left; cursor: pointer; border-radius: 8px; font-size: 0.9rem;
+            color: var(--primary-color); transition: 0.2s;
+        }
+        .nav-item:hover, .nav-item.active { background: rgba(255,255,255,0.6); font-weight: bold; }
+        .nav-item i { margin-right: 10px; width: 18px; text-align: center; }
+
+        /* --- メインコンテンツ --- */
+        #main-content { flex: 1; padding: 40px; }
+
+        /* --- ホーム画面 --- */
+        #home-view { max-width: 900px; margin: 0 auto; text-align: center; }
+        .hero-title { font-size: 2.5rem; color: var(--primary-color); margin-bottom: 5px; }
+        .hero-sub { color: #888; margin-bottom: 40px; }
         
-        .top-controls { display: flex; align-items: center; gap: 8px; max-width: 500px; margin: 0 auto 10px; }
-        .search-input {
-            width: 100%; padding: 8px 15px; border-radius: 20px;
-            border: 1px solid rgba(125, 107, 93, 0.2); background-color: var(--card-bg);
-            outline: none; font-size: 17px; transition: 0.3s;
+        .search-box { max-width: 600px; margin: 0 auto 50px; position: relative; }
+        .search-box input {
+            width: 100%; padding: 18px 30px; border-radius: 35px;
+            border: 2px solid var(--sidebar-bg); font-size: 1.1rem; outline: none;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05); transition: 0.3s;
         }
+        .search-box input:focus { border-color: var(--primary-color); }
 
-        /* パッチ切り替えトグル */
-        .smooth-toggle {
-            width: 185px; height: 32px; background-color: rgba(125, 107, 93, 0.15);
-            border-radius: 16px; position: relative; cursor: pointer; user-select: none;
-            display: flex; align-items: center; border: 1px solid rgba(125, 107, 93, 0.05);
+        .home-cat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 20px; }
+        .cat-card {
+            background: white; padding: 25px 15px; border-radius: 15px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05); cursor: pointer; transition: 0.3s;
         }
-        .toggle-slider {
-            position: absolute; top: 1px; left: 2px; width: 63px; height: 28px;
-            background-color: #ffffff; border-radius: 14px;
-            box-shadow: 0 2px 6px rgba(90, 70, 50, 0.1);
-            transition: transform 0.4s cubic-bezier(0.65, 0, 0.35, 1); z-index: 1;
-        }
-        .mode-patch .toggle-slider { transform: translateX(118px); }
-        .toggle-label { flex: 1; font-size: 0.65rem; font-weight: bold; color: var(--text-accent); z-index: 2; pointer-events: none; }
+        .cat-card:hover { transform: translateY(-5px); box-shadow: var(--shadow); }
+        .cat-card i { font-size: 2.2rem; color: var(--primary-color); margin-bottom: 15px; display: block; }
+        .cat-card span { font-weight: bold; font-size: 0.85rem; }
 
-        /* --- カテゴリフィルター --- */
-        .filter-scroll { display: flex; overflow-x: auto; gap: 8px; padding: 5px 0; justify-content: center; }
-        .filter-chip { padding: 6px 14px; background: rgba(125,107,93,0.18); border-radius: 15px; font-size: 0.7rem; cursor: pointer; border: none; font-weight: bold; color: var(--text-accent); }
-        .filter-chip.active { background: var(--text-accent); color: white; }
-
-        /* --- グリッド・カード --- */
-        .catalog-container { max-width: 1100px; margin: 0 auto; padding: 15px; }
-        .catalog-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
-        @media (min-width: 600px) {
-            .catalog-grid { grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 20px; }
-            body { padding-top: 190px; }
-        }
-
+        /* --- カタログ画面 --- */
+        #catalog-view { display: none; }
+        .view-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 30px; border-bottom: 2px solid var(--sidebar-bg); padding-bottom: 10px; }
+        .back-to-home { cursor: pointer; color: var(--primary-color); font-weight: bold; font-size: 0.9rem; }
+        
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 20px; }
+        
+        /* チェキカード (継承) */
         .cheki-card {
-            background-color: var(--card-bg); padding: 14px 14px 20px 14px;
+            background-color: var(--card-bg); padding: 12px 12px 18px;
             border-radius: 10px; box-shadow: var(--shadow);
             position: relative; transition: 0.3s;
-            animation: cardArrive 0.6s ease forwards;
         }
-        .cheki-card:hover { transform: translateY(-5px); background-color: var(--card-hover-bg); }
-
-        /* スライダー画像 */
-        .photo-area { position: relative; width: 100%; aspect-ratio: 1/1; background-color: #ddd; border-radius: 6px; overflow: hidden; margin-bottom: 8px; cursor: pointer; }
-        .slide-img { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity 0.3s ease; }
+        .cheki-card:hover { transform: translateY(-5px); background-color: white; }
+        .photo-area { position: relative; width: 100%; aspect-ratio: 1; border-radius: 6px; overflow: hidden; margin-bottom: 8px; cursor: pointer; }
+        .slide-img { position: absolute; top:0; left:0; width:100%; height:100%; object-fit: cover; opacity: 0; transition: 0.3s; }
         .slide-img.active { opacity: 1; }
-        
         .slider-controls { display: flex; justify-content: center; gap: 4px; margin-bottom: 8px; }
-        .slide-btn { background: rgba(125,107,93,0.1); border: 1px solid rgba(125,107,93,0.2); border-radius: 4px; font-size: 10px; color: var(--text-accent); cursor: pointer; padding: 2px 8px; }
-        .slide-btn:hover { background: var(--text-accent); color: white; }
+        .slide-btn { background: rgba(0,0,0,0.05); border: none; border-radius: 4px; font-size: 9px; cursor: pointer; padding: 2px 6px; }
+        .slide-btn:hover { background: var(--primary-color); color: white; }
+        .item-name { font-size: 0.8rem; font-weight: bold; text-align: center; margin: 0; color: var(--primary-color); }
 
-        .item-name { font-size: 0.8rem; font-weight: 600; text-align: center; color: var(--text-accent); margin: 0; }
+        .patch-divider { grid-column: 1 / -1; margin-top: 30px; font-weight: bold; color: var(--primary-color); border-left: 4px solid var(--primary-color); padding-left: 10px; }
 
-        /* パッチ区切り線 */
-        .patch-divider { grid-column: 1 / -1; display: flex; align-items: center; margin: 30px 0 10px 0; }
-        .patch-label { font-size: 0.75rem; font-weight: bold; color: var(--text-accent); background: rgba(255,255,255,0.5); padding: 3px 12px; border-radius: 12px; border: 1.5px dashed var(--text-accent); }
-
-        /* TOPに戻るボタン */
-        .back-to-top { position: fixed; bottom: 25px; right: 25px; width: 48px; height: 48px; background: var(--card-bg); border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(90, 70, 50, 0.2); z-index: 1001; opacity: 0; pointer-events: none; transition: 0.3s; text-decoration: none; }
-        .back-to-top.visible { opacity: 1; pointer-events: auto; }
-        .arrow-icon { width: 14px; height: 14px; border-top: 4px solid var(--text-accent); border-left: 4px solid var(--text-accent); transform: rotate(45deg) translate(2px, 2px); }
-
-        /* モーダル（ブックレイアウト） */
-        .modal { display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); backdrop-filter: blur(8px); align-items: center; justify-content: center; }
+        /* --- モーダル (継承) --- */
+        .modal { display: none; position: fixed; z-index: 2000; left:0; top:0; width:100%; height:100%; background: rgba(0,0,0,0.85); backdrop-filter: blur(8px); align-items: center; justify-content: center; }
         .modal.visible { display: flex; }
-        .book-layout { display: flex; width: 95%; max-width: 850px; height: 500px; background: #fdfaf3; border-radius: 10px; overflow: hidden; position: relative; }
+        .book-layout { display: flex; width: 95%; max-width: 800px; height: 500px; background: #fdfaf3; border-radius: 10px; overflow: hidden; position: relative; }
         .book-left { flex: 1.2; background: #1a1a1a; display: flex; align-items: center; justify-content: center; }
-        .book-right { flex: 1; padding: 30px; border-left: 1px solid rgba(125,107,93,0.2); overflow-y: auto; color: var(--text-main); }
-        .close-modal { position: absolute; top: 10px; right: 20px; font-size: 30px; cursor: pointer; color: #555; z-index: 10; }
+        .book-right { flex: 1; padding: 40px; border-left: 1px solid #ddd; overflow-y: auto; }
+        .close-modal { position: absolute; top: 15px; right: 20px; font-size: 30px; cursor: pointer; }
 
-        @keyframes cardArrive { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+        @media (max-width: 768px) {
+            #sidebar { display: none; } /* 本来はハンバーガーメニュー等に改修推奨 */
+            #main-content { padding: 20px; }
+            .book-layout { flex-direction: column; height: auto; max-height: 90vh; }
+        }
     </style>
 </head>
-<body class="mode-all">
+<body>
 
-    <header>
-        <h1>Furniture Post</h1>
-        <div class="top-controls">
-            <input type="text" id="searchInput" class="search-input" placeholder="家具を検索..." oninput="render()">
-            <div class="smooth-toggle" id="modeToggle" onclick="toggleMode()">
-                <div class="toggle-slider"></div>
-                <div class="toggle-label">新着順</div>
-                <div class="toggle-label">パッチ別</div>
-            </div>
-        </div>
-        <div class="filter-scroll" id="mainCategoryArea"></div>
-    </header>
-
-    <main class="catalog-container">
-        <div class="catalog-grid" id="grid"></div>
-    </main>
-
-    <div id="itemModal" class="modal">
-        <div class="book-layout">
-            <span class="close-modal" onclick="closeModal()">&times;</span>
-            <div class="book-left" id="modalPhoto"></div>
-            <div class="book-right">
-                <h2 id="modalTitle" style="margin-top:0;"></h2>
-                <p id="modalCategory" style="font-weight:bold; color:var(--text-accent);"></p>
-                <hr style="border:0; border-top:1px dotted #ccc; margin:15px 0;">
-                <div id="modalComment" style="font-size: 0.9rem; line-height:1.6;"></div>
-            </div>
-        </div>
+<nav id="sidebar">
+    <h1>Furniture Post</h1>
+    
+    <div class="nav-group">
+        <span class="nav-label">General</span>
+        <button class="nav-item active" onclick="showHome()"><i class="fa-solid fa-house"></i>Home</button>
     </div>
 
-    <a href="#" class="back-to-top" id="topBtn" onclick="scrollToTop(event)">
-        <span class="arrow-icon"></span>
-    </a>
+    <div class="nav-group">
+        <span class="nav-label">Categories</span>
+        <div id="side-cat-list"></div>
+    </div>
+
+    <div class="nav-group">
+        <span class="nav-label">Patch Version</span>
+        <div id="side-patch-list"></div>
+    </div>
+</nav>
+
+<main id="main-content">
+    <div id="home-view">
+        <h1 class="hero-title">Furniture Catalog</h1>
+        <p class="hero-sub">エオルゼアの調度品・庭具コレクション</p>
+        
+        <div class="search-box">
+            <input type="text" id="homeSearch" placeholder="家具の名前で検索..." onkeypress="handleSearch(event)">
+        </div>
+
+        <div class="home-cat-grid" id="home-cat-list">
+            </div>
+    </div>
+
+    <div id="catalog-view">
+        <div class="view-header">
+            <div class="back-to-home" onclick="showHome()"><i class="fa-solid fa-chevron-left"></i> Home</div>
+            <h2 id="view-title" style="margin:0; font-size: 1.2rem; color: var(--primary-color);"></h2>
+        </div>
+        <div class="grid" id="grid"></div>
+    </div>
+</main>
+
+<div id="itemModal" class="modal" onclick="closeModal()">
+    <div class="book-layout" onclick="event.stopPropagation()">
+        <span class="close-modal" onclick="closeModal()">&times;</span>
+        <div class="book-left" id="modalPhoto"></div>
+        <div class="book-right">
+            <h2 id="modalTitle" style="margin-top:0; color:var(--primary-color);"></h2>
+            <p id="modalCategory" style="font-weight:bold; color:#888; font-size:0.8rem;"></p>
+            <hr style="border:0; border-top:1px dotted #ccc; margin:20px 0;">
+            <div id="modalComment" style="font-size: 0.9rem; line-height:1.7;"></div>
+        </div>
+    </div>
+</div>
 
 <script>
-    let sampleData = [];      
-    let displayList = [];
-    let currentCat = 'all';
-    let currentMode = 'all'; // 'all' (新着順) or 'patch' (パッチ別)
-
     const GAS_URL = "https://script.google.com/macros/s/AKfycbxW6Gx_zg8upPU10cK2gS9acqg_YRdc79lUzq2qUB0DsMJv0hV2OkCcttbIHoa1AqSemw/exec";
+    let allData = [];
+    let currentFilter = { type: 'all', value: 'all' };
 
-    window.onload = function() {
-        fetch(GAS_URL)
-            .then(response => response.json())
-            .then(data => {
-                // スプシの並びを新着順（逆順）にして保持
-                sampleData = data.reverse(); 
-                createFilterButtons();
-                render(); 
-            });
+    window.onload = async function() {
+        const response = await fetch(GAS_URL);
+        const data = await response.json();
+        allData = data.reverse(); // 新着順
+        
+        buildMenu();
+        buildHome();
     };
 
-    function toggleMode() {
-        currentMode = (currentMode === 'all') ? 'patch' : 'all';
-        document.body.className = 'mode-' + currentMode;
+    function buildMenu() {
+        const cats = [...new Set(allData.map(i => i.category))].filter(Boolean);
+        const patches = [...new Set(allData.map(i => i.patch))].sort((a,b) => b-a);
+        
+        const sideCat = document.getElementById('side-cat-list');
+        sideCat.innerHTML = cats.map(c => `
+            <button class="nav-item" onclick="filterBy('category', '${c}')"><i class="fa-solid fa-couch"></i>${c}</button>
+        `).join('');
+
+        const sidePatch = document.getElementById('side-patch-list');
+        sidePatch.innerHTML = patches.map(p => `
+            <button class="nav-item" onclick="filterBy('patch', '${p}')"><i class="fa-solid fa-tag"></i>Patch ${p}</button>
+        `).join('');
+    }
+
+    function buildHome() {
+        const cats = [...new Set(allData.map(i => i.category))].filter(Boolean);
+        const homeGrid = document.getElementById('home-cat-list');
+        homeGrid.innerHTML = cats.map(c => `
+            <div class="cat-card" onclick="filterBy('category', '${c}')">
+                <i class="fa-solid fa-box"></i>
+                <span>${c}</span>
+            </div>
+        `).join('');
+    }
+
+    function showHome() {
+        document.getElementById('home-view').style.display = 'block';
+        document.getElementById('catalog-view').style.display = 'none';
+        document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+        document.querySelector('.nav-item i.fa-house').parentElement.classList.add('active');
+    }
+
+    function filterBy(type, value) {
+        currentFilter = { type, value };
+        document.getElementById('home-view').style.display = 'none';
+        document.getElementById('catalog-view').style.display = 'block';
+        document.getElementById('view-title').innerText = type === 'patch' ? `Patch ${value}` : value;
         render();
     }
 
-    function createFilterButtons() {
-        const area = document.getElementById('mainCategoryArea');
-        const categories = [...new Set(sampleData.map(item => item.category))].filter(c => c && c !== "‐" && c !== "×");
-        area.innerHTML = '<button class="filter-chip active" onclick="filterCat(\'all\', this)">すべて</button>';
-        categories.forEach(cat => {
-            area.innerHTML += `<button class="filter-chip" onclick="filterCat('${cat}', this)">${cat}</button>`;
-        });
-    }
-
-    function filterCat(cat, el) {
-        currentCat = cat;
-        document.querySelectorAll('.filter-chip').forEach(b => b.classList.remove('active'));
-        el.classList.add('active');
-        render();
+    function handleSearch(e) {
+        if (e.key === 'Enter') filterBy('search', e.target.value);
     }
 
     function render() {
         const grid = document.getElementById('grid');
-        const search = document.getElementById('searchInput').value.toLowerCase();
         grid.innerHTML = '';
         let lastPatch = "";
 
-        // フィルタリング
-        displayList = sampleData.filter(item => {
-            const categoryMatch = (currentCat === 'all' || item.category === currentCat);
-            const nameMatch = (item['アイテム名（日）'] || item.name || "").toLowerCase().includes(search);
-            return categoryMatch && nameMatch;
+        const filtered = allData.filter(item => {
+            if (currentFilter.type === 'category') return item.category === currentFilter.value;
+            if (currentFilter.type === 'patch') return item.patch === currentFilter.value;
+            if (currentFilter.type === 'search') return (item['アイテム名（日）'] || item.name).includes(currentFilter.value);
+            return true;
         });
 
-        // 表示
-        displayList.forEach((item, index) => {
-            // パッチ別モード時の仕切り
-            if (currentMode === 'patch' && item.patch !== lastPatch) {
-                const divider = document.createElement('div');
-                divider.className = 'patch-divider';
-                divider.innerHTML = `<span class="patch-label">Patch ${item.patch}</span>`;
-                grid.appendChild(divider);
+        filtered.forEach((item, index) => {
+            // パッチ区切り（カテゴリー別表示の時だけ出すなど調整可能）
+            if (currentFilter.type !== 'patch' && item.patch !== lastPatch) {
+                const div = document.createElement('div');
+                div.className = 'patch-divider';
+                div.innerText = `Patch ${item.patch}`;
+                grid.appendChild(div);
                 lastPatch = item.patch;
             }
 
+            const itemId = item['ItemID'] || item['アイテムID'];
             const card = document.createElement('div');
             card.className = 'cheki-card';
-            
-            const itemId = item['ItemID'];
-            const fImg = `images/${itemId}_front.png`;
-            const bImg = `images/${itemId}_bottom.png`; // 背面/底面用
-
             card.innerHTML = `
-                <div class="photo-area" onclick="openModal(${index})">
-                    <img src="${fImg}" class="slide-img active" id="f-${index}" onerror="this.src='https://placehold.jp/24/cccccc/ffffff/200x200.png?text=No%20Image'">
-                    <img src="${bImg}" class="slide-img" id="b-${index}" onerror="this.style.display='none'">
+                <div class="photo-area" onclick="openModalByIdx(${allData.indexOf(item)})">
+                    <img src="images/${itemId}_front.png" class="slide-img active" id="f-${index}" onerror="this.src='https://placehold.jp/200x200.png?text=No%20Image'">
+                    <img src="images/${itemId}_bottom.png" class="slide-img" id="b-${index}" onerror="this.style.display='none'">
                 </div>
                 <div class="slider-controls">
-                    <button class="slide-btn" onclick="event.stopPropagation(); changeImg(${index}, 'f')">Front</button>
-                    <button class="slide-btn" onclick="event.stopPropagation(); changeImg(${index}, 'b')">Bottom</button>
+                    <button class="slide-btn" onclick="changeImg(${index}, 'f')">F</button>
+                    <button class="slide-btn" onclick="changeImg(${index}, 'b')">B</button>
                 </div>
-                <p class="item-name" onclick="openModal(${index})">${item['アイテム名（日）'] || item.name}</p>
+                <p class="item-name">${item['アイテム名（日）'] || item.name}</p>
             `;
             grid.appendChild(card);
         });
@@ -238,46 +265,22 @@
     function changeImg(idx, side) {
         const f = document.getElementById(`f-${idx}`);
         const b = document.getElementById(`b-${idx}`);
-        if(side === 'f') {
-            f.classList.add('active'); b.classList.remove('active');
-        } else {
-            if(b.style.display !== 'none') {
-                b.classList.add('active'); f.classList.remove('active');
-            }
-        }
+        if(side === 'f') { f.classList.add('active'); b.classList.remove('active'); }
+        else if(b.style.display !== 'none') { b.classList.add('active'); f.classList.remove('active'); }
     }
 
-    function openModal(index) {
-        const item = displayList[index];
-        const itemId = item['アイテムID'];
+    function openModalByIdx(originalIdx) {
+        const item = allData[originalIdx];
+        const itemId = item['ItemID'] || item['アイテムID'];
         document.getElementById('modalTitle').innerText = item['アイテム名（日）'] || item.name;
-        document.getElementById('modalCategory').innerText = item.category + " / " + (item.genre || "");
-        document.getElementById('modalComment').innerText = item.remarks || "備考なし";
-        document.getElementById('modalPhoto').innerHTML = `<img src="images/${itemId}_front.png" style="max-width:100%; max-height:100%;" onerror="this.src='https://placehold.jp/200x200?text=NoImage'">`;
+        document.getElementById('modalCategory').innerText = `${item.category} / ${item.genre || 'なし'}`;
+        document.getElementById('modalComment').innerText = item.remarks || "備考はありません。";
+        document.getElementById('modalPhoto').innerHTML = `<img src="images/${itemId}_front.png" style="max-width:90%; max-height:90%; border-radius:4px;" onerror="this.src='https://placehold.jp/200x200?text=NoImage'">`;
         document.getElementById('itemModal').classList.add('visible');
-        document.body.style.overflow = 'hidden';
     }
 
-    function closeModal() {
-        document.getElementById('itemModal').classList.remove('visible');
-        document.body.style.overflow = 'auto';
-    }
-
-    // TOPへ戻る
-    function scrollToTop(e) {
-        e.preventDefault();
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-
-    window.onscroll = function() {
-        const btn = document.getElementById('topBtn');
-        if (document.documentElement.scrollTop > 300) {
-            btn.classList.add('visible');
-        } else {
-            btn.classList.remove('visible');
-        }
-    };
+    function closeModal() { document.getElementById('itemModal').classList.remove('visible'); }
 </script>
+
 </body>
 </html>
-
