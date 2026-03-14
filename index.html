@@ -129,6 +129,12 @@
             margin-top: 50px; /* 【修正1】位置を下げるためのマージンを追加 */
         }
         
+        /* 【追加】複数画像があるとき（JavaScriptで付与） */
+        .has-multiple-thumbs #modalPhoto {
+            height: 75%;      /* サムネイルの分、少し短くする */
+            margin-top: 20px; /* 位置を上に上げる */
+        }
+        
         #modalPhoto img { 
             max-width: 100%; 
             max-height: 100%; 
@@ -371,28 +377,33 @@ async function openModalByIdx(originalIdx) {
     document.getElementById('modalComment').innerText = item.remarks || "備考はありません。";
 
     const photoArea = document.getElementById('modalPhoto');
-    // メイン画像は確実に存在する front をまず表示
+    const bookRight = document.querySelector('.book-right');
+
+    // 1. 初期化：複数枚用クラスを一旦消し、メイン画像をfrontに設定
+    bookRight.classList.remove('has-multiple-thumbs');
     photoArea.innerHTML = `<img src="images/${itemId}_front.png" id="mainModalImg" onerror="this.src='https://placehold.jp/200x200?text=NoImage'">`;
 
+    // 2. サムネイルエリアの準備
     let thumbNav = document.querySelector('.thumb-nav');
     if (!thumbNav) {
         thumbNav = document.createElement('div');
         thumbNav.className = 'thumb-nav';
-        document.querySelector('.book-right').appendChild(thumbNav);
+        bookRight.appendChild(thumbNav);
     }
-    thumbNav.innerHTML = ''; // 一旦クリア
+    thumbNav.innerHTML = '';
 
-    // チェックしたい画像パターンのリスト
-    const suffixList = ['front', 'side', 'back', 'bottom', 'top', 'dye', 'night']; // 'dye' は染色用など任意
+    // 3. 画像チェック
+    const suffixList = ['front', 'side', 'back', 'bottom', 'top', 'dye', 'night'];
+    let foundCount = 0;
 
-    // 画像の存在確認を行ってサムネイルを追加する関数
     const checkAndAddThumbnail = (suffix) => {
         return new Promise((resolve) => {
             const imgUrl = `images/${itemId}_${suffix}.png`;
             const tempImg = new Image();
             
             tempImg.onload = () => {
-                // 読み込みに成功したらサムネイルを作成
+                foundCount++; // 画像が見つかったらカウント
+                
                 const tImg = document.createElement('img');
                 tImg.src = imgUrl;
                 tImg.alt = suffix;
@@ -408,17 +419,21 @@ async function openModalByIdx(originalIdx) {
             };
 
             tempImg.onerror = () => {
-                // 読み込みに失敗（画像がない）場合は何もしない
-                resolve();
+                resolve(); // 画像がなくても次のチェックへ
             };
 
             tempImg.src = imgUrl;
         });
     };
 
-    // すべてのパターンを順番にチェック
+    // すべての画像を順番にチェック
     for (const suffix of suffixList) {
         await checkAndAddThumbnail(suffix);
+    }
+
+    // 4. 【重要】2枚以上あればクラスを付与して上に上げる
+    if (foundCount > 1) {
+        bookRight.classList.add('has-multiple-thumbs');
     }
 
     document.getElementById('itemModal').classList.add('visible');
