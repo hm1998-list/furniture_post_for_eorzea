@@ -110,13 +110,20 @@
         
         /* 右側（画像エリア）の修正 */
         .book-right {
-            flex: 1.2; 
+            flex: 1; 
             background: #fdfaf3; /* 【修正2】背景色を黒からモダールの背景色へ */
             display: flex; 
             flex-direction: column; /* 縦並びにする */
             align-items: center; 
             justify-content: flex-start; /* 上詰めにする */
             padding: 20px;
+        }
+
+        .book-left {
+            flex: 0 0 400px; /* 横幅を320pxに固定して、右側にスペースを譲る */
+            padding: 40px 30px;
+            overflow-y: auto;
+            border-left: 1px solid rgba(0,0,0,0.05); /* 境界線を薄く入れると本っぽくなります */
         }
         
         /* メイン画像を表示するコンテナの修正 */
