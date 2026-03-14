@@ -456,15 +456,53 @@
         else if(b.style.display !== 'none') { b.classList.add('active'); f.classList.remove('active'); }
     }
 
-    function openModalByIdx(originalIdx) {
-        const item = allData[originalIdx];
-        const itemId = item['ItemID'] || item['アイテムID'];
-        document.getElementById('modalTitle').innerText = item['アイテム名（日）'] || item.name;
-        document.getElementById('modalCategory').innerText = `${item.category} / ${item['FF14サブカテゴリー'] || ''}`;
-        document.getElementById('modalComment').innerText = item.remarks || "備考はありません。";
-        document.getElementById('modalPhoto').innerHTML = `<img src="images/${itemId}_front.png" style="max-width:90%; max-height:90%; border-radius:4px;" onerror="this.src='https://placehold.jp/200x200?text=NoImage'">`;
-        document.getElementById('itemModal').classList.add('visible');
+function openModalByIdx(originalIdx) {
+    const item = allData[originalIdx];
+    const itemId = item['ItemID'] || item['アイテムID'];
+    
+    document.getElementById('modalTitle').innerText = item['アイテム名（日）'] || item.name;
+    document.getElementById('modalCategory').innerText = `${item.category} / ${item['FF14サブカテゴリー'] || ''}`;
+    document.getElementById('modalComment').innerText = item.remarks || "備考はありません。";
+
+    // メイン画像エリアの初期化
+    const photoArea = document.getElementById('modalPhoto');
+    photoArea.innerHTML = `<img src="images/${itemId}_front.png" id="mainModalImg" onerror="this.src='https://placehold.jp/200x200?text=NoImage'">`;
+
+    // サムネイルエリアの作成（既にある場合は削除して再作成）
+    let thumbNav = document.querySelector('.thumb-nav');
+    if (!thumbNav) {
+        thumbNav = document.createElement('div');
+        thumbNav.className = 'thumb-nav';
+        document.querySelector('.book-left').appendChild(thumbNav);
     }
+    thumbNav.innerHTML = '';
+
+    // サムネイルにする画像リスト（front と bottom）
+    const images = [
+        { id: 'front', url: `images/${itemId}_front.png` },
+        { id: 'bottom', url: `images/${itemId}_bottom.png` }
+    ];
+
+    images.forEach((imgData, i) => {
+        const tImg = document.createElement('img');
+        tImg.src = imgData.url;
+        if (i === 0) tImg.className = 'active'; // 1枚目を選択状態に
+
+        // サムネイルクリックでメイン画像を切り替え
+        tImg.onclick = () => {
+            document.getElementById('mainModalImg').src = imgData.url;
+            document.querySelectorAll('.thumb-nav img').forEach(el => el.classList.remove('active'));
+            tImg.classList.add('active');
+        };
+
+        // 画像が存在しない場合はサムネイルを表示しない（任意）
+        tImg.onerror = () => tImg.style.display = 'none';
+        
+        thumbNav.appendChild(tImg);
+    });
+
+    document.getElementById('itemModal').classList.add('visible');
+}
 
     function closeModal() { document.getElementById('itemModal').classList.remove('visible'); }
 </script>
