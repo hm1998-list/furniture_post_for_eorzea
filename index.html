@@ -100,76 +100,52 @@
         .slide-img.active { opacity: 1; }
         .slider-controls { display: flex; justify-content: center; gap: 4px; margin-bottom: 8px; }
         .slide-btn { background: rgba(0,0,0,0.05); border: none; border-radius: 4px; font-size: 9px; cursor: pointer; padding: 2px 6px; }
-        .item-name { font-size: 0.8rem; font-weight: bold; text-align: center; margin: 10px 0 0; color: var(--primary-color); }
+        .item-name { font-size: 0.8rem; font-weight: bold; text-align: center; margin: 0; color: var(--primary-color); }
         .patch-divider { grid-column: 1 / -1; margin-top: 30px; font-weight: bold; color: var(--primary-color); border-left: 4px solid var(--primary-color); padding-left: 10px; }
 
         /* モーダル */
         .modal { display: none; position: fixed; z-index: 2000; left:0; top:0; width:100%; height:100%; background: rgba(0,0,0,0.85); backdrop-filter: blur(8px); align-items: center; justify-content: center; }
         .modal.visible { display: flex; }
+        .book-layout { display: flex; width: 95%; max-width: 800px; height: 500px; background: #fdfaf3; border-radius: 10px; overflow: hidden; position: relative; }
         
-        .book-layout {
-            display: flex;
-            width: 95%;
-            max-width: 900px; /* 少し広げる */
-            height: 600px; /* 高さを少し出す */
-            background: #fdfaf3;
-            border-radius: 10px;
-            overflow: hidden;
-            position: relative;
-        }
-        
-        .book-left {
-            flex: 1.2;
-            background: #1a1a1a;
-            display: flex;
-            flex-direction: column; /* 縦に並べる */
-            align-items: center;
-            justify-content: center;
+        /* 右側（画像エリア）の修正 */
+        .book-right {
+            flex: 1.2; 
+            background: #fdfaf3; /* 【修正2】背景色を黒からモダールの背景色へ */
+            display: flex; 
+            flex-direction: column; /* 縦並びにする */
+            align-items: center; 
+            justify-content: flex-start; /* 上詰めにする */
             padding: 20px;
         }
         
-        /* メイン画像を表示するコンテナ */
+        /* メイン画像を表示するコンテナの修正 */
         #modalPhoto {
-            width: 100%;
+            width: 100%; 
             height: 80%; /* 上部8割をメイン画像に */
-            display: flex;
-            align-items: center;
+            display: flex; 
+            align-items: center; 
             justify-content: center;
+            margin-top: 50px; /* 【修正1】位置を下げるためのマージンを追加 */
         }
-
-        #modalPhoto img {
-            max-width: 100%;
-            max-height: 100%;
-            object-fit: contain;
+        
+        #modalPhoto img { 
+            max-width: 100%; 
+            max-height: 100%; 
+            object-fit: contain; 
             border-radius: 4px;
         }
         
         /* サムネイルを並べるコンテナ */
         .thumb-nav {
-            display: flex;
-            gap: 10px;
-            margin-top: 15px;
-            height: 60px;
-            justify-content: center;
+            display: flex; gap: 10px; margin-top: 15px; height: 60px; justify-content: center;
         }
-
         .thumb-nav img {
-            width: 60px;
-            height: 60px;
-            object-fit: cover;
-            cursor: pointer;
-            border-radius: 4px;
-            border: 2px solid transparent;
-            transition: 0.2s;
-            opacity: 0.6;
+            width: 60px; height: 60px; object-fit: cover; cursor: pointer; border-radius: 4px; border: 2px solid transparent; transition: 0.2s; opacity: 0.6;
         }
+        .thumb-nav img:hover, .thumb-nav img.active { border-color: var(--accent-color); opacity: 1; }
 
-        .thumb-nav img:hover, .thumb-nav img.active {
-            border-color: var(--accent-color);
-            opacity: 1;
-        }
-
-        .book-right { flex: 1; padding: 40px; overflow-y: auto; }
+        .book-left { flex: 1; padding: 40px; overflow-y: auto; }
         .close-modal { position: absolute; top: 15px; right: 20px; font-size: 30px; cursor: pointer; }
 
         @media (max-width: 768px) {
@@ -226,8 +202,10 @@
 <div id="itemModal" class="modal" onclick="closeModal()">
     <div class="book-layout" onclick="event.stopPropagation()">
         <span class="close-modal" onclick="closeModal()">&times;</span>
-        <div class="book-left" id="modalPhoto"></div>
         <div class="book-right">
+            <div id="modalPhoto"></div>
+        </div>
+        <div class="book-left">
             <h2 id="modalTitle" style="margin-top:0; color:var(--primary-color);"></h2>
             <p id="modalCategory" style="font-weight:bold; color:#888; font-size:0.8rem;"></p>
             <hr style="border:0; border-top:1px dotted #ccc; margin:20px 0;">
@@ -239,30 +217,8 @@
 <script>
     const GAS_URL = "https://script.google.com/macros/s/AKfycbxW6Gx_zg8upPU10cK2gS9acqg_YRdc79lUzq2qUB0DsMJv0hV2OkCcttbIHoa1AqSemw/exec";
     
-    const CATEGORY_ORDER = [
-        "調度品(一般)", "調度品(台座)", "調度品(卓上)", 
-        "調度品(壁掛)", "調度品(敷物)", "内装建材", "庭具"
-    ];
-
-    const SUB_CATEGORY_ORDER = [
-        "机",
-        "椅子/ソファ",
-        "棚/チェスト",
-        "壁/柱/仕切り",
-        "ベッド",
-        "照明",
-        "料理",
-        "時計",
-        "植物",
-        "ぬいぐるみ/マスコット",
-        "置物",
-        "風呂",
-        "旗/額縁/ポスター",
-        "窓","内壁","床材","天井照明","足場","水場","店舗",
-        "機能家具",
-        "その他"
-        // リストにないものはこの後ろに自動で並びます
-    ];
+    const CATEGORY_ORDER = ["調度品(一般)", "調度品(台座)", "調度品(卓上)", "調度品(壁掛)", "調度品(敷物)", "内装建材", "庭具"];
+    const SUB_CATEGORY_ORDER = ["椅子・ベンチ", "テーブル", "照明", "植物", "敷物"];
 
     let allData = [];
     let currentFilter = { type: 'all', value: 'all', subValue: 'all' };
@@ -275,11 +231,9 @@
         buildHome();
     };
 
-    // --- パッチ表示用の整形関数 ---
     function formatPatch(p) {
         if (!p) return "";
         const strP = p.toString();
-        // すでに「Patch」という文字が含まれていればそのまま、なければ「Patch 」を付与
         return strP.includes("Patch") ? strP : `Patch ${strP}`;
     }
 
@@ -312,45 +266,24 @@
         sideCatList.innerHTML = cats.map(c => {
             let subs = [...new Set(allData.filter(i => i.category === c).map(i => i['FF14サブカテゴリー']))].filter(Boolean);
             subs = sortSubCategories(subs);
-            return `
-                <div class="nav-item-container">
-                    <button class="nav-item-parent" onclick="toggleSubMenu(this, '${c}')">
-                        <span><i class="fa-solid fa-angle-right"></i> ${c}</span>
-                        ${subs.length > 0 ? '<i class="fa-solid fa-chevron-down" style="font-size:0.7rem;"></i>' : ''}
-                    </button>
-                    <div class="sub-menu">
-                        <button class="nav-item-sub" onclick="filterBy('category', '${c}', 'all')">すべて表示</button>
-                        ${subs.map(s => `<button class="nav-item-sub" onclick="filterBy('category', '${c}', '${s}')">${s}</button>`).join('')}
-                    </div>
-                </div>
-            `;
+            return `<div class="nav-item-container"><button class="nav-item-parent" onclick="toggleSubMenu(this, '${c}')"><span><i class="fa-solid fa-angle-right"></i> ${c}</span>${subs.length > 0 ? '<i class="fa-solid fa-chevron-down" style="font-size:0.7rem;"></i>' : ''}</button><div class="sub-menu"><button class="nav-item-sub" onclick="filterBy('category', '${c}', 'all')">すべて表示</button>${subs.map(s => `<button class="nav-item-sub" onclick="filterBy('category', '${c}', '${s}')">${s}</button>`).join('')}</div></div>`;
         }).join('');
 
         const patches = [...new Set(allData.map(i => i.patch))].sort((a,b) => b-a);
-        document.getElementById('side-patch-list').innerHTML = patches.map(p => 
-            `<button class="nav-item-parent" onclick="filterBy('patch', '${p}')"><span><i class="fa-solid fa-tag"></i> ${formatPatch(p)}</span></button>`
-        ).join('');
+        document.getElementById('side-patch-list').innerHTML = patches.map(p => `<button class="nav-item-parent" onclick="filterBy('patch', '${p}')"><span><i class="fa-solid fa-tag"></i> ${formatPatch(p)}</span></button>`).join('');
     }
 
     function toggleSubMenu(btn, category) {
         const subMenu = btn.nextElementSibling;
         const isOpen = subMenu.classList.contains('open');
         document.querySelectorAll('.sub-menu').forEach(m => m.classList.remove('open'));
-        if (!isOpen) {
-            subMenu.classList.add('open');
-            filterBy('category', category, 'all'); 
-        }
+        if (!isOpen) { subMenu.classList.add('open'); filterBy('category', category, 'all'); }
     }
 
     function buildHome() {
         let cats = [...new Set(allData.map(i => i.category))].filter(Boolean);
         cats = sortCategories(cats);
-        document.getElementById('home-cat-list').innerHTML = cats.map(c => `
-            <div class="cat-card" onclick="filterBy('category', '${c}', 'all')">
-                <i class="fa-solid fa-couch"></i>
-                <span>${c}</span>
-            </div>
-        `).join('');
+        document.getElementById('home-cat-list').innerHTML = cats.map(c => `<div class="cat-card" onclick="filterBy('category', '${c}', 'all')"><i class="fa-solid fa-couch"></i><span>${c}</span></div>`).join('');
     }
 
     function showHome() {
@@ -363,10 +296,7 @@
         currentFilter = { type, value, subValue };
         document.getElementById('home-view').style.display = 'none';
         document.getElementById('catalog-view').style.display = 'block';
-        
-        // --- 見出しの修正：ここでも formatPatch を使う ---
         document.getElementById('view-title').innerText = type === 'patch' ? formatPatch(value) : value;
-        
         updateTopTags(); 
         render();
         window.scrollTo(0, 0);
@@ -377,18 +307,12 @@
         tagArea.innerHTML = '';
         if (currentFilter.type !== 'category') return;
 
-        let subCats = [...new Set(allData
-            .filter(i => i.category === currentFilter.value)
-            .map(i => i['FF14サブカテゴリー']) 
-        )].filter(Boolean);
+        let subCats = [...new Set(allData.filter(i => i.category === currentFilter.value).map(i => i['FF14サブカテゴリー']))].filter(Boolean);
         subCats = sortSubCategories(subCats);
-
         if (subCats.length === 0) return;
 
         let html = `<div class="tag-chip ${currentFilter.subValue === 'all' ? 'active' : ''}" onclick="setSubFilter('all', this)">すべて</div>`;
-        subCats.forEach(s => {
-            html += `<div class="tag-chip ${currentFilter.subValue === s ? 'active' : ''}" onclick="setSubFilter('${s}', this)">${s}</div>`;
-        });
+        subCats.forEach(s => { html += `<div class="tag-chip ${currentFilter.subValue === s ? 'active' : ''}" onclick="setSubFilter('${s}', this)">${s}</div>`; });
         tagArea.innerHTML = html;
     }
 
@@ -416,15 +340,12 @@
         let lastPatch = "";
 
         const filtered = allData.filter(item => {
-            const matchMain = (currentFilter.type === 'category' ? item.category === currentFilter.value :
-                               currentFilter.type === 'patch' ? item.patch === currentFilter.value :
-                               currentFilter.type === 'search' ? (item['アイテム名（日）'] || item.name || "").includes(currentFilter.value) : true);
+            const matchMain = (currentFilter.type === 'category' ? item.category === currentFilter.value : currentFilter.type === 'patch' ? item.patch === currentFilter.value : currentFilter.type === 'search' ? (item['アイテム名（日）'] || item.name || "").includes(currentFilter.value) : true);
             const matchSub = (currentFilter.subValue === 'all' || item['FF14サブカテゴリー'] === currentFilter.subValue);
             return matchMain && matchSub;
         });
 
         filtered.forEach((item, index) => {
-            // --- 区切り線の修正：ここでも formatPatch を使う ---
             if (currentFilter.type === 'patch' && item.patch !== lastPatch) {
                 const div = document.createElement('div');
                 div.className = 'patch-divider';
@@ -436,73 +357,64 @@
             const itemId = item['ItemID'] || item['アイテムID'];
             const card = document.createElement('div');
             card.className = 'cheki-card';
-            card.innerHTML = `
-                <div class="photo-area" onclick="openModalByIdx(${allData.indexOf(item)})">
-                    <div class="photo-area" onclick="openModalByIdx(${allData.indexOf(item)})">
-                    <img src="images/${itemId}_front.png" class="slide-img active" onerror="this.src='https://placehold.jp/24/f0e1bd/7d6b5d/200x200.png?text=No%20Image'">
-                </div>
-                </div>
-
-                <p class="item-name">${item['アイテム名（日）'] || item.name}</p>
-            `;
+            card.innerHTML = `<div class="photo-area" onclick="openModalByIdx(${allData.indexOf(item)})"><img src="images/${itemId}_front.png" class="slide-img active" onerror="this.src='https://placehold.jp/200x200.png?text=No%20Image'"></div><p class="item-name">${item['アイテム名（日）'] || item.name}</p>`;
             grid.appendChild(card);
         });
     }
 
-    function changeImg(idx, side) {
-        const f = document.getElementById(`f-${idx}`);
-        const b = document.getElementById(`b-${idx}`);
-        if(side === 'f') { f.classList.add('active'); b.classList.remove('active'); }
-        else if(b.style.display !== 'none') { b.classList.add('active'); f.classList.remove('active'); }
-    }
-
-function openModalByIdx(originalIdx) {
-    const item = allData[originalIdx];
-    const itemId = item['ItemID'] || item['アイテムID'];
-    
-    document.getElementById('modalTitle').innerText = item['アイテム名（日）'] || item.name;
-    document.getElementById('modalCategory').innerText = `${item.category} / ${item['FF14サブカテゴリー'] || ''}`;
-    document.getElementById('modalComment').innerText = item.remarks || "備考はありません。";
-
-    // メイン画像エリアの初期化
-    const photoArea = document.getElementById('modalPhoto');
-    photoArea.innerHTML = `<img src="images/${itemId}_front.png" id="mainModalImg" onerror="this.src='https://placehold.jp/200x200?text=NoImage'">`;
-
-    // サムネイルエリアの作成（既にある場合は削除して再作成）
-    let thumbNav = document.querySelector('.thumb-nav');
-    if (!thumbNav) {
-        thumbNav = document.createElement('div');
-        thumbNav.className = 'thumb-nav';
-        document.querySelector('.book-left').appendChild(thumbNav);
-    }
-    thumbNav.innerHTML = '';
-
-    // サムネイルにする画像リスト（front と bottom）
-    const images = [
-        { id: 'front', url: `images/${itemId}_front.png` },
-        { id: 'bottom', url: `images/${itemId}_bottom.png` }
-    ];
-
-    images.forEach((imgData, i) => {
-        const tImg = document.createElement('img');
-        tImg.src = imgData.url;
-        if (i === 0) tImg.className = 'active'; // 1枚目を選択状態に
-
-        // サムネイルクリックでメイン画像を切り替え
-        tImg.onclick = () => {
-            document.getElementById('mainModalImg').src = imgData.url;
-            document.querySelectorAll('.thumb-nav img').forEach(el => el.classList.remove('active'));
-            tImg.classList.add('active');
-        };
-
-        // 画像が存在しない場合はサムネイルを表示しない（任意）
-        tImg.onerror = () => tImg.style.display = 'none';
+    // --- ギャラリー付きモーダル生成ロジックの追加 ---
+    function openModalByIdx(originalIdx) {
+        const item = allData[originalIdx];
+        const itemId = item['ItemID'] || item['アイテムID'];
         
-        thumbNav.appendChild(tImg);
-    });
+        document.getElementById('modalTitle').innerText = item['アイテム名（日）'] || item.name;
+        document.getElementById('modalCategory').innerText = `${item.category} / ${item['FF14サブカテゴリー'] || ''}`;
+        document.getElementById('modalComment').innerText = item.remarks || "備考はありません。";
 
-    document.getElementById('itemModal').classList.add('visible');
-}
+        // 【追加】ギャラリー機能の実装
+        // 1. メイン画像を表示
+        const photoArea = document.getElementById('modalPhoto');
+        photoArea.innerHTML = `<img src="images/${itemId}_front.png" id="mainModalImg" onerror="this.src='https://placehold.jp/200x200?text=NoImage'">`;
+
+        // 2. サムネイルエリアの作成（既にある場合は削除して再作成）
+        let thumbNav = document.querySelector('.thumb-nav');
+        if (!thumbNav) {
+            thumbNav = document.createElement('div');
+            thumbNav.className = 'thumb-nav';
+            document.querySelector('.book-right').appendChild(thumbNav); // book-rightに追加
+        }
+        thumbNav.innerHTML = ''; // 一旦クリア
+
+        // 3. サムネイル画像リスト（front と bottom）
+        const images = [
+            { id: 'front', url: `images/${itemId}_front.png` },
+            { id: 'bottom', url: `images/${itemId}_bottom.png` }
+        ];
+
+        // 4. サムネイルを動的に生成
+        images.forEach((imgData, i) => {
+            const tImg = document.createElement('img');
+            tImg.src = imgData.url;
+            tImg.alt = imgData.id;
+            if (i === 0) tImg.className = 'active'; // 1枚目を初期選択に
+
+            // サムネイルクリック時の処理
+            tImg.onclick = () => {
+                // メイン画像を切り替え
+                document.getElementById('mainModalImg').src = imgData.url;
+                // サムネイルの選択状態（枠線）を更新
+                document.querySelectorAll('.thumb-nav img').forEach(el => el.classList.remove('active'));
+                tImg.classList.add('active');
+            };
+
+            // 画像が存在しない場合はサムネイル自体を表示しない（任意）
+            // tImg.onerror = () => tImg.style.display = 'none';
+            
+            thumbNav.appendChild(tImg);
+        });
+
+        document.getElementById('itemModal').classList.add('visible');
+    }
 
     function closeModal() { document.getElementById('itemModal').classList.remove('visible'); }
 </script>
