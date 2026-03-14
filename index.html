@@ -110,7 +110,7 @@
         
         /* 右側（画像エリア）の修正 */
         .book-right {
-            flex: 1.2; 
+            flex: 2; 
             background: #fdfaf3; /* 【修正2】背景色を黒からモダールの背景色へ */
             display: flex; 
             flex-direction: column; /* 縦並びにする */
@@ -130,8 +130,10 @@
         }
         
         #modalPhoto img { 
-            max-width: 100%; 
-            max-height: 100%; 
+            max-width: 95%; 
+            max-height: 95%; 
+            width: auto;      /* 自動調整 */
+            height: auto;
             object-fit: contain; 
             border-radius: 4px;
         }
