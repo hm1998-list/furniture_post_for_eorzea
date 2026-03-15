@@ -116,6 +116,36 @@
             overflow: hidden; position: relative;
         }
 
+        .modal-nav {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 50px;
+            height: 50px;
+            background: rgba(125, 107, 93, 0.2);
+            color: var(--primary-color);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: 0.3s;
+            font-size: 1.5rem;
+            z-index: 3000;
+        }
+        .modal-nav:hover {
+            background: rgba(125, 107, 93, 0.5);
+            color: white;
+        }
+        .nav-prev { left: -70px; } /* モーダルの外側に配置 */
+        .nav-next { right: -70px; }
+        
+        /* スマホだと外側は見えないので調整 */
+        @media (max-width: 1200px) {
+            .nav-prev { left: 10px; background: rgba(255,255,255,0.7); }
+            .nav-next { right: 10px; background: rgba(255,255,255,0.7); }
+        }
+
         .tag-badge {
             display: inline-flex;
             align-items: center;
@@ -311,6 +341,10 @@
     <div id="itemModal" class="modal" onclick="closeModal()">
         <div class="book-layout" onclick="event.stopPropagation()">
             <span class="close-modal" onclick="closeModal()">&times;</span>
+            
+            <div class="modal-nav nav-prev" onclick="changeModalItem(-1)"><i class="fa-solid fa-chevron-left"></i></div>
+            <div class="modal-nav nav-next" onclick="changeModalItem(1)"><i class="fa-solid fa-chevron-right"></i></div>
+            
             <div class="book-right">
                 <div id="modalPhoto"></div>
             </div>
@@ -573,8 +607,12 @@
         isLoading = false;
     }
 
+    let currentModalIdx = -1;
+
 async function openModalByIdx(originalIdx) {
+    currentModalIdx = originalIdx;
     const item = allData[originalIdx];
+    
     const itemId = item['ItemID'] || item['アイテムID'];
     
 // 基本情報
@@ -690,6 +728,22 @@ async function openModalByIdx(originalIdx) {
 }
 
     function closeModal() { document.getElementById('itemModal').classList.remove('visible'); }
+
+    function changeModalItem(direction) {
+    // 1. 今の表示リスト(displayList)の中で、現在のアイテムが何番目か探す
+        const currentItem = allData[currentModalIdx];
+        let currentIndexInDisplay = displayList.indexOf(currentItem);
+        
+        // 2. 次のインデックスを計算
+        let nextIndexInDisplay = currentIndexInDisplay + direction;
+        
+        // 3. リストの範囲内なら、新しいアイテムの originalIdx を取得して開き直す
+        if (nextIndexInDisplay >= 0 && nextIndexInDisplay < displayList.length) {
+            const nextItem = displayList[nextIndexInDisplay];
+            const nextOriginalIdx = allData.indexOf(nextItem);
+            openModalByIdx(nextOriginalIdx);
+        }
+    }
 
     // スクロールを監視して、一番下まで来たら次のバッチを読み込む
     window.addEventListener('scroll', () => {
