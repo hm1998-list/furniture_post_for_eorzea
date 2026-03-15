@@ -348,7 +348,7 @@
     </div> </div> </div>
 
 <script>
-    const GAS_URL = "https://script.google.com/macros/s/AKfycbz_X5FQhWp0la32hLDQTRnhdyxvQy7IFmGMqyr664TeNEQe6XkKuQi_ESK7KUX8jMTbgA/exec";
+    const GAS_URL = "https://script.google.com/macros/s/AKfycbxN4O6KUpVGqOI479BHPivqRv1RccVBhVNyHCC6yKqyiXfH-xX9FLR-3c8uPuYM4MEkSA/exec";
     
     const CATEGORY_ORDER = ["調度品(一般)", "調度品(台座)", "調度品(卓上)", "調度品(壁掛)", "調度品(敷物)", "内装建材", "庭具"];
     const SUB_CATEGORY_ORDER = [
@@ -610,13 +610,13 @@ async function openModalByIdx(originalIdx) {
 
     // --- ステータス情報の流し込み ---
     // ※スプレッドシートの列名に合わせて ['〇〇'] の中身を変えてください
-    document.getElementById('modalDye').innerText = item['染色'] || "不可";
-    document.getElementById('modalMarket').innerText = item['マケボ'] || "不可";
-    document.getElementById('modalCraft').innerText = item['レシピ詳細'] || "-";
+    document.getElementById('modalDye').innerText = item['dyeable'] || "不可";
+    document.getElementById('modalMarket').innerText = item['market'] || "不可";
+    document.getElementById('modalCraft').innerText = item['recipe'] || "-";
 
     // 入手方法と備考
     document.getElementById('modalHowToGet').innerText = item['入手方法'] || "確認中";
-    document.getElementById('modalComment').innerText = item['備考'] || "特になし";
+    document.getElementById('modalComment').innerText = item['note'] || "特になし";
 
     // 1. 初期化：複数枚用クラスを一旦消し、メイン画像をfrontに設定
     bookRight.classList.remove('has-multiple-thumbs');
