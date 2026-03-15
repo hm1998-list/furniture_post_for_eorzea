@@ -396,17 +396,19 @@
         // （あるいは期限内でも裏でコッソリ最新に更新する「バックグラウンド更新」もアリ）
         if (!allData.length || (now - cachedTime >= CACHE_EXPIRE)) {
             try {
-                const response = await fetch(GAS_URL);
-                const data = await response.json();
-                allData = data.reverse();
-                
-                // 新しいデータをキャッシュに保存
-                localStorage.setItem(CACHE_KEY, JSON.stringify(allData));
-                localStorage.setItem(CACHE_TIME_KEY, now.toString());
-                
-                buildMenu();
-                buildHome();
-                console.log("最新データをGASから取得して保存しました。");
+        const response = await fetch(GAS_URL);
+        const data = await response.json();
+        
+        // 1. まず「見出し行（1行目）」を除去するなら data.slice(1)
+        // 2. その後で新しい順にしたいなら .reverse()
+        allData = data.slice(1).reverse(); 
+        
+        localStorage.setItem(CACHE_KEY, JSON.stringify(allData));
+        localStorage.setItem(CACHE_TIME_KEY, now.toString());
+        
+        buildMenu();
+        buildHome();
+        console.log("最新データを取得しました！");
             } catch (e) {
                 console.error("データの取得に失敗しました", e);
             }
