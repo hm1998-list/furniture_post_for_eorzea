@@ -243,6 +243,20 @@
             width: 80%; /* 線を少し短くして中央に寄せると、より「本の装飾」っぽくなります */
         }
 
+        .section-title {
+            text-align: center;
+            font-size: 0.95rem;
+            color: var(--primary-color); /* 文字の色（茶色系） */
+            margin: 20px 0 10px;
+        }
+
+        /* 記号だけのスタイル */
+        .symbol {
+            color: rgb(160, 179, 104); /* 記号だけをアクセントカラー（ベージュ系）に！ */
+            margin: 0 8px;              /* 文字との間に少しだけ隙間を作る */
+            font-size: 1.1rem;          /* 記号だけ少し大きくするとバランスが良いです */
+        }
+
         @media (max-width: 768px) {
             #sidebar { display: none; }
             .sticky-header { padding: 15px 20px 5px; }
@@ -317,14 +331,18 @@
         </div>
 
         <div class="info-section">
-            <h3 class="section-title">🌸 入手方法 🌸</h3>
+            <h3 class="section-title">
+            <span class="symbol">✦</span> 入手方法 <span class="symbol">✦</span>
+        </h3>
             <div id="modalHowToGet" class="section-content"></div>
         </div>
 
-        <hr style="border:0; border-top:1px dashed #ccc; margin:20px 0;">
+        <hr class="modal-divider">
 
         <div class="info-section">
-            <h3 class="section-title">🌸 備考 🌸</h3>
+            <h3 class="section-title">
+            <span class="symbol">✦</span> 備考 <span class="symbol">✦</span>
+        </h3>
             <div id="modalComment" class="section-content"></div>
         </div>
     </div> </div> </div>
