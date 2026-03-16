@@ -215,15 +215,19 @@ function updateTopTags() {
         subCats.forEach(s => { 
             html += `<div class="tag-chip ${currentFilter.subValue === s ? 'active' : ''}" onclick="setSubFilter('${s}', this)">${s}</div>`; 
         });
+        
+    // updateTopTags 関数内のパッチ用処理を以下に差し替え
     } else if (currentFilter.type === 'patch-group' || currentFilter.type === 'patch') {
-        // パッチグループ用のタグ生成
         const major = currentFilter.type === 'patch-group' ? currentFilter.value : currentFilter.value.toString().replace('Patch','').trim().split('.')[0];
         
+        // 【修正】チップには小数点第1位まで（7.0, 7.1...）のものだけを出す
         let subPatches = [...new Set(allData.map(i => i.patch))]
-            .filter(p => p.toString().replace('Patch','').trim().startsWith(major + '.'))
-            .sort((a, b) => {
-                return parseFloat(a.toString().replace('Patch','').trim()) - parseFloat(b.toString().replace('Patch','').trim());
-            });
+            .filter(p => {
+                const clean = p.toString().replace('Patch','').trim();
+                // 7.1 や 7.2 のように、数字.数字 の形式（マイナーパッチを除外）のみ抽出
+                return clean.startsWith(major + '.') && clean.split('.').length === 2;
+            })
+            .sort((a, b) => parseFloat(a.toString().replace('Patch','').trim()) - parseFloat(b.toString().replace('Patch','').trim()));
 
         html += `<div class="tag-chip ${currentFilter.type === 'patch-group' ? 'active' : ''}" onclick="filterBy('patch-group', '${major}', 'all')">すべて</div>`;
         subPatches.forEach(p => {
@@ -257,14 +261,19 @@ function render() {
     grid.innerHTML = '';
     currentIndex = 0;
 
+    // render 関数内の item.patch === currentFilter.value の部分を修正
     displayList = allData.filter(item => {
         let matchMain = false;
+        const itemPatch = item.patch.toString().replace('Patch','').trim();
+
         if (currentFilter.type === 'category') {
             matchMain = item.category === currentFilter.value;
         } else if (currentFilter.type === 'patch') {
-            matchMain = item.patch === currentFilter.value;
+            // 【修正】7.1 を選んだら、7.1 で始まるもの（7.1, 7.15...）をすべて出す
+            matchMain = itemPatch === currentFilter.value.toString().replace('Patch','').trim() || 
+                        itemPatch.startsWith(currentFilter.value.toString().replace('Patch','').trim() + ".");
         } else if (currentFilter.type === 'patch-group') {
-            matchMain = item.patch.toString().replace('Patch','').trim().startsWith(currentFilter.value + '.');
+            matchMain = itemPatch.startsWith(currentFilter.value + '.');
         } else if (currentFilter.type === 'search') {
             matchMain = (item['アイテム名（日）'] || item.name || "").includes(currentFilter.value);
         } else {
