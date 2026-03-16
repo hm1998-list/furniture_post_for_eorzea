@@ -75,12 +75,12 @@ function loadMoreItems() {
         card.className = 'cheki-card';
         const itemId = item.ItemID || item['アイテムID'];
         
-        // 【修正】onerror で自分自身（カード）を消し去るように設定
+        // onerror で物理削除せず、プレースホルダー画像に差し替える形に戻します
         card.innerHTML = `
             <div class="photo-area" onclick="openModalByIdx(${allData.indexOf(item)})">
                 <img src="images/${itemId}_front.png" 
                      class="slide-img active" 
-                     onerror="onImgError(this)">
+                     onerror="this.src='https://placehold.jp/200x200?text=NoImage'">
             </div>
             <p class="item-name">${item['アイテム名（日）'] || item.name}</p>
         `;
