@@ -314,30 +314,38 @@ body {
     right: 30px;
     width: 50px;
     height: 50px;
-    background-color: var(--primary-color);
+    /* --- デザイン担当指定：メインカテゴリー色 --- */
+    background-color: #6670b0; 
     color: white;
+    /* ------------------------------------------ */
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.15); /* 少し影を柔らかく */
     z-index: 3000;
     
-    /* アニメーションの設定 */
+    /* 初期状態：少し下に配置してふわっと浮き上がらせる */
     opacity: 0;
     visibility: hidden;
-    transition: all 0.3s ease;
+    transform: translateY(20px); 
+    transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1); /* 高級感のある動き */
 }
 
-/* JSでこのクラスがついた時だけ表示 */
+/* 表示状態 */
 #backToTop.visible {
-    opacity: 1;
+    opacity: 0.85; /* ほんのり透かして上品に */
     visibility: visible;
     transform: translateY(0);
 }
 
+/* ホバー時 */
 #backToTop:hover {
-    transform: translateY(-5px);
-    background-color: var(--accent-color);
+    /* --- デザイン担当指定：サブカテゴリー色 --- */
+    background-color: #7f3030; 
+    /* ------------------------------------------ */
+    opacity: 1;
+    transform: translateY(-8px); /* 通常時より少し大きく浮かせます */
+    box-shadow: 0 8px 20px rgba(0,0,0,0.2);
 }
