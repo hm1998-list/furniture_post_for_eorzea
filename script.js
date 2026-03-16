@@ -12,7 +12,7 @@ let isLoading = false;
 let currentModalIdx = -1;
 
 window.onload = async function() {
-    const CACHE_KEY = 'eorzea_furniture_data_final'; // キーを変えてキャッシュをリフレッシュ
+    const CACHE_KEY = 'eorzea_furniture_data_final_v2'; // キーを更新してキャッシュをクリア
     const cachedData = localStorage.getItem(CACHE_KEY);
 
     if (cachedData) {
@@ -23,36 +23,28 @@ window.onload = async function() {
         try {
             const response = await fetch(GAS_URL);
             let data = await response.json();
+            // スプレッドシートの全データを取得（逆順にして最新を上に）
             let rawData = data.slice(1).reverse();
             
-            // 【超重要】画像が「GitHub上に存在するか」を事前に全件チェック
-            // 404エラーを出すデータは最初から allData に入れない
-            console.log("画像の実在チェックを開始します...");
-            
-            // 1700件あるので、少し待機が必要ですが、一度キャッシュすれば後は速いです
+            // 画像チェックはせず、IDがあるものだけを有効データとして採用
             allData = rawData.filter(item => {
                 const id = item.ItemID || item['アイテムID'];
-                // IDが空、または数字じゃないものは除外
-                return id && !isNaN(id);
+                return id && id.toString().trim() !== "";
             });
 
             localStorage.setItem(CACHE_KEY, JSON.stringify(allData));
             buildMenu();
             buildHome();
-        } catch (e) { console.error(e); }
+        } catch (e) { console.error("データ取得エラー:", e); }
     }
     showHome();
 };
 
-// 【追加】画像読み込み失敗時に「カードごと抹殺」する関数
-function onImgError(img) {
-    const card = img.closest('.cheki-card');
-    if (card) {
-        card.remove(); // 物理的にDOMから消去
-    }
+// --- カタログ描画ロジック ---
+function formatPatch(p) {
+    const s = p.toString().replace('Patch', '').trim();
+    return `Patch ${s}`;
 }
-
-// --- 以下、カタログ描画ロジック ---
 
 function loadMoreItems() {
     if (isLoading || currentIndex >= displayList.length) return;
@@ -75,7 +67,6 @@ function loadMoreItems() {
         card.className = 'cheki-card';
         const itemId = item.ItemID || item['アイテムID'];
         
-        // onerror で物理削除せず、プレースホルダー画像に差し替える形に戻します
         card.innerHTML = `
             <div class="photo-area" onclick="openModalByIdx(${allData.indexOf(item)})">
                 <img src="images/${itemId}_front.png" 
@@ -90,7 +81,7 @@ function loadMoreItems() {
     isLoading = false;
 }
 
-// キーボード操作
+// キーボード操作（左右キー対応）
 window.addEventListener('keydown', (e) => {
     if (!document.getElementById('itemModal').classList.contains('visible')) return;
     if (e.key === 'ArrowLeft') changeModalItem(-1);
@@ -98,7 +89,7 @@ window.addEventListener('keydown', (e) => {
     else if (e.key === 'Escape') closeModal();
 });
 
-// --- 以降、モーダルやメニュー生成（前回までと同じ） ---
+// --- メニュー・フィルタリングロジック ---
 function buildMenu() {
     let cats = [...new Set(allData.map(i => i.category))].filter(Boolean);
     cats = cats.sort((a,b) => (CATEGORY_ORDER.indexOf(a) - CATEGORY_ORDER.indexOf(b)));
