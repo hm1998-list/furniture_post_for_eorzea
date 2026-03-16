@@ -151,23 +151,39 @@ function loadMoreItems() {
     if (isLoading || currentIndex >= displayList.length) return;
     isLoading = true;
     const grid = document.getElementById('grid');
-    const next = displayList.slice(currentIndex, currentIndex + itemsPerPage);
-    let lastP = (currentIndex > 0) ? formatPatch(displayList[currentIndex-1].patch) : "";
-
-    next.forEach(item => {
-        const currentP = formatPatch(item.patch);
-        if((currentFilter.type === 'patch-group' || currentFilter.type === 'patch') && currentP !== lastP) {
+    const nextBatch = displayList.slice(currentIndex, currentIndex + itemsPerPage);
+    let lastPatch = (currentIndex > 0) ? formatPatch(displayList[currentIndex - 1].patch) : "";
+    
+    nextBatch.forEach((item) => {
+        const itemPatch = formatPatch(item.patch);
+        
+        // パッチの見出し（仕切り）の生成（そのまま）
+        if ((currentFilter.type === 'patch-group' || currentFilter.type === 'patch') && itemPatch !== lastPatch) {
             const div = document.createElement('div');
             div.className = 'patch-divider';
-            div.innerText = currentP;
+            div.innerText = itemPatch;
             grid.appendChild(div);
-            lastP = currentP;
+            lastPatch = itemPatch;
         }
+
+        // 家具カードの生成
+        const itemId = item['ItemID'] || item['アイテムID'];
         const card = document.createElement('div');
-        card.className = 'cheki-card';
-        card.innerHTML = `<div class="photo-area" onclick="openModalByIdx(${allData.indexOf(item)})"><img src="images/${item.ItemID || item['アイテムID']}_front.png" class="slide-img active" onerror="this.src='https://placehold.jp/200x200.png?text=NoImage'"></div><p class="item-name">${item['アイテム名（日）'] || item.name}</p>`;
+        card.className = 'cheki-card'; // 初期状態では表示
+
+    // 【修正】onerrorイベントを活用して、画像の実在を確認
+        card.innerHTML = `
+            <div class="photo-area" onclick="openModalByIdx(${allData.indexOf(item)})">
+                <img src="images/${itemId}_front.png" 
+                        class="slide-img active" 
+                        alt="${item['アイテム名（日）'] || item.name}"
+                        onerror="this.closest('.cheki-card').classList.add('hidden-card');"> 
+            </div>
+            <p class="item-name">${item['アイテム名（日）'] || item.name}</p>
+        `;
         grid.appendChild(card);
     });
+        
     currentIndex += itemsPerPage;
     isLoading = false;
 }
