@@ -108,16 +108,15 @@ function buildMenu() {
 
     const patches = [...new Set(allData.map(i => i.patch))].sort((a, b) => b - a);
 
-    // パッチをグループ化する
     const groups = {};
     patches.forEach(p => {
-        const major = p.toString().split('.')[0];
+        const major = p.toString().split('.')[0]; 
         
-        // ↓ ここを「Patch ${major}.x」ではなく、対応表を使うように変更
+        // 【ここが最重要！】PACKAGE_NAMESを使って名前を作ります
         const groupName = PACKAGE_NAMES[major] 
             ? `${PACKAGE_NAMES[major]} (${major}.x)` 
             : `${major}.x Series`;
-    
+
         if (!groups[groupName]) groups[groupName] = [];
         groups[groupName].push(p);
     });
