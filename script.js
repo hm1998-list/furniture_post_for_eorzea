@@ -54,6 +54,13 @@ function loadMoreItems() {
     let lastP = (currentIndex > 0) ? formatPatch(displayList[currentIndex-1].patch) : "";
 
     next.forEach(item => {
+        // --- モーダル側の参照項目と完全に一致させる ---
+        const dyeVal = item['染色'];  // modalDyeに対応
+        const marketVal = item['マケボ']; // modalMarketに対応
+        const craftVal = item['製作']; // modalCraftに対応
+        const itemId = item.ItemID || item['アイテムID'];
+        // ------------------------------------------
+
         const currentP = formatPatch(item.patch);
         if((currentFilter.type === 'patch-group' || currentFilter.type === 'patch') && currentP !== lastP) {
             const div = document.createElement('div');
@@ -65,13 +72,18 @@ function loadMoreItems() {
         
         const card = document.createElement('div');
         card.className = 'cheki-card';
-        const itemId = item.ItemID || item['アイテムID'];
         
         card.innerHTML = `
             <div class="photo-area" onclick="openModalByIdx(${allData.indexOf(item)})">
                 <img src="images/${itemId}_front.png" 
                      class="slide-img active" 
                      onerror="this.src='https://placehold.jp/200x200?text=NoImage'">
+                
+                <div class="card-flags">
+                    ${(dyeVal && dyeVal !== '不可') ? '<div class="flag-diamond flag-dye"><span>🎨</span></div>' : ''}
+                    ${(marketVal && marketVal !== '不可') ? '<div class="flag-diamond flag-market"><span>💰</span></div>' : ''}
+                    ${(craftVal && craftVal !== '-' && craftVal !== '不可' && craftVal !== '') ? '<div class="flag-diamond flag-craft"><span>🔨</span></div>' : ''}
+                </div>
             </div>
             <p class="item-name">${item['アイテム名（日）'] || item.name}</p>
         `;
