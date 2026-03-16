@@ -75,13 +75,14 @@ function loadMoreItems() {
             <img src="images/${itemId}_front.png" 
                  class="slide-img active" 
                  onerror="this.src='https://placehold.jp/200x200?text=NoImage'">
+        </div>
             
             <div class="card-flags">
                 ${(dyeVal && dyeVal !== '不可') ? '<div class="flag-diamond flag-dye"><span>🎨</span></div>' : ''}
                 ${(marketVal && marketVal !== '不可') ? '<div class="flag-diamond flag-market"><span>💰</span></div>' : ''}
                 ${(craftVal && craftVal !== '-' && craftVal !== '不可' && craftVal !== '') ? '<div class="flag-diamond flag-craft"><span>🔨</span></div>' : ''}
             </div>
-        </div>
+        
         <p class="item-name">${item['アイテム名（日）'] || item.name}</p>
     `;
     grid.appendChild(card);
