@@ -21,6 +21,16 @@ let currentIndex = 0;
 const itemsPerPage = 24;
 let isLoading = false;
 
+// パッケージ名との対応表
+const PACKAGE_NAMES = {
+    "7": "黄金のレガシー",
+    "6": "暁月のフィナーレ",
+    "5": "漆黒のヴィランズ",
+    "4": "紅蓮のリベレーター",
+    "3": "蒼天のイシュガルド",
+    "2": "新生エオルゼア"
+};
+
 window.onload = async function() {
     showHome();
 
@@ -98,33 +108,33 @@ function buildMenu() {
 
     const patches = [...new Set(allData.map(i => i.patch))].sort((a, b) => b - a);
 
-    // パッチを「x.x系」でグループ化する
+    // パッチをグループ化する
     const groups = {};
     patches.forEach(p => {
-        const major = p.toString().split('.')[0]; // "7.1" なら "7" を取得
-        const groupName = `Patch ${major}.x`;
+        const major = p.toString().split('.')[0]; 
+        const groupName = PACKAGE_NAMES[major] ? `${PACKAGE_NAMES[major]} (${major}.x)` : `${major}.x Series`;
         if (!groups[groupName]) groups[groupName] = [];
         groups[groupName].push(p);
     });
     
     // HTML生成
-        const sidePatchList = document.getElementById('side-patch-list');
-        sidePatchList.innerHTML = Object.keys(groups).map(groupName => `
-            <div class="nav-item-container">
-                <button class="nav-item-parent" onclick="toggleSubMenu(this, 'all')">
-                    <span><i class="fa-solid fa-folder-open"></i> ${groupName}</span>
-                    <i class="fa-solid fa-chevron-down" style="font-size:0.7rem;"></i>
-                </button>
-                <div class="sub-menu">
-                    ${groups[groupName].map(p => `
-                        <button class="nav-item-sub" onclick="filterBy('patch', '${p}')">
-                            ${formatPatch(p)}
-                        </button>
-                    `).join('')}
-                </div>
+    const sidePatchList = document.getElementById('side-patch-list');
+    sidePatchList.innerHTML = Object.keys(groups).map(groupName => `
+        <div class="nav-item-container">
+            <button class="nav-item-parent" onclick="toggleSubMenu(this, 'all')">
+                <span><i class="fa-solid fa-tag"></i> ${groupName}</span>
+                <i class="fa-solid fa-chevron-down" style="font-size:0.7rem;"></i>
+            </button>
+            <div class="sub-menu">
+                ${groups[groupName].map(p => `
+                    <button class="nav-item-sub" onclick="filterBy('patch', '${p}')">
+                        ${formatPatch(p)}
+                    </button>
+                `).join('')}
             </div>
-        `).join('');
-    };
+        </div>
+    `).join('');
+} // ここがbuildMenuの終わりです
 
 function toggleSubMenu(btn, category) {
     const subMenu = btn.nextElementSibling;
@@ -133,7 +143,6 @@ function toggleSubMenu(btn, category) {
     document.querySelectorAll('.sub-menu').forEach(m => m.classList.remove('open'));
     if (!isOpen) {
         subMenu.classList.add('open');
-        // カテゴリーの場合だけ初期フィルタリングを実行
         if(category !== 'all') {
             filterBy('category', category, 'all');
         }
