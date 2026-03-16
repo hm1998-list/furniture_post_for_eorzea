@@ -115,7 +115,7 @@ body {
     margin: 8px 0 6px 0; /* 上下に少し余白 */
     color: var(--primary-color);
     line-height: 1.2;
-    min-height: 2.4em; /* 2行分確保してアイコンの位置を揃える */
+    min-height: 1.2em; /* 2行分確保してアイコンの位置を揃える */
     display: flex;
     align-items: center;
     justify-content: center;
