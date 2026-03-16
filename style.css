@@ -129,12 +129,30 @@ body {
     background: var(--primary-color);
     transform: translateY(-50%) scale(1.1);
 }
-.nav-prev { left: -60px; } 
-.nav-next { right: -60px; }
 
+/* --- デフォルト（広い画面）の設定：モーダルのすぐ外側 --- */
+.nav-prev { 
+    left: -60px; 
+}
+.nav-next { 
+    right: -60px; 
+}
+
+/* --- 画面が狭くなった時（1200px以下）の設定：モーダルの内側へ --- */
 @media (max-width: 1200px) {
-    .nav-prev { left: 10px; background: rgba(255,255,255,0.7); }
-    .nav-next { right: 10px; background: rgba(255,255,255,0.7); }
+    .nav-prev { 
+        left: 10px; 
+        background: rgba(255, 255, 255, 0.6); /* 内側で見えやすいように白っぽく */
+        box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    .nav-next { 
+        right: 10px; 
+        background: rgba(255, 255, 255, 0.6);
+        box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    .modal-nav {
+        color: var(--primary-color); /* アイコンの色を濃くして視認性アップ */
+    }
 }
 
 .tag-badge {
