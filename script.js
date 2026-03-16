@@ -225,24 +225,22 @@ function buildHome() {
 
 function showHome() { document.getElementById('home-view').style.display='block'; document.getElementById('catalog-view').style.display='none'; }
 
-// JSの一番下の window.onscroll をこれに差し替えてください
 window.onscroll = () => {
-    // 1. カタログ表示中のみ無限スクロール
-    const catalogView = document.getElementById('catalog-view');
-    if (catalogView && catalogView.style.display === 'block') {
-        if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 500) {
-            loadMoreItems();
-        }
+    // 無限スクロール
+    if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 500) {
+        loadMoreItems();
     }
 
-    // 2. 「TOPに戻る」ボタンの制御（どの画面でも500px以上スクロールしたら出す）
+    // ボタンの表示判定
     const topBtn = document.getElementById('backToTop');
     if (topBtn) {
-        // スクロール量が500を超えたら visible クラスをつける
-        if (window.pageYOffset > 500 || document.documentElement.scrollTop > 500) {
-            topBtn.classList.add('visible');
+        // 100pxでもスクロールしたら出す（テスト用に甘くします）
+        if (window.scrollY > 100) {
+            topBtn.style.opacity = "1";
+            topBtn.style.visibility = "visible";
         } else {
-            topBtn.classList.remove('visible');
+            topBtn.style.opacity = "0";
+            topBtn.style.visibility = "hidden";
         }
     }
 };
