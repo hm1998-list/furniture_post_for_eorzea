@@ -198,59 +198,81 @@ body {
     }
 }
 
-/* --- レスポンシブ設定：画面幅1100px以下 --- */
+    /* --- 1. 三本線ボタンの基本スタイル（PCでは隠す） --- */
+#menu-toggle {
+    display: none;
+    position: fixed;
+    top: 15px;
+    left: 15px;
+    z-index: 5000;
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    width: 45px;
+    height: 45px;
+    font-size: 20px;
+    cursor: pointer;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+}
+
+/* --- 2. 画面幅1100px以下のレスポンシブ設定 --- */
 @media (max-width: 1100px) {
-    /* 1. 三本線ボタンを表示 */
+    /* 三本線ボタンを表示 */
     #menu-toggle {
-        display: block !important; /* 強制的に表示 */
-    }
-
-    /* 2. サイドバーを隠しメニュー化 */
-    #sidebar {
-        position: fixed;
-        left: -280px; /* 画面外へ */
-        top: 0;
-        width: 250px;
-        height: 100vh;
-        z-index: 3500;
-        transition: left 0.3s ease;
-        background-color: var(--sidebar-bg);
-        box-shadow: 2px 0 10px rgba(0,0,0,0.2);
-        display: block !important; /* display:noneを上書き */
-    }
-
-    /* サイドバーが開いた時 */
-    #sidebar.open {
-        left: 0;
-    }
-
-    /* 3. 全体レイアウトの調整 */
-    #container {
-        flex-direction: column;
         display: block;
     }
 
-    main, #main-content {
+    /* サイドバーを画面外に隠す */
+    #sidebar {
+        position: fixed !important;
+        left: -280px !important; /* 画面外へ */
+        top: 0;
+        width: 260px;
+        height: 100vh;
+        z-index: 4000;
+        transition: left 0.3s ease;
+        display: block !important; /* 以前のdisplay:noneを上書き */
+    }
+
+    /* 開いた時のアニメーション */
+    #sidebar.open {
+        left: 0 !important;
+    }
+
+    /* メインコンテンツを横幅いっぱいにする */
+    #container {
+        display: block;
+    }
+
+    #main-content {
         margin-left: 0 !important;
-        padding-top: 60px; /* 三本線ボタンと被らない余白 */
+        width: 100% !important;
     }
 
-    /* 4. カタログ画面の余白調整 */
+    /* カタログ画面の余白調整 */
     .sticky-header {
-        padding: 15px 20px 5px;
+        padding: 70px 20px 10px !important; /* ボタンと被らないよう上を空ける */
+    }
+    
+    .content-body {
+        padding: 10px 20px 40px !important;
     }
 
-    /* 5. グリッドを3枚並びにする */
-    #grid {
+    /* カードを3枚並びにする */
+    .grid {
         grid-template-columns: repeat(3, 1fr) !important;
-        gap: 12px;
+        gap: 12px !important;
     }
 }
-    
-/* さらにスマホサイズ（画面幅600px以下） */
+
+/* --- 3. スマホサイズ（600px以下） --- */
 @media (max-width: 600px) {
-    #grid {
-        grid-template-columns: repeat(2, 1fr); /* スマホは2枚並び */
+    .grid {
+        grid-template-columns: repeat(2, 1fr) !important;
+    }
+    .hero-title {
+        font-size: 1.8rem;
     }
 }
 
