@@ -175,36 +175,39 @@ function filterBy(type, value, subValue = 'all') {
 }
 
 function updateTopTags() {
-    const tagArea = document.getElementById('tag-area');
-    tagArea.innerHTML = '';
+    const area = document.getElementById('tag-area');
     let html = '';
-
-    if (currentFilter.type === 'category') {
-        let subCats = [...new Set(allData.filter(i => i.category === currentFilter.value).map(i => i['FF14サブカテゴリー']))].filter(Boolean);
-        subCats = sortSubCategories(subCats);
-        if (subCats.length === 0) return;
-        html += `<div class="tag-chip ${currentFilter.subValue === 'all' ? 'active' : ''}" onclick="setSubFilter('all', this)">すべて</div>`;
-        subCats.forEach(s => { html += `<div class="tag-chip ${currentFilter.subValue === s ? 'active' : ''}" onclick="setSubFilter('${s}', this)">${s}</div>`; });
-    } else if (currentFilter.type === 'patch-group' || currentFilter.type === 'patch') {
+    
+    if(currentFilter.type === 'category') {
+        const subs = [...new Set(allData.filter(i => i.category === currentFilter.value).map(i => i['FF14サブカテゴリー']))].filter(Boolean);
+        html += `<div class="tag-chip ${currentFilter.subValue === 'all' ? 'active' : ''}" onclick="filterBy('category', '${currentFilter.value}', 'all')">すべて</div>`;
+        subs.forEach(s => { html += `<div class="tag-chip ${currentFilter.subValue === s ? 'active' : ''}" onclick="filterBy('category', '${currentFilter.value}', '${s}')">${s}</div>`; });
+    } 
+    else if(currentFilter.type === 'patch-group' || currentFilter.type === 'patch') {
         const cleanVal = currentFilter.value.toString().replace('Patch','').trim();
         const major = cleanVal.split('.')[0];
-        
-        let subPatches = [...new Set(allData.map(i => i.patch))]
-            .filter(p => {
-                const cleanP = p.toString().replace('Patch','').trim();
-                return cleanP.startsWith(major + '.') && cleanP.split('.').length === 2; // 7.1, 7.2 のみ抽出
-            })
-            .sort((a, b) => parseFloat(a.toString().replace('Patch','').trim()) - parseFloat(b.toString().replace('Patch','').trim()));
 
-        html += `<div class="tag-chip ${currentFilter.type === 'patch-group' ? 'active' : ''}" onclick="filterBy('patch-group', '${major}', 'all')">すべて</div>`;
-        subPatches.forEach(p => {
-            const isActive = (currentFilter.type === 'patch' && currentFilter.value.toString().startsWith(p.toString()));
-            html += `<div class="tag-chip ${isActive ? 'active' : ''}" onclick="filterBy('patch', '${p}')">${formatPatch(p)}</div>`;
+        // 全データからこのメジャー（例: 7）で始まるパッチを抽出
+        const allPatches = [...new Set(allData.map(i => i.patch.toString().replace('Patch','').trim()))];
+        
+        // 【修正】小数点第1位までのリスト（7.0, 7.1...）を作る
+        const chips = allPatches.filter(p => {
+            if (!p.startsWith(major + '.')) return false;
+            const parts = p.split('.');
+            // 「7.1」なら塊は2つ。「7.15」なら塊は2つだけど、2つ目の塊の文字数が1文字の時だけ採用
+            // これで 7.1 は通るけど 7.15 は弾かれるようになります
+            return parts.length === 2 && parts[1].length === 1;
+        }).sort((a, b) => parseFloat(a) - parseFloat(b));
+        
+        html += `<div class="tag-chip ${currentFilter.type === 'patch-group' ? 'active' : ''}" onclick="filterBy('patch-group', '${major}')">すべて</div>`;
+        
+        chips.forEach(p => {
+            const active = currentFilter.type === 'patch' && currentFilter.value.toString().replace('Patch','').trim().startsWith(p);
+            html += `<div class="tag-chip ${active ? 'active' : ''}" onclick="filterBy('patch', '${p}')">Patch ${p}</div>`;
         });
     }
-    tagArea.innerHTML = html;
+    area.innerHTML = html;
 }
-
 function setSubFilter(val, el) {
     currentFilter.subValue = val;
     document.querySelectorAll('.tag-chip').forEach(t => t.classList.remove('active'));
@@ -289,17 +292,44 @@ async function openModalByIdx(originalIdx) {
     currentModalIdx = originalIdx;
     const item = allData[originalIdx];
     const itemId = item['ItemID'] || item['アイテムID'];
-    document.getElementById('modalTitle').innerText = item['アイテム名（日）'] || item.name;
+    
+    // --- カテゴリー表示の修正 ---
+    const mainBadge = document.getElementById('modalMainCategory');
     const subBadge = document.getElementById('modalSubCategory');
-    subBadge.innerText = item['FF14サブカテゴリー'] || "";
-    subBadge.style.display = subBadge.innerText ? "inline-flex" : "none";
+
+    // item.category または item['カテゴリー'] など、データにあるキーに合わせる
+    const mainCat = item.category || item['カテゴリー'] || "";
+    const subCat = item['FF14サブカテゴリー'] || item['サブカテゴリー'] || "";
+
+    mainBadge.innerText = mainCat;
+    mainBadge.style.display = mainCat ? "inline-flex" : "none";
+
+    subBadge.innerText = subCat;
+    subBadge.style.display = subCat ? "inline-flex" : "none";
+    // -------------------------
+
+    const titleEl = document.getElementById('modalTitle');
+    const itemName = item['アイテム名（日）'] || item.name;
+    titleEl.innerText = itemName;
+
+    // 文字数に応じたフォントサイズ調整
+    if (itemName.length > 15) {
+        titleEl.style.fontSize = "1.2rem"; 
+    } else if (itemName.length > 10) {
+        titleEl.style.fontSize = "1.4rem"; 
+    } else {
+        titleEl.style.fontSize = "1.8rem"; 
+    }
+
     document.getElementById('modalDye').innerText = item['dyeable'] || "不可";
     document.getElementById('modalMarket').innerText = item['market'] || "不可";
     document.getElementById('modalCraft').innerText = item['recipe'] || "-";
     document.getElementById('modalHowToGet').innerText = item['入手方法'] || "確認中";
     document.getElementById('modalComment').innerText = item['note'] || "特になし";
+
     const photoArea = document.getElementById('modalPhoto');
     photoArea.innerHTML = `<img src="images/${itemId}_front.png" id="mainModalImg" onerror="this.src='https://placehold.jp/200x200?text=NoImage'">`;
+
     document.getElementById('itemModal').classList.add('visible');
 }
 
