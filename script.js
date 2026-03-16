@@ -111,12 +111,17 @@ function buildMenu() {
     // パッチをグループ化する
     const groups = {};
     patches.forEach(p => {
-        const major = p.toString().split('.')[0]; 
-        const groupName = PACKAGE_NAMES[major] ? `${PACKAGE_NAMES[major]} (${major}.x)` : `${major}.x Series`;
+        const major = p.toString().split('.')[0];
+        
+        // ↓ ここを「Patch ${major}.x」ではなく、対応表を使うように変更
+        const groupName = PACKAGE_NAMES[major] 
+            ? `${PACKAGE_NAMES[major]} (${major}.x)` 
+            : `${major}.x Series`;
+    
         if (!groups[groupName]) groups[groupName] = [];
         groups[groupName].push(p);
     });
-    
+        
     // HTML生成
     const sidePatchList = document.getElementById('side-patch-list');
     sidePatchList.innerHTML = Object.keys(groups).map(groupName => `
