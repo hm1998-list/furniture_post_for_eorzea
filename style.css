@@ -322,11 +322,10 @@ body {
     justify-content: center;
     cursor: pointer;
     box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-    opacity: 0;         /* 最初は透明 */
-    visibility: hidden; /* 最初はクリックもできない状態 */
+    opacity: 0; /* 最初は隠す */
+    visibility: hidden;
     transition: all 0.3s ease;
-    z-index: 3000;      /* モーダルが2000なので、それより上に */
-}
+    z-index: 1500;
 
 /* JSの add('visible') と名前を合わせる */
 #backToTop.visible {
