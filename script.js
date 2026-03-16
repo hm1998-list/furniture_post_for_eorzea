@@ -122,14 +122,19 @@ function buildMenu() {
     });
         
     // HTML生成
-    const sidePatchList = document.getElementById('side-patch-list');
-    sidePatchList.innerHTML = Object.keys(groups).map(groupName => `
+    // buildMenu関数内のパッチ生成部分（sidePatchList.innerHTML = ... のところ）
+sidePatchList.innerHTML = Object.keys(groups).map(groupName => {
+    // 拡張名からメジャー番号（7など）を逆算
+    const major = Object.keys(PACKAGE_NAMES).find(key => groupName.includes(PACKAGE_NAMES[key]));
+
+    return `
         <div class="nav-item-container">
-            <button class="nav-item-parent" onclick="toggleSubMenu(this, 'all')">
+            <button class="nav-item-parent" onclick="toggleSubMenu(this, 'patch-group:${major}')">
                 <span><i class="fa-solid fa-tag"></i> ${groupName}</span>
                 <i class="fa-solid fa-chevron-down" style="font-size:0.7rem;"></i>
             </button>
             <div class="sub-menu">
+                <button class="nav-item-sub" onclick="filterBy('patch-group', '${major}', 'all')">すべて表示</button>
                 ${groups[groupName].map(p => `
                     <button class="nav-item-sub" onclick="filterBy('patch', '${p}')">
                         ${formatPatch(p)}
@@ -137,8 +142,8 @@ function buildMenu() {
                 `).join('')}
             </div>
         </div>
-    `).join('');
-} // ここがbuildMenuの終わりです
+    `;
+}).join('');
 
 function toggleSubMenu(btn, category) {
     const subMenu = btn.nextElementSibling;
@@ -171,26 +176,52 @@ function filterBy(type, value, subValue = 'all') {
     currentFilter = { type, value, subValue };
     document.getElementById('home-view').style.display = 'none';
     document.getElementById('catalog-view').style.display = 'block';
-    document.getElementById('view-title').innerText = type === 'patch' ? formatPatch(value) : value;
+
+if (type === 'patch-group') {
+        document.getElementById('view-title').innerText = `${PACKAGE_NAMES[value]} (${value}.x)`;
+    } else {
+        document.getElementById('view-title').innerText = type === 'patch' ? formatPatch(value) : value;
+    }
+
     updateTopTags(); 
     render();
     window.scrollTo(0, 0);
 }
 
+// updateTopTags関数を改造
 function updateTopTags() {
     const tagArea = document.getElementById('tag-area');
     tagArea.innerHTML = '';
-    if (currentFilter.type !== 'category') return;
 
-    let subCats = [...new Set(allData.filter(i => i.category === currentFilter.value).map(i => i['FF14サブカテゴリー']))].filter(Boolean);
-    subCats = sortSubCategories(subCats);
-    if (subCats.length === 0) return;
+    let html = '';
+    
+    if (currentFilter.type === 'category') {
+        // --- 既存のカテゴリー用処理 ---
+        let subCats = [...new Set(allData.filter(i => i.category === currentFilter.value).map(i => i['FF14サブカテゴリー']))].filter(Boolean);
+        subCats = sortSubCategories(subCats);
+        if (subCats.length === 0) return;
+        html += `<div class="tag-chip ${currentFilter.subValue === 'all' ? 'active' : ''}" onclick="setSubFilter('all', this)">すべて</div>`;
+        subCats.forEach(s => { html += `<div class="tag-chip ${currentFilter.subValue === s ? 'active' : ''}" onclick="setSubFilter('${s}', this)">${s}</div>`; });
+        
+    } else if (currentFilter.type === 'patch-group' || currentFilter.type === 'patch') {
+        // --- 【新設】パッチ用処理 ---
+        // 選択されたメジャーバージョン（7など）を特定
+        const major = currentFilter.type === 'patch-group' ? currentFilter.value : currentFilter.value.toString().split('.')[0];
+        
+        // そのメジャーに属する細かいパッチ（7.0, 7.1...）を抽出
+        let subPatches = [...new Set(allData.map(i => i.patch))]
+            .filter(p => p.toString().startsWith(major + '.'))
+            .sort((a, b) => parseFloat(a) - parseFloat(b));
 
-    let html = `<div class="tag-chip ${currentFilter.subValue === 'all' ? 'active' : ''}" onclick="setSubFilter('all', this)">すべて</div>`;
-    subCats.forEach(s => { html += `<div class="tag-chip ${currentFilter.subValue === s ? 'active' : ''}" onclick="setSubFilter('${s}', this)">${s}</div>`; });
+        html += `<div class="tag-chip ${currentFilter.type === 'patch-group' ? 'active' : ''}" onclick="filterBy('patch-group', '${major}', 'all')">すべて</div>`;
+        subPatches.forEach(p => {
+            html += `<div class="tag-chip ${currentFilter.value === p ? 'active' : ''}" onclick="filterBy('patch', '${p}')">${formatPatch(p)}</div>`;
+        });
+    }
+
     tagArea.innerHTML = html;
 }
-
+    
 function setSubFilter(val, el) {
     currentFilter.subValue = val;
     document.querySelectorAll('.tag-chip').forEach(t => t.classList.remove('active'));
@@ -214,13 +245,25 @@ function render() {
     grid.innerHTML = '';
     currentIndex = 0;
 
-    displayList = allData.filter(item => {
-        const matchMain = (currentFilter.type === 'category' ? item.category === currentFilter.value : 
-                          currentFilter.type === 'patch' ? item.patch === currentFilter.value : 
-                          currentFilter.type === 'search' ? (item['アイテム名（日）'] || item.name || "").includes(currentFilter.value) : true);
-        const matchSub = (currentFilter.subValue === 'all' || item['FF14サブカテゴリー'] === currentFilter.subValue);
-        return matchMain && matchSub;
-    });
+    // render関数内の displayList = allData.filter(...) の中身を修正
+displayList = allData.filter(item => {
+    let matchMain = false;
+    if (currentFilter.type === 'category') {
+        matchMain = item.category === currentFilter.value;
+    } else if (currentFilter.type === 'patch') {
+        matchMain = item.patch === currentFilter.value;
+    } else if (currentFilter.type === 'patch-group') {
+        // 7.x などを選んだ時、その数字で始まるパッチをすべてヒットさせる
+        matchMain = item.patch.toString().startsWith(currentFilter.value + '.');
+    } else if (currentFilter.type === 'search') {
+        matchMain = (item['アイテム名（日）'] || item.name || "").includes(currentFilter.value);
+    } else {
+        matchMain = true;
+    }
+
+    const matchSub = (currentFilter.subValue === 'all' || item['FF14サブカテゴリー'] === currentFilter.subValue);
+    return matchMain && matchSub;
+});
 
     loadMoreItems();
 }
