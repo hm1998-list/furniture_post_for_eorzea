@@ -226,21 +226,18 @@ function buildHome() {
 function showHome() { document.getElementById('home-view').style.display='block'; document.getElementById('catalog-view').style.display='none'; }
 
 window.onscroll = () => {
-    // 無限スクロール
+    // 無限ロード
     if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 500) {
         loadMoreItems();
     }
 
-    // ボタンの表示判定
+    // TOPボタンの表示切り替え
     const topBtn = document.getElementById('backToTop');
     if (topBtn) {
-        // 100pxでもスクロールしたら出す（テスト用に甘くします）
-        if (window.scrollY > 100) {
-            topBtn.style.opacity = "1";
-            topBtn.style.visibility = "visible";
+        if (window.scrollY > 300) {
+            topBtn.classList.add('visible');
         } else {
-            topBtn.style.opacity = "0";
-            topBtn.style.visibility = "hidden";
+            topBtn.classList.remove('visible');
         }
     }
 };
