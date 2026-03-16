@@ -256,6 +256,13 @@ body {
 }
 .symbol { color: rgb(160, 179, 104); margin: 0 8px; font-size: 1.1rem; }
 
+/* サイドバーのアイコンとテキストの間に余白を追加 */
+.nav-item-parent span i {
+    margin-right: 8px;
+    width: 1.2em;
+    text-align: center;
+}
+
 @media (max-width: 768px) {
     #sidebar { display: none; }
     .sticky-header { padding: 15px 20px 5px; }
