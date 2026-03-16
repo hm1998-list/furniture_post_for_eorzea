@@ -309,32 +309,35 @@ body {
 }
 
 #backToTop {
-    position: fixed !important; /* 絶対にこの位置 */
-    bottom: 20px !important;
-    right: 20px !important;
-    width: 60px !important;
-    height: 60px !important;
-    background-color: #6670b0 !important; /* カテゴリと同じ青紫色 */
-    color: white !important;
-    border-radius: 50% !important;
-    display: flex !important; /* 強制表示 */
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    width: 50px;
+    height: 50px;
+    background-color: var(--primary-color);
+    color: white;
+    border-radius: 50%;
+    display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    z-index: 9999 !important; /* 何よりも上に */
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    z-index: 3000;
     
-    /* ↓ 一旦、スクロール判定を無視して「常に表示」させて確認します */
-    opacity: 1 !important;
-    visibility: visible !important;
+    /* アニメーションの設定 */
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
 }
 
-/* JSの add('visible') と名前を合わせる */
+/* JSでこのクラスがついた時だけ表示 */
 #backToTop.visible {
-    opacity: 0.9;
+    opacity: 1;
     visibility: visible;
+    transform: translateY(0);
 }
 
 #backToTop:hover {
-    opacity: 1; /* ホバー時はしっかり表示 */
     transform: translateY(-5px);
+    background-color: var(--accent-color);
 }
