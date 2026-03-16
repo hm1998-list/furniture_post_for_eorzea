@@ -225,4 +225,28 @@ function buildHome() {
 
 function showHome() { document.getElementById('home-view').style.display='block'; document.getElementById('catalog-view').style.display='none'; }
 
-window.onscroll = () => { if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 500) loadMoreItems(); };
+// スクロール時の処理を統合・強化
+window.onscroll = () => {
+    // 1. 無限スクロールの判定（既存）
+    if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 500) {
+        loadMoreItems();
+    }
+
+    // 2. 「TOPに戻る」ボタンの表示制御（復活！）
+    const topBtn = document.getElementById('backToTop'); // HTMLのIDに合わせてください
+    if (topBtn) {
+        if (window.scrollY > 500) {
+            topBtn.classList.add('visible');
+        } else {
+            topBtn.classList.remove('visible');
+        }
+    }
+};
+
+// ボタンをクリックした時の動作（念のため）
+function scrollToTop() {
+    window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+    });
+}
