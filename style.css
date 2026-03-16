@@ -10,120 +10,423 @@
 }
 
 * { box-sizing: border-box; }
-
 body {
-    margin: 0;
-    padding: 0;
-    font-family: 'Noto Sans JP', sans-serif;
-    background-color: var(--bg-color);
-    color: var(--text-main);
-    display: flex; /* ←これがないと横に並びません */
-    min-height: 100vh;
+    margin: 0; font-family: 'Noto Sans JP', sans-serif;
+    background-color: var(--bg-color); color: var(--text-main);
+    display: flex; min-height: 100vh;
 }
 
 /* --- サイドバー --- */
 #sidebar {
-    width: 260px;
-    min-width: 260px;
-    background-color: var(--sidebar-bg);
-    padding: 25px 15px;
-    position: sticky;
-    top: 0;
-    height: 100vh;
-    overflow-y: auto;
-    box-shadow: 2px 0 10px rgba(0,0,0,0.05);
-    z-index: 1000;
+    width: 260px; background-color: var(--sidebar-bg);
+    padding: 25px 15px; position: sticky; top: 0; height: 100vh;
+    overflow-y: auto; box-shadow: 2px 0 10px rgba(0,0,0,0.05); z-index: 1000;
 }
-
 #sidebar h1 { font-size: 1.2rem; color: var(--primary-color); margin-bottom: 30px; text-align: center; }
+.nav-group { margin-bottom: 20px; }
+.nav-label { font-size: 0.75rem; font-weight: bold; color: rgba(125,107,93,0.6); margin-bottom: 10px; display: block; border-bottom: 1px solid rgba(0,0,0,0.05); }
 
-/* ナビゲーション */
 .nav-item-parent {
     display: flex; justify-content: space-between; align-items: center;
     width: 100%; padding: 10px; border: none; background: none;
     text-align: left; cursor: pointer; border-radius: 8px;
-    font-size: 0.85rem; white-space: nowrap; overflow: hidden; letter-spacing: -0.3px;
+
+    /* --- 修正ポイント：一行に収めるための設定 --- */
+    font-size: 0.85rem;         /* 0.9remから微調整（収まりを良くする） */
+    white-space: nowrap;       /* 絶対に改行させない */
+    overflow: hidden;          /* はみ出しを隠す */
+    letter-spacing: -0.3px;    /* ほんの少し文字間を詰めて余白を確保 */
+    /* -------------------------------------- */
+
     color: var(--primary-color); transition: 0.2s;
 }
-.nav-item-parent span i { margin-right: 8px; width: 1.2em; text-align: center; }
-.nav-item-parent:hover { background: rgba(255,255,255,0.4); }
 
+.nav-item-parent span {
+    display: flex;
+    align-items: center;
+    overflow: hidden;         /* テキストが長い場合に備えて */
+    text-overflow: ellipsis;  /* もし限界まで狭まったら「...」にする */
+    flex: 1;
+}
+
+.nav-item-parent:hover { background: rgba(255,255,255,0.4); }
 .sub-menu { display: none; padding-left: 15px; margin-top: 5px; }
 .sub-menu.open { display: block; }
+.nav-item-sub {
+    display: block; width: 100%; padding: 6px 10px; border: none; background: none;
+    text-align: left; cursor: pointer; border-radius: 6px; font-size: 0.8rem;
+    color: var(--text-main); opacity: 0.8;
+}
+.nav-item-sub:hover { opacity: 1; background: rgba(255,255,255,0.6); }
 
 /* --- メインコンテンツ --- */
-#main-content {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    min-width: 0;
+#main-content { flex: 1; display: flex; flex-direction: column; }
+
+/* --- ホーム画面 --- */
+#home-view { max-width: 900px; margin: 40px auto; text-align: center; padding: 0 20px; }
+.hero-title { font-size: 2.5rem; color: var(--primary-color); margin-bottom: 40px; }
+.search-box { max-width: 600px; margin: 0 auto 50px; }
+.search-box input {
+    width: 100%; padding: 18px 30px; border-radius: 35px;
+    border: 2px solid var(--sidebar-bg); font-size: 1.1rem; outline: none;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
 }
 
-/* --- カタログ・グリッド表示 --- */
+.home-cat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 20px; }
+.cat-card {
+    background: white; padding: 25px 15px; border-radius: 15px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.05); cursor: pointer; transition: 0.3s; text-align: center;
+}
+.cat-card:hover { transform: translateY(-5px); box-shadow: var(--shadow); }
+.cat-card i { font-size: 2.2rem; color: var(--primary-color); margin-bottom: 15px; display: block; }
+
+/* --- カタログ表示画面 --- */
+#catalog-view { display: none; }
+.sticky-header {
+    position: sticky; top: 0; background: var(--bg-color); z-index: 500;
+    padding: 20px 40px 10px; border-bottom: 1px solid var(--sidebar-bg);
+    box-shadow: 0 2px 10px rgba(0,0,0,0.02);
+}
+.back-to-home { cursor: pointer; color: var(--primary-color); font-weight: bold; margin-bottom: 10px; display: inline-block; font-size: 0.9rem; }
+.tag-container { overflow-x: auto; white-space: nowrap; padding-bottom: 10px; scrollbar-width: none; }
+.tag-container::-webkit-scrollbar { display: none; } 
+.tag-area { display: inline-flex; gap: 8px; }
+.tag-chip {
+    padding: 8px 18px; background: white; border-radius: 20px;
+    font-size: 0.8rem; cursor: pointer; border: 1px solid var(--sidebar-bg); 
+    font-weight: bold; transition: 0.2s; color: var(--primary-color);
+}
+.tag-chip.active { background: var(--primary-color); color: white; border-color: var(--primary-color); }
+
 .content-body { padding: 20px 40px 40px; }
-.grid { 
-    display: grid; 
-    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); 
-    gap: 20px; 
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 20px; }
+.cheki-card { background-color: var(--card-bg); padding: 12px 12px 18px; border-radius: 10px; box-shadow: var(--shadow); transition: 0.3s; }
+.cheki-card:hover { transform: translateY(-5px); background-color: white; }
+.photo-area { position: relative; width: 100%; aspect-ratio: 1; border-radius: 6px; overflow: hidden; margin-bottom: 8px; cursor: pointer; }
+.slide-img { position: absolute; top:0; left:0; width:100%; height:100%; object-fit: cover; opacity: 0; transition: 0.3s; }
+.slide-img.active { opacity: 1; }
+.slider-controls { display: flex; justify-content: center; gap: 4px; margin-bottom: 8px; }
+.slide-btn { background: rgba(0,0,0,0.05); border: none; border-radius: 4px; font-size: 9px; cursor: pointer; padding: 2px 6px; }
+
+.item-name {
+    font-size: 0.8rem;
+    font-weight: bold;
+    text-align: center; /* 名前は中央寄せ */
+    margin: 8px 0 6px 0; /* 上下に少し余白 */
+    color: var(--primary-color);
+    line-height: 1.2;
+    min-height: 1.8em; /* 2行分確保してアイコンの位置を揃える */
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
-/* --- チェキカード & 右下アイコン --- */
+.patch-divider {
+    grid-column: 1 / -1; /* 横いっぱいに広げる */
+    width: 100%;
+    margin: 40px 0 20px;
+    padding: 10px 15px;
+    background: rgba(125, 107, 93, 0.1);
+    border-left: 5px solid var(--primary-color);
+    font-weight: bold;
+    color: var(--primary-color);
+    font-size: 1rem;
+    display: block; /* 確実に表示 */
+}
+
+/* モーダル */
+.modal { display: none; position: fixed; z-index: 2000; left:0; top:0; width:100%; height:100%; background: rgba(0,0,0,0.85); backdrop-filter: blur(8px); align-items: center; justify-content: center; }
+.modal.visible { display: flex; }
+.book-layout {
+    display: flex;
+    width: 95vw;
+    max-width: 1000px;
+    height: 80vh;
+    background: #fdfaf3;
+    border-radius: 12px;
+    overflow: hidden; position: relative;
+}
+
+.modal-nav {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 50px;
+    height: 50px;
+    background: rgba(125, 107, 93, 0.5);
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: 0.3s;
+    font-size: 1.5rem;
+    z-index: 4000;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.modal-nav:hover {
+    background: var(--primary-color);
+    transform: translateY(-50%) scale(1.1);
+}
+
+/* --- デフォルト（広い画面）の設定：モーダルのすぐ外側 --- */
+.nav-prev { 
+    left: -60px; 
+}
+.nav-next { 
+    right: -60px; 
+}
+
+/* --- 画面が狭くなった時（1200px以下）の設定：モーダルの内側へ --- */
+@media (max-width: 1200px) {
+    .nav-prev { 
+        left: 10px; 
+        background: rgba(255, 255, 255, 0.6); /* 内側で見えやすいように白っぽく */
+        box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    .nav-next { 
+        right: 10px; 
+        background: rgba(255, 255, 255, 0.6);
+        box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    .modal-nav {
+        color: var(--primary-color); /* アイコンの色を濃くして視認性アップ */
+    }
+}
+
+.tag-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2px 15px 4px 28px;
+    color: white;
+    font-size: 0.75rem;
+    font-weight: bold;
+    position: relative;
+    white-space: nowrap;
+
+    -webkit-mask-image: url('images/tag-bg.png');
+    mask-image: url('images/tag-bg.png');
+    -webkit-mask-size: 100% 100%;
+    mask-size: 100% 100%;
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+
+    background-color: #7d6b5d; 
+    filter: drop-shadow(2px 2px 2px rgba(0,0,0,0.15));
+}
+
+/* 1. メインカテゴリータグ（青紫） */
+#modalMainCategory {
+    background-color: #6670b0 !important;
+}
+
+/* 2. サブカテゴリータグ（赤） */
+#modalSubCategory {
+    background-color: #7f3030 !important;
+}
+
+.book-right {
+    flex: 1; 
+    background: #fdfaf3;
+    display: flex; 
+    flex-direction: column;
+    align-items: center; 
+    justify-content: flex-start;
+    padding: 20px;
+}
+
+.book-left {
+    flex: 0 0 400px;
+    padding: 40px 30px;
+    overflow-y: auto;
+    border-left: 1px solid rgba(0,0,0,0.05);
+}
+
+#modalPhoto {
+    width: 100%; 
+    height: 80%;
+    display: flex; 
+    align-items: center; 
+    justify-content: center;
+    margin-top: 50px;
+    transition: all 0.3s ease;
+}
+
+.has-multiple-thumbs #modalPhoto {
+    height: 75%;
+    margin-top: 20px;
+}
+
+#modalPhoto img { 
+    max-width: 100%; 
+    max-height: 100%; 
+    object-fit: contain; 
+    border-radius: 4px;
+}
+
+/* --- 新しいアイコン置き場（カード右下に配置） --- */
+.card-flags {
+    display: flex;
+    justify-content: flex-end; /* 右寄せ */
+    gap: 3px;                 /* アイコン同士をキュッと詰める */
+    margin-top: auto;         /* 名前の長さに関わらず下の方に配置 */
+    padding-right: 4px;       /* 右に少し余裕をもたせる */
+    padding-bottom: 2px;      /* 下に少し余裕をもたせる */
+}
+
+/* --- ひし形の設定（サイズ・色・形は前回のまま） --- */
+/* ひし形土台の設定（角丸を追加） */
+.flag-diamond {
+    width: 18px;
+    height: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transform: rotate(45deg); /* ここで◆にする */
+    
+    /* ★ここを追加：角を丸くする（2px〜3pxくらいが可愛いです） */
+    border-radius: 2px; /* 2pxだとほんのり、3pxだとしっかり丸くなります */
+    
+    /* 以前の設定はそのまま */
+    box-shadow: 0 1px 2px rgba(0,0,0,0.2);
+    border: 1px solid rgba(255,255,255,0.5);
+}
+
+.flag-diamond span {
+    transform: rotate(-45deg); 
+    font-size: 9px;
+    line-height: 1;
+}
+
+/* --- 中の絵文字をまっすぐに戻す（サイズ調整） --- */
+.flag-diamond span {
+    transform: rotate(-45deg); 
+    font-size: 9px; /* ★追加：絵文字を少し小さく（10px→9px） */
+    line-height: 1;
+}
+
+/* 1. 染色可能 (水色〜濃い水色) ← ★色を変更しました */
+.flag-dye {
+    background: linear-gradient(135deg, #a0f0ff, #0099cc); /* 爽やかな水色のグラデーション */
+}
+
+/* 2. マケボ可能 (黄緑〜緑) ← 色はそのまま */
+.flag-market {
+    background: linear-gradient(135deg, #a2d149, #2e7d32);
+}
+
+/* 3. 製作可能 (紫〜紺) ← 色はそのまま */
+.flag-craft {
+    background: linear-gradient(135deg, #7644ac, #252a60);
+}
+/* カード自体の設定に position: relative を追加（右下配置の基準にするため） */
+/* --- チェキカード自体の設定（下側のパディングを少し広げる） --- */
 .cheki-card {
     position: relative;
     background-color: var(--card-bg);
-    padding: 12px 12px 18px;
+    padding: 12px 12px 18px; /* 下側のパディングを18pxから24pxに広げて余白を作る */
     border-radius: 10px;
     box-shadow: var(--shadow);
     transition: 0.3s;
+    display: flex; /* ★追加：縦並びを制御 */
+    flex-direction: column; /* ★追加：縦並びを制御 */
+}
+
+.thumb-nav {
+    display: none;
+    gap: 10px; 
+    margin-top: 15px; 
+    height: 60px; 
+    justify-content: center;
+    width: 100%;
+}
+.thumb-nav img {
+    width: 60px; height: 60px; object-fit: cover; cursor: pointer; border-radius: 4px; border: 2px solid transparent; transition: 0.2s; opacity: 0.6;
+}
+.thumb-nav img:hover, .thumb-nav img.active { border-color: var(--accent-color); opacity: 1; }
+
+.close-modal { position: absolute; top: 15px; right: 20px; font-size: 30px; cursor: pointer; }
+
+.status-grid { margin: 0 auto 30px; max-width: 400px; }
+.status-item {
     display: flex;
-    flex-direction: column;
+    justify-content: space-between;
+    border-bottom: 1px dashed #ccc;
+    padding: 10px 10px;
+    font-size: 1rem;
+    color: #555;
 }
-.cheki-card:hover { transform: translateY(-5px); background-color: white; }
+.status-item span:last-child { font-weight: bold; color: #333; }
 
-.photo-area { position: relative; width: 100%; aspect-ratio: 1; border-radius: 6px; overflow: hidden; margin-bottom: 8px; }
-.slide-img { position: absolute; top:0; left:0; width:100%; height:100%; object-fit: cover; opacity: 0; transition: 0.3s; }
-.slide-img.active { opacity: 1; }
+.section-title { text-align: center; font-size: 0.95rem; color: var(--primary-color); margin: 20px 0 10px; }
+.section-content { text-align: center; font-size: 0.9rem; line-height: 1.6; color: #555; white-space: pre-wrap; }
+.modal-divider {
+    border: none;
+    height: 1px;
+    background-image: linear-gradient(to right, #ccc 50%, rgba(255,255,255,0) 0%);
+    background-position: bottom;
+    background-size: 4px 1px;
+    background-repeat: repeat-x;
+    margin: 25px auto;
+    width: 80%;
+}
+.symbol { color: rgb(160, 179, 104); margin: 0 8px; font-size: 1.1rem; }
 
-.item-name {
-    font-size: 0.8rem; font-weight: bold; text-align: center; margin: 0 0 8px 0;
-    color: var(--primary-color); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+/* サイドバーのアイコンとテキストの間に余白を追加 */
+.nav-item-parent span i {
+    margin-right: 8px;
+    width: 1.2em;
+    text-align: center;
 }
 
-/* カード右下のひし形アイコン群 */
-.card-flags {
-    display: flex;
-    justify-content: flex-end;
-    gap: 3px;
-    margin-top: auto;
-    padding-right: 4px;
-}
-.flag-diamond {
-    width: 18px; height: 18px; transform: rotate(45deg); border-radius: 3px;
-    display: flex; align-items: center; justify-content: center;
-    box-shadow: 0 1px 2px rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.5);
-}
-.flag-diamond span { transform: rotate(-45deg); font-size: 9px; color: white; font-weight: bold; }
-.flag-dye { background: linear-gradient(135deg, #a0f0ff, #0099cc); }
-.flag-market { background: linear-gradient(135deg, #a2d149, #2e7d32); }
-.flag-craft { background: linear-gradient(135deg, #7644ac, #252a60); }
-
-/* --- モーダルタグの色 --- */
-#modalMainCategory { background-color: #6670b0 !important; }
-#modalSubCategory { background-color: #7f3030 !important; }
-
-/* --- 戻るボタン --- */
-#backToTop {
-    position: fixed; bottom: 30px; right: 30px; width: 50px; height: 50px;
-    background-color: #6670b0; color: white; border-radius: 50%;
-    display: flex; align-items: center; justify-content: center;
-    cursor: pointer; opacity: 0; visibility: hidden; transition: 0.4s;
-}
-#backToTop.visible { opacity: 0.85; visibility: visible; }
-#backToTop:hover { background-color: #7f3030; }
-
-/* --- レスポンシブ --- */
-@media (max-width: 1100px) {
+@media (max-width: 768px) {
     #sidebar { display: none; }
-    #main-content { width: 100% !important; }
-    .grid { grid-template-columns: repeat(3, 1fr) !important; }
+    .sticky-header { padding: 15px 20px 5px; }
+    .content-body { padding: 20px; }
+    .book-layout { flex-direction: column; height: auto; max-height: 90vh; }
+}
+
+#backToTop {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    width: 50px;
+    height: 50px;
+    /* --- デザイン担当指定：メインカテゴリー色 --- */
+    background-color: #6670b0; 
+    color: white;
+    /* ------------------------------------------ */
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.15); /* 少し影を柔らかく */
+    z-index: 3000;
+
+    /* 初期状態：少し下に配置してふわっと浮き上がらせる */
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(20px); 
+    transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1); /* 高級感のある動き */
+}
+
+/* 表示状態 */
+#backToTop.visible {
+    opacity: 0.85; /* ほんのり透かして上品に */
+    visibility: visible;
+    transform: translateY(0);
+}
+
+/* ホバー時 */
+#backToTop:hover {
+    /* --- デザイン担当指定：サブカテゴリー色 --- */
+    background-color: #7f3030; 
+    /* ------------------------------------------ */
+    opacity: 1;
+    transform: translateY(-8px); /* 通常時より少し大きく浮かせます */
+    box-shadow: 0 8px 20px rgba(0,0,0,0.2);
 }
