@@ -329,11 +329,11 @@ body {
 
 /* JSの add('visible') と名前を合わせる */
 #backToTop.visible {
-    opacity: 1;
+    opacity: 0.9;
     visibility: visible;
 }
 
 #backToTop:hover {
+    opacity: 1; /* ホバー時はしっかり表示 */
     transform: translateY(-5px);
-    background-color: var(--accent-color);
 }
