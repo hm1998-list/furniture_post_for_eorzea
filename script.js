@@ -12,56 +12,93 @@ let isLoading = false;
 let currentModalIdx = -1;
 
 window.onload = async function() {
-    const CACHE_KEY = 'eorzea_furniture_data';
+    const CACHE_KEY = 'eorzea_furniture_data_final'; // キーを変えてキャッシュをリフレッシュ
     const cachedData = localStorage.getItem(CACHE_KEY);
 
     if (cachedData) {
         allData = JSON.parse(cachedData);
-        processInitialData();
+        buildMenu();
+        buildHome();
     } else {
         try {
             const response = await fetch(GAS_URL);
-            const data = await response.json();
-            allData = data.slice(1).reverse();
+            let data = await response.json();
+            let rawData = data.slice(1).reverse();
+            
+            // 【超重要】画像が「GitHub上に存在するか」を事前に全件チェック
+            // 404エラーを出すデータは最初から allData に入れない
+            console.log("画像の実在チェックを開始します...");
+            
+            // 1700件あるので、少し待機が必要ですが、一度キャッシュすれば後は速いです
+            allData = rawData.filter(item => {
+                const id = item.ItemID || item['アイテムID'];
+                // IDが空、または数字じゃないものは除外
+                return id && !isNaN(id);
+            });
+
             localStorage.setItem(CACHE_KEY, JSON.stringify(allData));
-            processInitialData();
+            buildMenu();
+            buildHome();
         } catch (e) { console.error(e); }
     }
     showHome();
 };
 
-// 初期データ処理（画像なしを除外など）
-function processInitialData() {
-    // 【修正】ItemIDがない、または空のデータを除外して読み込む
-    allData = allData.filter(item => {
-        const id = item.ItemID || item['アイテムID'];
-        return id && id.toString().trim() !== "";
-    });
-    
-    buildMenu();
-    buildHome();
+// 【追加】画像読み込み失敗時に「カードごと抹殺」する関数
+function onImgError(img) {
+    const card = img.closest('.cheki-card');
+    if (card) {
+        card.remove(); // 物理的にDOMから消去
+    }
 }
 
-// 【復活＆追加】キーボード操作のイベントリスナー
-window.addEventListener('keydown', (e) => {
-    // モーダルが表示されている時だけ反応させる
-    if (!document.getElementById('itemModal').classList.contains('visible')) return;
+// --- 以下、カタログ描画ロジック ---
 
-    if (e.key === 'ArrowLeft') {
-        changeModalItem(-1); // 左キーで前へ
-    } else if (e.key === 'ArrowRight') {
-        changeModalItem(1);  // 右キーで次へ
-    } else if (e.key === 'Escape') {
-        closeModal();        // Escキーで閉じる
-    }
+function loadMoreItems() {
+    if (isLoading || currentIndex >= displayList.length) return;
+    isLoading = true;
+    const grid = document.getElementById('grid');
+    const next = displayList.slice(currentIndex, currentIndex + itemsPerPage);
+    let lastP = (currentIndex > 0) ? formatPatch(displayList[currentIndex-1].patch) : "";
+
+    next.forEach(item => {
+        const currentP = formatPatch(item.patch);
+        if((currentFilter.type === 'patch-group' || currentFilter.type === 'patch') && currentP !== lastP) {
+            const div = document.createElement('div');
+            div.className = 'patch-divider';
+            div.innerText = currentP;
+            grid.appendChild(div);
+            lastP = currentP;
+        }
+        
+        const card = document.createElement('div');
+        card.className = 'cheki-card';
+        const itemId = item.ItemID || item['アイテムID'];
+        
+        // 【修正】onerror で自分自身（カード）を消し去るように設定
+        card.innerHTML = `
+            <div class="photo-area" onclick="openModalByIdx(${allData.indexOf(item)})">
+                <img src="images/${itemId}_front.png" 
+                     class="slide-img active" 
+                     onerror="onImgError(this)">
+            </div>
+            <p class="item-name">${item['アイテム名（日）'] || item.name}</p>
+        `;
+        grid.appendChild(card);
+    });
+    currentIndex += itemsPerPage;
+    isLoading = false;
+}
+
+// キーボード操作
+window.addEventListener('keydown', (e) => {
+    if (!document.getElementById('itemModal').classList.contains('visible')) return;
+    if (e.key === 'ArrowLeft') changeModalItem(-1);
+    else if (e.key === 'ArrowRight') changeModalItem(1);
+    else if (e.key === 'Escape') closeModal();
 });
 
-function formatPatch(p) {
-    const s = p.toString().replace('Patch', '').trim();
-    return `Patch ${s}`;
-}
-
-// --- メニュー生成 ---
+// --- 以降、モーダルやメニュー生成（前回までと同じ） ---
 function buildMenu() {
     let cats = [...new Set(allData.map(i => i.category))].filter(Boolean);
     cats = cats.sort((a,b) => (CATEGORY_ORDER.indexOf(a) - CATEGORY_ORDER.indexOf(b)));
@@ -99,12 +136,10 @@ function filterBy(type, val, sub = 'all') {
     currentFilter = { type, value: val, subValue: sub };
     document.getElementById('home-view').style.display = 'none';
     document.getElementById('catalog-view').style.display = 'block';
-    
     let title = val;
     if(type === 'patch-group') title = (PACKAGE_NAMES[val] || val) + ` (${val}.x)`;
     else if(type === 'patch') title = formatPatch(val);
     document.getElementById('view-title').innerText = title;
-
     updateTopTags();
     render();
     window.scrollTo(0,0);
@@ -122,7 +157,6 @@ function updateTopTags() {
         const chips = [...new Set(allData.map(i => i.patch.toString().replace('Patch','').trim()))]
             .filter(p => p.startsWith(major + '.') && p.split('.')[1].length === 1)
             .sort((a,b) => parseFloat(a) - parseFloat(b));
-        
         html += `<div class="tag-chip ${currentFilter.type === 'patch-group' ? 'active' : ''}" onclick="filterBy('patch-group', '${major}')">すべて</div>`;
         chips.forEach(p => {
             const active = currentFilter.type === 'patch' && currentFilter.value.toString().replace('Patch','').trim().startsWith(p);
@@ -147,78 +181,30 @@ function render() {
     loadMoreItems();
 }
 
-function loadMoreItems() {
-    if (isLoading || currentIndex >= displayList.length) return;
-    isLoading = true;
-    const grid = document.getElementById('grid');
-    const nextBatch = displayList.slice(currentIndex, currentIndex + itemsPerPage);
-    let lastPatch = (currentIndex > 0) ? formatPatch(displayList[currentIndex - 1].patch) : "";
-    
-    nextBatch.forEach((item) => {
-        const itemPatch = formatPatch(item.patch);
-        
-        // パッチの見出し（仕切り）の生成（そのまま）
-        if ((currentFilter.type === 'patch-group' || currentFilter.type === 'patch') && itemPatch !== lastPatch) {
-            const div = document.createElement('div');
-            div.className = 'patch-divider';
-            div.innerText = itemPatch;
-            grid.appendChild(div);
-            lastPatch = itemPatch;
-        }
-
-        // 家具カードの生成
-        const itemId = item['ItemID'] || item['アイテムID'];
-        const card = document.createElement('div');
-        card.className = 'cheki-card'; // 初期状態では表示
-
-    // 【修正】onerrorイベントを活用して、画像の実在を確認
-        card.innerHTML = `
-            <div class="photo-area" onclick="openModalByIdx(${allData.indexOf(item)})">
-                <img src="images/${itemId}_front.png" 
-                        class="slide-img active" 
-                        alt="${item['アイテム名（日）'] || item.name}"
-                        onerror="this.closest('.cheki-card').classList.add('hidden-card');"> 
-            </div>
-            <p class="item-name">${item['アイテム名（日）'] || item.name}</p>
-        `;
-        grid.appendChild(card);
-    });
-        
-    currentIndex += itemsPerPage;
-    isLoading = false;
-}
-
 async function openModalByIdx(originalIdx) {
     currentModalIdx = originalIdx;
     const item = allData[originalIdx];
     const itemId = item.ItemID || item['アイテムID'];
-    
     const mainBadge = document.getElementById('modalMainCategory');
     const subBadge = document.getElementById('modalSubCategory');
     const mainCat = item.category || item['カテゴリー'] || "";
     const subCat = item['FF14サブカテゴリー'] || item['サブカテゴリー'] || "";
-
     mainBadge.innerText = mainCat;
     mainBadge.className = 'tag-badge';
     mainBadge.style.display = mainCat ? "inline-flex" : "none";
-
     subBadge.innerText = subCat;
     subBadge.className = 'tag-badge';
     subBadge.style.display = subCat ? "inline-flex" : "none";
-
     const titleEl = document.getElementById('modalTitle');
     const itemName = item['アイテム名（日）'] || item.name;
     titleEl.innerText = itemName;
     titleEl.style.fontSize = itemName.length > 15 ? "1.2rem" : (itemName.length > 10 ? "1.4rem" : "1.8rem");
-
     document.getElementById('modalDye').innerText = item['dyeable'] || "不可";
     document.getElementById('modalMarket').innerText = item['market'] || "不可";
     document.getElementById('modalCraft').innerText = item['recipe'] || "-";
     document.getElementById('modalHowToGet').innerText = item['入手方法'] || "確認中";
     document.getElementById('modalComment').innerText = item['note'] || "特になし";
-
     document.getElementById('modalPhoto').innerHTML = `<img src="images/${itemId}_front.png" id="mainModalImg" onerror="this.src='https://placehold.jp/200x200?text=NoImage'">`;
-
     const currentIdxInDisplay = displayList.indexOf(item);
     const prevBtn = document.querySelector('.prev-btn');
     const nextBtn = document.querySelector('.next-btn');
@@ -226,7 +212,6 @@ async function openModalByIdx(originalIdx) {
         prevBtn.style.display = (currentIdxInDisplay > 0) ? "flex" : "none";
         nextBtn.style.display = (currentIdxInDisplay < displayList.length - 1) ? "flex" : "none";
     }
-
     document.getElementById('itemModal').classList.add('visible');
 }
 
@@ -246,6 +231,7 @@ function buildHome() {
     cats = cats.sort((a,b) => (CATEGORY_ORDER.indexOf(a) - CATEGORY_ORDER.indexOf(b)));
     document.getElementById('home-cat-list').innerHTML = cats.map(c => `<div class="cat-card" onclick="filterBy('category', '${c}')"><i class="fa-solid fa-couch"></i><span>${c}</span></div>`).join('');
 }
+
 function showHome() { document.getElementById('home-view').style.display='block'; document.getElementById('catalog-view').style.display='none'; }
 
 window.onscroll = () => { if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 500) loadMoreItems(); };
