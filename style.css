@@ -205,6 +205,16 @@ body {
     filter: drop-shadow(2px 2px 2px rgba(0,0,0,0.15));
 }
 
+/* 1. メインカテゴリータグ（青紫） */
+#modalMainCategory {
+    background-color: #6670b0 !important;
+}
+
+/* 2. サブカテゴリータグ（赤） */
+#modalSubCategory {
+    background-color: #7f3030 !important;
+}
+
 .book-right {
     flex: 1; 
     background: #fdfaf3;
