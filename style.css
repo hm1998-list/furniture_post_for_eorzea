@@ -159,6 +159,7 @@ body {
     height: 80vh;
     background: #fdfaf3;
     border-radius: 12px;
+    overflow: hidden;
 }
 
 .modal-nav {
