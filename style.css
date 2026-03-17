@@ -245,7 +245,8 @@ body {
 
 /* 右側の画像エリア全体 */
 .book-right {
-    flex: 0 0 550px; 
+    flex: 1; 
+    width: 50%;
     background: #fdfaf3;
     display: flex; 
     flex-direction: column;
@@ -258,7 +259,8 @@ body {
 }
 
 .book-left {
-    flex: 0 0 400px;
+    flex: 1;
+    width: 50%;
     padding: 40px 30px;
     overflow-y: auto;
     border-left: 1px solid rgba(0,0,0,0.05);
