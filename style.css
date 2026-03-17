@@ -139,16 +139,19 @@ body {
 .modal.visible { display: flex; }
 
 #modalTitle {
-    font-size: 0.85rem;   /* ご希望のサイズ */
-    line-height: 1.4;     /* 行間を少し広げて、2行になっても読みやすくする */
-    word-break: break-all; /* 長い単語でも枠からはみ出さずに改行させる */
-    overflow-wrap: break-word; /* 意味の区切りを優先しつつ改行する */
-    display: block;       /* 確実に幅いっぱいのエリアを確保する */
-    margin-bottom: 20px;
+    font-size: 1.4rem;  /* 「ちっちゃすぎ」にならず、かつ収まりの良いサイズ */
     font-weight: bold;
+    line-height: 1.3;
+    margin-bottom: 20px;
+    color: #4a4a4a;     /* 落ち着いた色 */
+    
+    /* 長い名前でも枠を突き抜けないための設定 */
+    word-break: break-all;
+    overflow-wrap: break-word;
 }
 
 .book-layout {
+    position: relative;
     display: flex;
     flex-direction: row; /* 横並びを強制 */
     width: 95vw;
@@ -407,12 +410,14 @@ body {
 
 .close-modal {
     position: absolute;
-    top: 10px;    /* 少し内側に下げる */
-    right: 15px;  /* 少し内側に寄せる */
-    font-size: 24px; /* サイズを少し調整 */
+    top: 20px;    /* 上から20px */
+    right: 20px;   /* 右から20px */
+    font-size: 24px;
+    line-height: 1;
     cursor: pointer;
-    z-index: 5000; /* 他の要素より手前に来るように */
-    color: var(--primary-color); /* 色を馴染ませる */
+    color: #666;   /* 目立ちすぎず、でも見つけやすい色 */
+    z-index: 100;  /* テキストなどと重なっても一番上に */
+    transition: color 0.2s;
 }
 
 .status-grid { margin: 0 auto 30px; max-width: 400px; }
