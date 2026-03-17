@@ -11,7 +11,7 @@ const SUB_CATEGORY_ORDER = [
         "機能家具",
         "その他"
         // リストにないものはこの後ろに自動で並びます
-    ];
+    ];    
 const PACKAGE_NAMES = { "7": "黄金のレガシー", "6": "暁月のフィナーレ", "5": "漆黒のヴィランズ", "4": "紅蓮のリベレーター", "3": "蒼天のイシュガルド", "2": "新生エオルゼア" };
 
 let allData = [];
@@ -173,7 +173,20 @@ function buildMenu() {
     let cats = [...new Set(allData.map(i => i.category))].filter(Boolean);
     cats = cats.sort((a,b) => (CATEGORY_ORDER.indexOf(a) - CATEGORY_ORDER.indexOf(b)));
     document.getElementById('side-cat-list').innerHTML = cats.map(c => {
+        
         let subs = [...new Set(allData.filter(i => i.category === c).map(i => i['FF14サブカテゴリー']))].filter(Boolean);
+        
+        subs.sort((a, b) => {
+            let indexA = SUB_CATEGORY_ORDER.indexOf(a);
+            let indexB = SUB_CATEGORY_ORDER.indexOf(b);
+            
+            // リストにないものは一番後ろ（大きな数値）にする
+            if (indexA === -1) indexA = 999;
+            if (indexB === -1) indexB = 999;
+            
+            return indexA - indexB;
+        });
+        
         return `<div class="nav-item-container"><button class="nav-item-parent" onclick="toggleSubMenu(this, '${c}')"><span><i class="fa-solid fa-angle-right"></i> ${c}</span></button><div class="sub-menu"><button class="nav-item-sub" onclick="filterBy('category', '${c}', 'all')">すべて表示</button>${subs.map(s => `<button class="nav-item-sub" onclick="filterBy('category', '${c}', '${s}')">${s}</button>`).join('')}</div></div>`;
     }).join('');
 
@@ -219,7 +232,17 @@ function updateTopTags() {
     const area = document.getElementById('tag-area');
     let html = '';
     if(currentFilter.type === 'category') {
+        
         const subs = [...new Set(allData.filter(i => i.category === currentFilter.value).map(i => i['FF14サブカテゴリー']))].filter(Boolean);
+        
+        subs.sort((a, b) => {
+            let indexA = SUB_CATEGORY_ORDER.indexOf(a);
+            let indexB = SUB_CATEGORY_ORDER.indexOf(b);
+            if (indexA === -1) indexA = 999;
+            if (indexB === -1) indexB = 999;
+            return indexA - indexB;
+        });
+        
         html += `<div class="tag-chip ${currentFilter.subValue === 'all' ? 'active' : ''}" onclick="filterBy('category', '${currentFilter.value}', 'all')">すべて</div>`;
         subs.forEach(s => { html += `<div class="tag-chip ${currentFilter.subValue === s ? 'active' : ''}" onclick="filterBy('category', '${currentFilter.value}', '${s}')">${s}</div>`; });
     } else if(currentFilter.type === 'patch-group' || currentFilter.type === 'patch') {
