@@ -188,12 +188,26 @@ async function openModalByIdx(originalIdx) {
     const item = allData[originalIdx];
     const itemId = item.ItemID || item['アイテムID'];
 
-    // 1. 基本情報を表示する
+    // 1. 基本テキストの設定
     const titleEl = document.getElementById('modalTitle');
-    titleEl.innerText = item['アイテム名（日）'] || item.name;
-    document.getElementById('modalPhoto').innerHTML = `<img src="images/${itemId}_front.png" id="mainModalImg" onerror="this.src='https://placehold.jp/200x200?text=NoImage'">`;
+    const itemName = item['アイテム名（日）'] || item.name;
+    titleEl.innerText = itemName;
+    titleEl.style.fontSize = itemName.length > 15 ? "1.2rem" : (itemName.length > 10 ? "1.4rem" : "1.8rem");
 
-    // 2. サムネイルの土台を準備する
+    // バッジ・詳細
+    document.getElementById('modalMainCategory').innerText = item.category || "";
+    document.getElementById('modalSubCategory').innerText = item['FF14サブカテゴリー'] || "";
+    document.getElementById('modalDye').innerText = item['dyeable'] || item['染色'] || "不可";
+    document.getElementById('modalMarket').innerText = item['market'] || item['マケボ'] || "不可";
+    document.getElementById('modalCraft').innerText = item['recipe'] || item['製作'] || "-";
+    document.getElementById('modalHowToGet').innerText = item['入手方法'] || "確認中";
+    document.getElementById('modalComment').innerText = item['note'] || "備考はありません";
+
+    // 2. メイン画像の設定
+    const photoArea = document.getElementById('modalPhoto');
+    photoArea.innerHTML = `<img src="images/${itemId}_front.png" id="mainModalImg" onerror="this.src='https://placehold.jp/200x200?text=NoImage'">`;
+
+    // 3. サムネイルの準備
     const bookRight = document.querySelector('.book-right');
     bookRight.classList.remove('has-multiple-thumbs');
     let thumbNav = document.querySelector('.thumb-nav') || document.createElement('div');
@@ -202,40 +216,46 @@ async function openModalByIdx(originalIdx) {
     thumbNav.innerHTML = '';
     thumbNav.style.display = 'none';
 
-    // 3. 画像の存在チェック用の関数（中に入れておきます）
-    const checkAndAddThumbnail = (suffix) => {
-        return new Promise((resolve) => {
-            const imgUrl = `images/${itemId}_${suffix}.png`;
-            const tempImg = new Image();
-            tempImg.onload = () => {
-                const tImg = document.createElement('img');
-                tImg.src = imgUrl;
-                if (suffix === 'front') tImg.className = 'active';
-                tImg.onclick = () => {
-                    document.getElementById('mainModalImg').src = imgUrl;
-                    document.querySelectorAll('.thumb-nav img').forEach(el => el.classList.remove('active'));
-                    tImg.classList.add('active');
-                };
-                thumbNav.appendChild(tImg);
-                resolve(true);
-            };
-            tempImg.onerror = () => resolve(false);
-            tempImg.src = imgUrl;
-        });
-    };
-
-    // 4. 【ここで使う！】画像リストを順番にチェック
+    // 4. 画像チェックとカウント（ここが foundCount の定義場所）
     const suffixList = ['front', 'side', 'back', 'bottom', 'top', 'dye', 'night'];
     let foundCount = 0;
+
     for (const suffix of suffixList) {
-        const exists = await checkAndAddThumbnail(suffix); // ここでawaitが使える！
-        if (exists) foundCount++;
+        const imgUrl = `images/${itemId}_${suffix}.png`;
+        const exists = await new Promise(res => {
+            const img = new Image();
+            img.onload = () => res(true);
+            img.onerror = () => res(false);
+            img.src = imgUrl;
+        });
+
+        if (exists) {
+            foundCount++;
+            const tImg = document.createElement('img');
+            tImg.src = imgUrl;
+            if (suffix === 'front') tImg.className = 'active';
+            tImg.onclick = () => {
+                document.getElementById('mainModalImg').src = imgUrl;
+                document.querySelectorAll('.thumb-nav img').forEach(el => el.classList.remove('active'));
+                tImg.classList.add('active');
+            };
+            thumbNav.appendChild(tImg);
+        }
     }
 
-    // 5. 2枚以上あればサムネイルを表示
+    // 5. 複数枚判定（foundCount を使う）
     if (foundCount > 1) {
         bookRight.classList.add('has-multiple-thumbs');
         thumbNav.style.display = 'flex';
+    }
+
+    // 6. 前後ボタンの制御
+    const currentIdxInDisplay = displayList.indexOf(item);
+    const prevBtn = document.querySelector('.nav-prev');
+    const nextBtn = document.querySelector('.nav-next');
+    if (prevBtn && nextBtn) {
+        prevBtn.style.display = (currentIdxInDisplay > 0) ? "flex" : "none";
+        nextBtn.style.display = (currentIdxInDisplay < displayList.length - 1) ? "flex" : "none";
     }
 
     document.getElementById('itemModal').classList.add('visible');
