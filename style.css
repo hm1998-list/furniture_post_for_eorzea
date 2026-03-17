@@ -485,7 +485,7 @@ body {
     width: 100%;
     /* 備考の位置を固定するための「最小の高さ」 */
     /* これにより、文字が少なくても備考が上に跳ね上がりません */
-    min-height: 150px; 
+    min-height: 100px; 
     
     display: flex;
     flex-direction: column;
@@ -493,16 +493,14 @@ body {
     margin-bottom: 0;
 }
 
-/* --- 2. 入手方法・備考のフォントサイズ調整 --- */
+/* ✦ 入手方法 ✦ などのタイトル */
 .section-title {
     text-align: center;
     font-size: 0.95rem;
     color: var(--primary-color);
-    margin: 15px 0 8px !important; /* 他の指定に負けないよう調整 */
+    margin: 5px 0 8px !important; /* 他の指定に負けないよう調整 */
     display: block;
 }
-
-/* テキスト本文（入手方法の中身など） */
 .section-content {
     text-align: center;
     font-size: 0.9rem;
@@ -519,8 +517,14 @@ body {
 
 /* --- 3. 区切り線（hr）の余白調整 --- */
 .modal-divider {
-    margin: 15px auto !important;
-    width: 80%;
+    border: none;
+    height: 1px;
+    background-image: linear-gradient(to right, #ccc 50%, rgba(255,255,255,0) 0%);
+    background-position: bottom;
+    background-size: 4px 1px; /* 点線の間隔 */
+    background-repeat: repeat-x;
+    margin: 25px auto;
+    width: 80%; /* 線を短くして中央寄せ */
 }
         
 .symbol { color: rgb(160, 179, 104); margin: 0 8px; font-size: 1.1rem; }
