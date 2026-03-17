@@ -184,8 +184,10 @@ function render() {
 
 async function openModalByIdx(originalIdx) {
     currentModalIdx = originalIdx;
+    
     const item = allData[originalIdx];
     const itemId = item.ItemID || item['アイテムID'];
+    
     const mainBadge = document.getElementById('modalMainCategory');
     const subBadge = document.getElementById('modalSubCategory');
     const mainCat = item.category || item['カテゴリー'] || "";
@@ -196,15 +198,26 @@ async function openModalByIdx(originalIdx) {
     subBadge.innerText = subCat;
     subBadge.className = 'tag-badge';
     subBadge.style.display = subCat ? "inline-flex" : "none";
+    
     const titleEl = document.getElementById('modalTitle');
     const itemName = item['アイテム名（日）'] || item.name;
     titleEl.innerText = itemName;
+
+    // 文字数に応じてフォントサイズを自動調整（枠に合わせて小さくする）
+    if (itemName.length > 15) {
+        titleEl.style.fontSize = "1.2rem"; 
+    } else if (itemName.length > 10) {
+        titleEl.style.fontSize = "1.4rem"; 
+    } else {
+        titleEl.style.fontSize = "1.8rem"; 
+    }
+    
     titleEl.style.fontSize = itemName.length > 15 ? "1.2rem" : (itemName.length > 10 ? "1.4rem" : "1.8rem");
     document.getElementById('modalDye').innerText = item['dyeable'] || "不可";
     document.getElementById('modalMarket').innerText = item['market'] || "不可";
     document.getElementById('modalCraft').innerText = item['recipe'] || "-";
     document.getElementById('modalHowToGet').innerText = item['入手方法'] || "確認中";
-    document.getElementById('modalComment').innerText = item['note'] || "特になし";
+    document.getElementById('modalComment').innerText = item['note'] || "備考はありません";
     document.getElementById('modalPhoto').innerHTML = `<img src="images/${itemId}_front.png" id="mainModalImg" onerror="this.src='https://placehold.jp/200x200?text=NoImage'">`;
     const currentIdxInDisplay = displayList.indexOf(item);
     const prevBtn = document.querySelector('.prev-btn');
@@ -215,6 +228,55 @@ async function openModalByIdx(originalIdx) {
     }
     document.getElementById('itemModal').classList.add('visible');
 }
+
+const photoArea = document.getElementById('modalPhoto');
+    const bookRight = document.querySelector('.book-right'); // クラスをつける対象
+
+    bookRight.classList.remove('has-multiple-thumbs')
+
+let thumbNav = document.querySelector('.thumb-nav');
+    if (!thumbNav) {
+        thumbNav = document.createElement('div');
+        thumbNav.className = 'thumb-nav';
+        bookRight.appendChild(thumbNav);
+    }
+    thumbNav.innerHTML = '';
+
+const suffixList = ['front', 'side', 'back', 'bottom', 'top', 'dye', 'night'];
+    let foundCount = 0; // 見つかった枚数を数える
+
+const checkAndAddThumbnail = (suffix) => {
+        return new Promise((resolve) => {
+            const imgUrl = `images/${itemId}_${suffix}.png`;
+            const tempImg = new Image();
+            tempImg.onload = () => {
+                foundCount++; // 画像があったらカウントアップ
+                
+                const tImg = document.createElement('img');
+                tImg.src = imgUrl;
+                if (suffix === 'front') tImg.className = 'active';
+                tImg.onclick = () => {
+                    document.getElementById('mainModalImg').src = imgUrl;
+                    document.querySelectorAll('.thumb-nav img').forEach(el => el.classList.remove('active'));
+                    tImg.classList.add('active');
+                };
+                thumbNav.appendChild(tImg);
+                resolve();
+            };
+            tempImg.onerror = () => resolve();
+            tempImg.src = imgUrl;
+        });
+    };
+
+for (const suffix of suffixList) {
+        await checkAndAddThumbnail(suffix);
+    }
+
+// 【ここがポイント！】
+    // 画像が2枚以上（front + α）見つかったらクラスを付与
+    if (foundCount > 1) {
+        bookRight.classList.add('has-multiple-thumbs');
+    }
 
 function changeModalItem(dir) {
     const currentItem = allData[currentModalIdx];
