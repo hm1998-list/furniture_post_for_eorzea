@@ -275,7 +275,12 @@ for (const suffix of suffixList) {
 // 【ここがポイント！】
     // 画像が2枚以上（front + α）見つかったらクラスを付与
     if (foundCount > 1) {
+        // 2枚以上ある：クラスを付けて上に上げ、サムネイルを表示する
         bookRight.classList.add('has-multiple-thumbs');
+        thumbNav.style.display = 'flex'; 
+    } else {
+        // 1枚のみ：サムネイルを非表示にする
+        thumbNav.style.display = 'none';
     }
 
 function changeModalItem(dir) {
