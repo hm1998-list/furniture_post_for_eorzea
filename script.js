@@ -182,63 +182,32 @@ function render() {
     loadMoreItems();
 }
 
+// --- モーダルを開くメインの処理 ---
 async function openModalByIdx(originalIdx) {
     currentModalIdx = originalIdx;
-    
     const item = allData[originalIdx];
     const itemId = item.ItemID || item['アイテムID'];
-    
-    // --- 基本情報の設定 ---
-    const mainBadge = document.getElementById('modalMainCategory');
-    const subBadge = document.getElementById('modalSubCategory');
-    const mainCat = item.category || item['カテゴリー'] || "";
-    const subCat = item['FF14サブカテゴリー'] || item['サブカテゴリー'] || "";
-    
-    mainBadge.innerText = mainCat;
-    mainBadge.style.display = mainCat ? "inline-flex" : "none";
-    subBadge.innerText = subCat;
-    subBadge.style.display = subCat ? "inline-flex" : "none";
-    
+
+    // 1. 基本情報を表示する
     const titleEl = document.getElementById('modalTitle');
-    const itemName = item['アイテム名（日）'] || item.name;
-    titleEl.innerText = itemName;
+    titleEl.innerText = item['アイテム名（日）'] || item.name;
+    document.getElementById('modalPhoto').innerHTML = `<img src="images/${itemId}_front.png" id="mainModalImg" onerror="this.src='https://placehold.jp/200x200?text=NoImage'">`;
 
-    // タイトルサイズ調整
-    titleEl.style.fontSize = itemName.length > 15 ? "1.2rem" : (itemName.length > 10 ? "1.4rem" : "1.8rem");
-
-    document.getElementById('modalDye').innerText = item['dyeable'] || item['染色'] || "不可";
-    document.getElementById('modalMarket').innerText = item['market'] || item['マケボ'] || "不可";
-    document.getElementById('modalCraft').innerText = item['recipe'] || item['製作'] || "-";
-    document.getElementById('modalHowToGet').innerText = item['入手方法'] || "確認中";
-    document.getElementById('modalComment').innerText = item['note'] || "備考はありません";
-
-    // メイン画像初期化
-    const photoArea = document.getElementById('modalPhoto');
-    photoArea.innerHTML = `<img src="images/${itemId}_front.png" id="mainModalImg" onerror="this.src='https://placehold.jp/200x200?text=NoImage'">`;
-
-    // --- サムネイル制御ロジック ---
+    // 2. サムネイルの土台を準備する
     const bookRight = document.querySelector('.book-right');
     bookRight.classList.remove('has-multiple-thumbs');
-
-    let thumbNav = document.querySelector('.thumb-nav');
-    if (!thumbNav) {
-        thumbNav = document.createElement('div');
-        thumbNav.className = 'thumb-nav';
-        bookRight.appendChild(thumbNav);
-    }
+    let thumbNav = document.querySelector('.thumb-nav') || document.createElement('div');
+    thumbNav.className = 'thumb-nav';
+    if (!thumbNav.parentElement) bookRight.appendChild(thumbNav);
     thumbNav.innerHTML = '';
-    thumbNav.style.display = 'none'; // 初期状態は隠す
+    thumbNav.style.display = 'none';
 
-    const suffixList = ['front', 'side', 'back', 'bottom', 'top', 'dye', 'night'];
-    let foundCount = 0;
-
-    // 画像の存在チェック
+    // 3. 画像の存在チェック用の関数（中に入れておきます）
     const checkAndAddThumbnail = (suffix) => {
         return new Promise((resolve) => {
             const imgUrl = `images/${itemId}_${suffix}.png`;
             const tempImg = new Image();
             tempImg.onload = () => {
-                foundCount++;
                 const tImg = document.createElement('img');
                 tImg.src = imgUrl;
                 if (suffix === 'front') tImg.className = 'active';
@@ -248,78 +217,29 @@ async function openModalByIdx(originalIdx) {
                     tImg.classList.add('active');
                 };
                 thumbNav.appendChild(tImg);
-                resolve();
+                resolve(true);
             };
-            tempImg.onerror = () => resolve();
+            tempImg.onerror = () => resolve(false);
             tempImg.src = imgUrl;
         });
     };
 
-    // 全てのサフィックスをチェック
+    // 4. 【ここで使う！】画像リストを順番にチェック
+    const suffixList = ['front', 'side', 'back', 'bottom', 'top', 'dye', 'night'];
+    let foundCount = 0;
     for (const suffix of suffixList) {
-        await checkAndAddThumbnail(suffix);
+        const exists = await checkAndAddThumbnail(suffix); // ここでawaitが使える！
+        if (exists) foundCount++;
     }
 
-    // 複数枚ある場合のみ表示を整える
+    // 5. 2枚以上あればサムネイルを表示
     if (foundCount > 1) {
         bookRight.classList.add('has-multiple-thumbs');
         thumbNav.style.display = 'flex';
     }
 
-    // 前後のナビゲーションボタン制御
-    const currentIdxInDisplay = displayList.indexOf(item);
-    const prevBtn = document.querySelector('.nav-prev'); // クラス名を以前のものに合わせる
-    const nextBtn = document.querySelector('.nav-next');
-    if (prevBtn && nextBtn) {
-        prevBtn.style.display = (currentIdxInDisplay > 0) ? "flex" : "none";
-        nextBtn.style.display = (currentIdxInDisplay < displayList.length - 1) ? "flex" : "none";
-    }
-
     document.getElementById('itemModal').classList.add('visible');
-} // ここで関数を閉じる
-
-const photoArea = document.getElementById('modalPhoto');
-    const bookRight = document.querySelector('.book-right'); // クラスをつける対象
-
-    bookRight.classList.remove('has-multiple-thumbs')
-
-let thumbNav = document.querySelector('.thumb-nav');
-    if (!thumbNav) {
-        thumbNav = document.createElement('div');
-        thumbNav.className = 'thumb-nav';
-        bookRight.appendChild(thumbNav);
-    }
-    thumbNav.innerHTML = '';
-
-const suffixList = ['front', 'side', 'back', 'bottom', 'top', 'dye', 'night'];
-    let foundCount = 0; // 見つかった枚数を数える
-
-const checkAndAddThumbnail = (suffix) => {
-        return new Promise((resolve) => {
-            const imgUrl = `images/${itemId}_${suffix}.png`;
-            const tempImg = new Image();
-            tempImg.onload = () => {
-                foundCount++; // 画像があったらカウントアップ
-                
-                const tImg = document.createElement('img');
-                tImg.src = imgUrl;
-                if (suffix === 'front') tImg.className = 'active';
-                tImg.onclick = () => {
-                    document.getElementById('mainModalImg').src = imgUrl;
-                    document.querySelectorAll('.thumb-nav img').forEach(el => el.classList.remove('active'));
-                    tImg.classList.add('active');
-                };
-                thumbNav.appendChild(tImg);
-                resolve();
-            };
-            tempImg.onerror = () => resolve();
-            tempImg.src = imgUrl;
-        });
-    };
-
-for (const suffix of suffixList) {
-        await checkAndAddThumbnail(suffix);
-    }
+} // ← 最後にこの閉じカッコがあることを確認！
 
 // 【ここがポイント！】
     // 画像が2枚以上（front + α）見つかったらクラスを付与
