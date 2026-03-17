@@ -192,7 +192,6 @@ async function openModalByIdx(originalIdx) {
     const titleEl = document.getElementById('modalTitle');
     const itemName = item['アイテム名（日）'] || item.name;
     titleEl.innerText = itemName;
-    titleEl.style.fontSize = itemName.length > 15 ? "1.2rem" : (itemName.length > 10 ? "1.4rem" : "1.8rem");
 
     // バッジ・詳細
     document.getElementById('modalMainCategory').innerText = item.category || "";
