@@ -1,5 +1,17 @@
 const GAS_URL = "https://script.google.com/macros/s/AKfycbxN4O6KUpVGqOI479BHPivqRv1RccVBhVNyHCC6yKqyiXfH-xX9FLR-3c8uPuYM4MEkSA/exec";
 const CATEGORY_ORDER = ["調度品(一般)", "調度品(台座)", "調度品(卓上)", "調度品(壁掛)", "調度品(敷物)", "内装建材", "庭具"];
+const SUB_CATEGORY_ORDER = [
+        "机", "椅子/ソファ", "棚/チェスト", "壁/柱/仕切り", "ベッド",
+        "照明", "料理", "時計", "植物",
+        "ぬいぐるみ/マスコット", "置物",
+        "風呂",
+        "旗/額縁/ポスター", "窓",
+        "足場", "水場", "店舗",
+        "天井照明", "内壁", "床材",
+        "機能家具",
+        "その他"
+        // リストにないものはこの後ろに自動で並びます
+    ];
 const PACKAGE_NAMES = { "7": "黄金のレガシー", "6": "暁月のフィナーレ", "5": "漆黒のヴィランズ", "4": "紅蓮のリベレーター", "3": "蒼天のイシュガルド", "2": "新生エオルゼア" };
 
 let allData = [];
