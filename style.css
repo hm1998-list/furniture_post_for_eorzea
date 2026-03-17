@@ -11,10 +11,13 @@
 
 * { box-sizing: border-box; }
 body {
+    margin: 0;
+    font-family: 'Noto Sans JP', sans-serif;
+    background-color: #fdfaf3; /* ← ここで確実に背景色を指定 */
+    color: var(--text-main);
     display: flex;
     min-height: 100vh;
     overflow-x: hidden; /* 横揺れ防止 */
-    /* overflow-y: hidden; などがあれば削除してください */
 }
 
 /* --- サイドバー --- */
@@ -65,8 +68,9 @@ body {
     flex: 1;
     display: flex;
     flex-direction: column;
-    /* height: 100vh; を削除 */
-    /* overflow-y: auto; を削除 */
+    background-color: #fdfaf3; /* 親と同じ色をここにも念のため敷く */
+    min-height: 100vh;
+    position: relative;
 }
 
 /* --- ホーム画面 --- */
