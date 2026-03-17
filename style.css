@@ -436,22 +436,36 @@ body {
 }
 
 .close-modal {
+    /* 1. 配置の基準を「本の枠」の右上に固定 */
     position: absolute;
-    top: 15px;    /* 少し内側に寄せる */
-    right: 15px;   /* 少し内側に寄せる */
-    font-size: 30px;
-    line-height: 1;
-    cursor: pointer;
-    color: #666;
-    z-index: 10000; /* 何よりも上にくるように */
-    background: rgba(255, 255, 255, 0.5); /* 背景色を少し入れると見つけやすい */
+    top: 20px;
+    right: 20px;
+
+    /* 2. 見た目の調整（押しやすく、見つけやすく） */
     width: 40px;
     height: 40px;
+    background: rgba(255, 255, 255, 0.8); /* 少し白背景を入れると画像に埋もれません */
+    color: #7d6b5d; /* 変数 --primary-color と同じ色 */
+    border-radius: 50%;
+    
+    /* 3. 中央に「×」を配置 */
     display: flex;
     align-items: center;
     justify-content: center;
-    border-radius: 50%;
+    font-size: 28px;
+    line-height: 1;
+    
+    /* 4. 重なり順（最前面へ） */
+    z-index: 10000; 
+    cursor: pointer;
+    transition: background 0.2s;
 }
+
+.close-modal:hover {
+    background: #ffffff;
+    color: #000000;
+}
+
 .status-grid { margin: 0 auto 30px; max-width: 400px; }
 .status-item {
     display: flex;
