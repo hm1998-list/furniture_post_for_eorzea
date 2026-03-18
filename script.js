@@ -74,7 +74,7 @@ function loadMoreItems() {
         card.className = 'cheki-card';
         card.innerHTML = `
             <div class="photo-area" onclick="openModalByIdx(${allData.indexOf(item)})">
-                <img src="images/${itemId}_front.png" class="slide-img active" onerror="this.src='https://placehold.jp/200x200?text=NoImage'">
+                <img src="images/${itemId}_front.webp" class="slide-img active" onerror="this.src='https://placehold.jp/200x200?text=NoImage'">
             </div>
             <p class="item-name">${item['アイテム名（日）'] || item.name}</p>
             <div class="card-flags">
@@ -104,7 +104,7 @@ async function openModalByIdx(originalIdx) {
     document.getElementById('modalComment').innerText = item['note'] || "備考はありません";
 
     const photoArea = document.getElementById('modalPhoto');
-    photoArea.innerHTML = `<img src="images/${itemId}_front.png" id="mainModalImg" onerror="this.src='https://placehold.jp/200x200?text=NoImage'">`;
+    photoArea.innerHTML = `<img src="images/${itemId}_front.webp" id="mainModalImg" onerror="this.src='https://placehold.jp/200x200?text=NoImage'">`;
 
     // --- 左右切り替えボタンの表示制御 ---
     const idxInList = displayList.indexOf(item);
@@ -124,7 +124,7 @@ async function openModalByIdx(originalIdx) {
     let foundCount = 0;
 
     for (const suffix of suffixList) {
-        const imgUrl = `images/${itemId}_${suffix}.png`;
+        const imgUrl = `images/${itemId}_${suffix}.webp`;
         const exists = await new Promise(res => {
             const img = new Image();
             img.onload = () => res(true);
