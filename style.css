@@ -242,8 +242,8 @@ body {
     position: relative;
     white-space: nowrap;
 
-    -webkit-mask-image: url('images/tag-bg.png');
-    mask-image: url('images/tag-bg.png');
+    -webkit-mask-image: url('ui/tag-bg.png');
+    mask-image: url('ui/tag-bg.png');
     -webkit-mask-size: 100% 100%;
     mask-size: 100% 100%;
     -webkit-mask-repeat: no-repeat;
