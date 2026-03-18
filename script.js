@@ -27,6 +27,24 @@ let currentIndex = 0;
 const itemsPerPage = 24;
 let isLoading = false;
 let currentModalIdx = -1;
+let latestPatch = "0";
+
+// 1. ページ読み込み時に実行される部分
+window.onload = function() {
+    // ここでスプレッドシートなどからデータを取ってくる処理があるはずです
+    // 例：fetchData(); 
+};
+
+// 2. データを「受け取った瞬間」に実行する関数（ここに追加！）
+function initData(data) {
+    allData = data;
+    
+    // 全データの中から最新パッチを特定
+    // item['パッチ'] の部分は、スプレッドシートの列名に合わせて「item.patch」などに変えてね
+    latestPatch = Math.max(...allData.map(item => parseFloat(item['パッチ'] || item.patch) || 0)).toString();
+    
+    render(); // データをセットし終わったら描画開始
+}
 
 // 検索用の正規化（ひらがな化、中点・スペース除去）
 function normalizeText(str) {
@@ -73,28 +91,29 @@ function loadMoreItems() {
     const grid = document.getElementById('grid');
     const next = displayList.slice(currentIndex, currentIndex + itemsPerPage);
 
-    // 【追加】データ全体の中から最新のパッチ番号を特定（例: "7.1"）
-    const latestPatch = Math.max(...allData.map(item => parseFloat(item.patch) || 0)).toString();
-
     next.forEach(item => {
-        const dyeVal = item['染色'] || item.dyeable || item['染色可否'];
-        const marketVal = item['マケボ'] || item.market || item['マケボ取引'];
-        const craftVal = item['製作'] || item.recipe || item['製作可否'];
-        const itemId = item.ItemID || item['アイテムID'];
-        const itemPatch = (item.patch || "").toString();
+        // 項目の存在チェックを厳重にする
+        const dyeVal = item['染色'] || item['染色可否'] || "";
+        const marketVal = item['マケボ'] || item['マケボ取引'] || "";
+        const craftVal = item['製作'] || item['製作可否'] || "";
+        
+        // ItemIDが空だと画像が出ないので、予備のプロパティも見る
+        const itemId = item.ItemID || item['アイテムID'] || item.id;
+        const itemPatch = (item['パッチ'] || item.patch || "").toString();
 
         const card = document.createElement('div');
         card.className = 'cheki-card';
 
-        // 【追加】最新パッチと一致する場合のみバッジを表示
-        const newBadge = (itemPatch === latestPatch) ? '<span class="badge-new">New</span>' : '';
+        // 数値として比較してNewバッジを判定
+        const isNew = parseFloat(itemPatch) === parseFloat(latestPatch);
+        const newBadge = isNew ? '<span class="badge-new">New</span>' : '';
 
         card.innerHTML = `
             ${newBadge}
             <div class="photo-area" onclick="openModalByIdx(${allData.indexOf(item)})">
                 <img src="images/${itemId}_front.png" class="slide-img active" onerror="this.src='https://placehold.jp/200x200?text=NoImage'">
             </div>
-            <p class="item-name">${item['アイテム名（日）'] || item.name}</p>
+            <p class="item-name">${item['アイテム名（日）'] || item.name || '名称不明'}</p>
             <div class="card-flags">
                 ${(dyeVal && dyeVal !== '不可') ? '<div class="flag-diamond flag-dye"><span>🎨</span></div>' : ''}
                 ${(marketVal && marketVal !== '不可') ? '<div class="flag-diamond flag-market"><span>💰</span></div>' : ''}
