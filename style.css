@@ -355,20 +355,17 @@ body {
     border: 1px solid rgba(255,255,255,0.5);
 }
 
-.flag-diamond span {
-    transform: rotate(-45deg); 
-    font-size: 9px;
-    line-height: 1;
+/* ダイヤモンド型の枠の中の画像を調整 */
+.flag-diamond img {
+    width: 14px;      /* アイコンのサイズ（枠に合わせて調整） */
+    height: 14px;
+    object-fit: contain;
+    /* 親要素が45度傾いているので、画像だけ-45度戻して「まっすぐ」に見せる */
+    
+    /* 位置の微調整用（画像がズレて見える場合に使用） */
     position: relative;
-    top: -1.2px;  /* 数値を入れると上下に微細に動かせます */
-    left: -1.5px; /* 数値を入れると左右に微細に動かせます */
-}
-
-/* --- 中の絵文字をまっすぐに戻す（サイズ調整） --- */
-.flag-diamond span {
-    transform: rotate(-45deg); 
-    font-size: 13px; /* ★追加：絵文字を少し小さく（10px→9px） */
-    line-height: 1;
+    top: 0px; 
+    left: 0px;
 }
 
 /* 1. 染色可能 (水色〜濃い水色) ← ★色を変更しました */
