@@ -385,6 +385,23 @@ body {
 .flag-craft {
     background: linear-gradient(135deg, #7644ac, #252a60);
 }
+
+.flag-battle {
+    background: linear-gradient(135deg, #a52a2a, #800020);
+}
+    
+.flag-retainer {
+    background: linear-gradient(135deg, #708090, #36454f);
+}
+    
+.flag-shop {
+    background: linear-gradient(135deg, #ffa07a, #e2725b);
+}
+    
+.flag-voyage {
+    background: linear-gradient(135deg, #1e40af, #030712);
+}
+
 /* カード自体の設定に position: relative を追加（右下配置の基準にするため） */
 /* --- チェキカード自体の設定（下側のパディングを少し広げる） --- */
 .cheki-card {
