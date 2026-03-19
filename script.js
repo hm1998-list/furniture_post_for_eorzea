@@ -98,10 +98,6 @@ function loadMoreItems() {
         const dyeVal = item['染色'] || item.dyeable || item['染色可否'];
         const marketVal = item['マケボ'] || item.market || item['マケボ取引'];
         const craftVal = item['製作'] || item.recipe || item['製作可否'];
-        const shopVal = item['NPCショップ'] || item.shop; 
-        const battleVal = item['バトルコンテンツ'] || item.battle;
-        const retainerVal = item['リテイナー'] || item.retainer;
-        const voyageVal = item['潜水艦'] || item.voyage;
         const itemId = item.ItemID || item['アイテムID'];
         const itemPatch = (item.patch || "").toString();
 
@@ -121,10 +117,6 @@ function loadMoreItems() {
                 ${(dyeVal && dyeVal !== '不可') ? '<div class="flag-diamond flag-dye"><span>🎨</span></div>' : ''}
                 ${(marketVal && marketVal !== '不可') ? '<div class="flag-diamond flag-market"><span>⚖</span></div>' : ''}
                 ${(craftVal && craftVal !== '-' && craftVal !== '不可' && craftVal !== '') ? '<div class="flag-diamond flag-craft"><span>🔨</span></div>' : ''}
-                ${(shopVal && shopVal !== '不可' && shopVal !== '') ? '<div class="flag-diamond flag-shop"><span>💰</span></div>' : ''}
-                ${(battleVal && battleVal !== '不可' && battleVal !== '') ? '<div class="flag-diamond flag-battle"><span>⚔</span></div>' : ''}
-                ${(retainerVal && retainerVal !== '不可' && shopVal !== '') ? '<div class="flag-diamond flag-retainer"><span>🛎</span></div>' : ''}
-                ${(voyageVal && voyageVal !== '不可' && voyageVal !== '') ? '<div class="flag-diamond flag-voyage"><span>⚓</span></div>' : ''}
             </div>
         `;
         grid.appendChild(card);
