@@ -376,7 +376,7 @@ body {
 .flag-dye img {
     width: 16px;      /* アイコンのサイズ（枠に合わせて調整） */
     height: 16px;
-
+}
 /* 2. マケボ可能 (黄緑〜緑) ← 色はそのまま */
 .flag-market {
     background: linear-gradient(135deg, #a2d149, #2e7d32);
