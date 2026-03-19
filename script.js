@@ -114,9 +114,9 @@ function loadMoreItems() {
             </div>
             <p class="item-name">${item['アイテム名（日）'] || item.name}</p>
             <div class="card-flags">
-                ${(dyeVal && dyeVal !== '不可') ? '<div class="flag-diamond flag-dye"><span>🎨</span></div>' : ''}
-                ${(marketVal && marketVal !== '不可') ? '<div class="flag-diamond flag-market"><span>⚖</span></div>' : ''}
-                ${(craftVal && craftVal !== '-' && craftVal !== '不可' && craftVal !== '') ? '<div class="flag-diamond flag-craft"><span>🔨</span></div>' : ''}
+                ${(dyeVal && dyeVal !== '不可') ? '<div class="flag-diamond flag-dye"><img src="ui/dye.png" alt="染色"></div>' : ''}
+                ${(marketVal && marketVal !== '不可') ? '<div class="flag-diamond flag-market"><img src="ui/icon_marketbord.png" alt="マケボ"></div>' : ''}
+                ${(craftVal && craftVal !== '-' && craftVal !== '不可' && craftVal !== '') ? '<div class="flag-diamond flag-craft"><img src="ui/craft.png" alt="製作"></div>' : ''}
             </div>
         `;
         grid.appendChild(card);
