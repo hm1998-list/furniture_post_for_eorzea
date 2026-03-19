@@ -361,6 +361,7 @@ body {
     height: 15px;
     object-fit: contain;
     /* 親要素が45度傾いているので、画像だけ-45度戻して「まっすぐ」に見せる */
+    transform: rotate(-45deg);
     
     /* 位置の微調整用（画像がズレて見える場合に使用） */
     position: relative;
