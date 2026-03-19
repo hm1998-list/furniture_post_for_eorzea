@@ -386,6 +386,14 @@ body {
 .flag-craft {
     background: linear-gradient(135deg, #b091d2, #484e7c);
 }
+.flag-craft img {
+    width: 18px;      /* アイコンのサイズ（枠に合わせて調整） */
+    height: 18px;
+}
+position: relative;
+    top: -2px; 
+    left: -1px;
+}
 
 .flag-battle {
     background: linear-gradient(135deg, #a52a2a, #800020);
