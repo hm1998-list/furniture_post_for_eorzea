@@ -406,9 +406,8 @@ body {
     background: linear-gradient(135deg, #ffcb4b, #c37547);
 }
 .flag-shop img {
-    width: 19px;      /* アイコンのサイズ（枠に合わせて調整） */
-    height: 19px;
-    position: relative;
+    width: 20px;      /* アイコンのサイズ（枠に合わせて調整） */
+    height: 20px;
 }
     
 .flag-voyage {
