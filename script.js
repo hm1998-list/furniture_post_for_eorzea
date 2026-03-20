@@ -98,6 +98,11 @@ function loadMoreItems() {
         const dyeVal = item['染色'] || item.dyeable || item['染色可否'];
         const marketVal = item['マケボ'] || item.market || item['マケボ取引'];
         const craftVal = item['製作'] || item.recipe || item['製作可否'];
+        const shopVal = (item['ショップ'] || "").toString().trim();
+        const battleVal = (item['バトルコンテンツ'] || "").toString().trim();
+        const retainerVal = (item['リテイナー'] || "").toString().trim();
+        const voyageVal = (item['潜水艦'] || "").toString().trim();
+            
         const itemId = item.ItemID || item['アイテムID'];
         const itemPatch = (item.patch || "").toString();
 
@@ -117,6 +122,11 @@ function loadMoreItems() {
                 ${(dyeVal && dyeVal !== '不可') ? '<div class="flag-diamond flag-dye"><img src="ui/dye.png" alt="染色"></div>' : ''}
                 ${(marketVal && marketVal !== '不可') ? '<div class="flag-diamond flag-market"><img src="ui/marketbord.png" alt="マケボ"></div>' : ''}
                 ${(craftVal && craftVal !== '-' && craftVal !== '不可' && craftVal !== '') ? '<div class="flag-diamond flag-craft"><img src="ui/craft.png" alt="製作"></div>' : ''}
+
+                ${(shopVal === 'あり') ? '<div class="flag-diamond flag-shop"><img src="ui/shop.png" alt="ショップ"></div>' : ''}
+                ${(battleVal === 'あり') ? '<div class="flag-diamond flag-battle"><img src="ui/battle.png" alt="バトルコンテンツ"></div>' : ''}
+                ${(retainerVal === 'あり') ? '<div class="flag-diamond flag-retainer"><img src="ui/rite.png" alt="リテイナー"></div>' : ''}
+                ${(voyageVal === 'あり') ? '<div class="flag-diamond flag-voyage"><img src="ui/voyger.png" alt="潜水艦"></div>' : ''}
             </div>
         `;
         grid.appendChild(card);
