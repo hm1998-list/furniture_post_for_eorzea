@@ -671,3 +671,20 @@ body {
     transform: translateY(-8px); /* 通常時より少し大きく浮かせます */
     box-shadow: 0 8px 20px rgba(0,0,0,0.2);
 }
+
+/* サブカテゴリー（タグ）が並んでいる親要素 */
+#tag-area {
+    display: flex;        /* 横並びにする */
+    flex-wrap: wrap;      /* 【重要】幅がいっぱいになったら改行する */
+    gap: 10px;            /* タグ同士の上下左右の間隔 */
+    padding: 10px;
+    justify-content: flex-start; /* 左寄せ（中央寄せなら center） */
+}
+
+/* 各タグ（チップ）の調整 */
+.tag-chip {
+    white-space: nowrap;  /* タグの中の文字自体は改行させない */
+    padding: 8px 15px;
+    border-radius: 20px;
+    /* ...その他のデザイン... */
+}
