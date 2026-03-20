@@ -258,12 +258,35 @@ function buildMenu() {
 
 function toggleSubMenu(btn, val) {
     const sub = btn.nextElementSibling;
+    if (!sub) return;
+
+    // 1. 【修正】他の開いているメニューをすべて探して閉じる
+    document.querySelectorAll('.sub-menu.open').forEach(el => {
+        if (el !== sub) {
+            el.classList.remove('open');
+            // 他が閉じる時も「ぬるっ」とさせるためにmax-heightを0にする
+            el.style.maxHeight = '0'; 
+        }
+    });
+
+    // 2. 【メイン】クリックされたメニューの開閉
     const isOpen = sub.classList.contains('open');
-    if(!isOpen) {
+    if (!isOpen) {
         sub.classList.add('open');
-        if(val.startsWith('patch-group:')) filterBy('patch-group', val.split(':')[1]);
-        else if(val !== 'all') filterBy('category', val);
-    } else { sub.classList.remove('open'); }
+        // 自分のmax-heightを1000pxにして「ぬるっ」と開く
+        sub.style.maxHeight = '1000px';
+        
+        // フィルター実行（既存のロジック）
+        if (val && val.startsWith('patch-group:')) {
+            filterBy('patch-group', val.split(':')[1]);
+        } else if (val && val !== 'all') {
+            filterBy('category', val);
+        }
+    } else {
+        // すでに開いているものをもう一度押したら閉じる
+        sub.classList.remove('open');
+        sub.style.maxHeight = '0';
+    }
 }
 
 function filterBy(type, val, sub = 'all') {
