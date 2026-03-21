@@ -85,32 +85,44 @@ function formatPatch(p) {
     return `Patch ${s}`;
 }
 
+let lastRenderedPatch = null; 
+
 function loadMoreItems() {
     if (isLoading || currentIndex >= displayList.length) return;
     isLoading = true;
     const grid = document.getElementById('grid');
     const next = displayList.slice(currentIndex, currentIndex + itemsPerPage);
 
-    // 【追加】データ全体の中から最新のパッチ番号を特定（例: "7.1"）
-    const latestPatch = Math.max(...allData.map(item => parseFloat(item.patch) || 0)).toString();
+    // 最新パッチの特定（バッジ用）
+    const latestPatch = Math.max(...allData.map(item => parseFloat(item.patch || item['パッチ']) || 0)).toString();
 
     next.forEach(item => {
+        const itemPatch = (item.patch || item['パッチ'] || "").toString().trim();
+        // 【追加！】前のアイテムとパッチが違ったら、見出し（セパレーター）を差し込む
+        if (itemPatch !== lastRenderedPatch) {
+            const separator = document.createElement('div');
+            separator.className = 'patch-separator';
+            separator.innerHTML = `<span>|| Patch ${itemPatch}</span>`;
+            grid.appendChild(separator);
+            
+            lastRenderedPatch = itemPatch; // 記録を更新
+        }
+
+        // --- ここからカード作成（既存のロジック） ---
         const dyeVal = item['染色'] || item.dyeable || item['染色可否'];
         const marketVal = item['マケボ'] || item.market || item['マケボ取引'];
         const craftVal = item['製作'] || item.recipe || item['製作可否'];
         const shopVal = (item['ショップ'] || "").toString().trim();
         const battleVal = (item['バトルコンテンツ'] || "").toString().trim();
         const retainerVal = (item['リテイナー'] || "").toString().trim();
-        const voyageVal = (item['潜水艦'] || "").toString().trim();
-            
+        const voyageVal = (item['潜水艦'] || "").toString().trim();    
         const itemId = item.ItemID || item['アイテムID'];
-        const itemPatch = (item.patch || "").toString();
+        const currentItemPatch = (item.patch || "").toString();
 
         const card = document.createElement('div');
         card.className = 'cheki-card';
 
-        // 【追加】最新パッチと一致する場合のみバッジを表示
-        const newBadge = (itemPatch === latestPatch) ? '<span class="badge-new">New</span>' : '';
+        const newBadge = (currentItemPatch === latestPatch) ? '<span class="badge-new">New</span>' : '';
 
         card.innerHTML = `
             ${newBadge}
@@ -122,7 +134,6 @@ function loadMoreItems() {
                 ${(dyeVal && dyeVal !== '不可') ? '<div class="flag-diamond flag-dye"><img src="ui/dye.png" alt="染色"></div>' : ''}
                 ${(marketVal && marketVal !== '不可') ? '<div class="flag-diamond flag-market"><img src="ui/marketbord.png" alt="マケボ"></div>' : ''}
                 ${(craftVal && craftVal !== '-' && craftVal !== '不可' && craftVal !== '') ? '<div class="flag-diamond flag-craft"><img src="ui/craft.png" alt="製作"></div>' : ''}
-
                 ${(shopVal === 'あり') ? '<div class="flag-diamond flag-shop"><img src="ui/shop.png" alt="ショップ"></div>' : ''}
                 ${(battleVal === 'あり') ? '<div class="flag-diamond flag-battle"><img src="ui/battle.png" alt="バトルコンテンツ"></div>' : ''}
                 ${(retainerVal === 'あり') ? '<div class="flag-diamond flag-retainer"><img src="ui/rite.png" alt="リテイナー"></div>' : ''}
@@ -131,9 +142,11 @@ function loadMoreItems() {
         `;
         grid.appendChild(card);
     });
+
     currentIndex += itemsPerPage;
     isLoading = false;
 }
+
 async function openModalByIdx(originalIdx) {
     currentModalIdx = originalIdx;
     const item = allData[originalIdx];
@@ -361,23 +374,27 @@ function render() {
     grid.innerHTML = '';
     currentIndex = 0;
 
-    // 表示すべき全データのリストを作成
     displayList = allData.filter(item => {
-        // 【修正ポイント】検索モードの場合のロジック
+        // --- 検索モードなどはそのまま ---
         if (currentFilter.type === 'search') {
-            const sKey = normalizeText(currentFilter.value); // 入力文字を整える
-            const itemName = normalizeText(item['アイテム名（日）'] || item.name || ""); // 家具名を整える
-            return itemName.includes(sKey); // 部分一致で判定
+            const sKey = normalizeText(currentFilter.value);
+            const itemName = normalizeText(item['アイテム名（日）'] || item.name || "");
+            return itemName.includes(sKey);
         }
-        
-        // 通常のカテゴリ・パッチフィルター（既存のまま）
+        // --- 【修正！】パッチごとのフィルタリング ---
+        if (currentFilter.type === 'patch') {
+            const itemPatch = (item.patch || "").toString().replace('Patch', '').trim();
+            const filterValue = currentFilter.value.toString().replace('Patch', '').trim();            
+            // 例: ボタンが「7.4」なら、「7.4」で始まるパッチ（7.4、7.45など）をすべて通す
+            return itemPatch.startsWith(filterValue);
+        }
+        // --- カテゴリー判定などはそのまま ---
         const matchMain = (currentFilter.type === 'category' ? item.category === currentFilter.value : 
-                          currentFilter.type === 'patch' ? item.patch.toString() === currentFilter.value.toString() : true);
-        const matchSub = (currentFilter.subValue === 'all' || item['FF14サブカテゴリー'] === currentFilter.subValue);
+                          currentFilter.type === 'patch-group' ? item.patch.toString().startsWith(currentFilter.value + '.') : true);
+        const matchSub = (currentFilter.subValue === 'all' || item['FF14サブカテゴリー'] === currentFilter.subValue);        
         return matchMain && matchSub;
     });
-
-    loadMoreItems(); // 最初の24件を表示
+    loadMoreItems();
 }
 
 function setSubFilter(val, el) {
