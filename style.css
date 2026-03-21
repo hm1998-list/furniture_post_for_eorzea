@@ -104,12 +104,38 @@ body {
 }
 
 .home-cat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 20px; }
+/* Home画面のカテゴリーカード全体の設定 */
 .cat-card {
-    background: white; padding: 25px 15px; border-radius: 15px;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.05); cursor: pointer; transition: 0.3s; text-align: center;
+    display: flex; background: white; padding: 25px 15px; border-radius: 15px; flex-direction: column;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.09); cursor: pointer; transition: 0.3s; text-align: center;
+    gap: 7px;
 }
 .cat-card:hover { transform: translateY(-5px); box-shadow: var(--shadow); }
-.cat-card i { font-size: 2.2rem; color: var(--primary-color); margin-bottom: 15px; display: block; }
+
+/* ★塗りつぶしアイコンの指定 */
+.cat-card .material-symbols-rounded {
+  font-variation-settings:
+    'FILL' 1,   /* ★1 にすることで完全に塗りつぶされます */
+    'wght' 330, /* 線の太さは標準で */
+    'GRAD' 0,
+    'opsz' 24;
+  
+  font-size: 45px;  /* カード用なので少し大きめに */
+  color:var(--primary-color);
+  transition: all 0.3s ease; /* アイコンの動きもぬるっと */
+}
+        
+/* カテゴリー名のスタイル */
+.cat-card span:last-child {
+    font-size: 14px;
+    color: #3a3531;
+}
+        
+/* ★マウスを乗せた時（ホバー）の演出 */
+.cat-card:hover .material-symbols-rounded {
+    color: #8c6e52;
+    transform: scale(1.15) translateY(-3px); /* ぬるっと拡大して少し浮く */
+}
 
 /* --- カタログ表示画面 --- */
 #catalog-view { display: none; }
