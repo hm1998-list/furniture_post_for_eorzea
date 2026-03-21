@@ -735,3 +735,22 @@ body {
     border-radius: 20px;
     /* ...その他のデザイン... */
 }
+
+/* パッチの区切り線のスタイル */
+.patch-separator {
+    grid-column: 1 / -1; /* グリッドの端から端まで突き抜ける設定 */
+    width: 100%;
+    padding: 10px 0 10px 10px;
+    margin-top: 10px;
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: var(--primary-color); /* テーマカラーに合わせる */
+    border-bottom: 2px solid rgba(125, 107, 93, 0.31); /* 下線を入れて区切りを強調 */
+    text-align: left;
+}
+
+.patch-separator span {
+    display: inline-block;
+    padding: 2px 0px;
+    border-radius: 4px;
+}
