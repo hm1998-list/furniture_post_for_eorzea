@@ -552,6 +552,7 @@ h1 {
 .thumb-nav {
     display: none; 
     gap: 10px;
+    margin-top: 15px; /* ★ここでメイン画像との「縦の距離」を調整します */
     justify-content: center;
     width: 100%;
     height: 70px;
