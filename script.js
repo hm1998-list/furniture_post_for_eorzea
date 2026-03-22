@@ -221,18 +221,24 @@ async function openModalByIdx(originalIdx) {
     }
     // ドット更新関数
     function updateDots(total, current) {
-        if (total <= 1) {
-            dotContainer.style.display = 'none';
-            return;
-        }
-        dotContainer.style.display = 'flex';
-        let dotsHtml = '';
-        for (let i = 0; i < total; i++) {
-            const icon = (i === current) ? 'fiber_manual_record' : 'circle';
-            dotsHtml += `<span class="material-symbols-rounded" style="font-size:10px; margin:0 3px; color:${i === current ? 'var(--primary-color)' : '#ccc'}">${icon}</span>`;
-        }
-        dotContainer.innerHTML = dotsHtml;
+    if (total <= 1) {
+        dotContainer.style.display = 'none';
+        return;
     }
+    dotContainer.style.display = 'flex';
+    let dotsHtml = '';
+    for (let i = 0; i < total; i++) {
+        // 現在のページ：塗りつぶし(circle) / それ以外：枠線のみ(panorama_fish_eye など)
+        // もしくは、両方塗りつぶし(circle)にして、色の濃淡で分けるのがAmazon風です
+        const isCurrent = (i === current);
+        const icon = 'circle'; // どちらも丸にする
+        const color = isCurrent ? 'var(--primary-color)' : '#e0e0e0'; // 現在地は濃く、他は薄いグレー
+        const size = isCurrent ? '10px' : '8px'; // 現在地を少しだけ大きくするとより親切です
+
+        dotsHtml += `<span class="material-symbols-rounded" style="font-size:${size}; margin:0 4px; color:${color}; transition: all 0.2s;">${icon}</span>`;
+    }
+    dotContainer.innerHTML = dotsHtml;
+}
 
 // デバイスごとの表示切り替え
     const prevBtn = document.querySelector('.nav-prev');
