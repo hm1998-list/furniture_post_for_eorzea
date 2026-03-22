@@ -874,7 +874,7 @@ h1 {
         height: auto !important;
         flex: 0 0 auto !important;
         border-right: none !important;
-        background: #fff !important;
+        background: #fdfaf3 !important;
         padding-bottom: 0 !important;
     }
     .thumb-nav {
@@ -887,7 +887,7 @@ h1 {
         justify-content: center;
         align-items: center;
         padding: 8px 0;
-        background: #fff;
+        background: #fdfaf3;
         border-bottom: 1px solid rgba(0,0,0,0.05);
     }
 
