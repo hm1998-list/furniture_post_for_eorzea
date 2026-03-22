@@ -245,22 +245,61 @@ async function openModalByIdx(originalIdx) {
             document.getElementById('modalPhoto').after(dotContainer);
             updateDots(foundCount, 0);
 
-            if (prevBtn) prevBtn.classList.add('semi-circle');
-            if (nextBtn) nextBtn.classList.add('semi-circle');
+        if (prevBtn && nextBtn) {
+                prevBtn.classList.add('semi-circle');
+                nextBtn.classList.add('semi-circle');
+                // 重要：既存の「次の家具へ」の動きを無効化し、「次の画像へ」に上書き
+                prevBtn.onclick = (e) => {
+                    e.stopPropagation(); // 親要素へのイベント伝播を止める
+                    let current = suffixList.findIndex(s => document.getElementById('mainModalImg').src.includes(`_${s}.webp`));
+                    // 実際に見つかった画像（foundCount分）の中でループさせる処理が必要ですが、
+                    // 一旦シンプルに「前の画像」を探す処理へ
+                    // ※簡易化のため、ここでは「画像の切り替え」に専念させます
+                    changeInternalImage(itemId, suffixList, -1, foundCount);
+                };
+                nextBtn.onclick = (e) => {
+                    e.stopPropagation();
+                    changeInternalImage(itemId, suffixList, 1, foundCount);
+                };
+            }
         } else {
-            // 【PC】サムネイルを表示し、ドットと半円ボタンを隠す
+            // 【PC】サムネイルを表示し、ドットと半円ボタンを隠す（元の挙動に戻す）
             thumbNav.style.display = 'flex';
             dotContainer.style.display = 'none';
 
-            if (prevBtn) prevBtn.classList.remove('semi-circle');
-            if (nextBtn) nextBtn.classList.remove('semi-circle');
+            if (prevBtn && nextBtn) {
+                prevBtn.classList.remove('semi-circle');
+                nextBtn.classList.remove('semi-circle');
+                // PC版は「次の家具・前の家具」の挙動に戻す
+                prevBtn.onclick = () => changeModalItem(-1);
+                nextBtn.onclick = () => changeModalItem(1);
+            }
         }
-    } else {
-        // 画像が1枚以下の場合はすべて非表示
-        thumbNav.style.display = 'none';
-        dotContainer.style.display = 'none';
-        if (prevBtn) prevBtn.classList.remove('semi-circle');
-        if (nextBtn) nextBtn.classList.remove('semi-circle');
+    }
+        
+// スマホ用：モーダル内の画像だけを切り替える関数
+    async function changeInternalImage(itemId, list, direction, total) {
+        const mainImg = document.getElementById('mainModalImg');
+        const currentSrc = mainImg.src;
+        
+        // 現在のサフィックスを特定
+        let currentIndex = -1;
+        const activeSuffixes = []; // 実際に存在するサフィックスだけのリストを作る
+        
+        // 存在する画像だけを抽出（同期的に判定し直すのは重いので、表示中の要素から判断）
+        const thumbs = document.querySelectorAll('.thumb-nav img');
+        thumbs.forEach((img, idx) => {
+            if (currentSrc.includes(img.src)) currentIndex = idx;
+        });
+
+        let nextIdx = (currentIndex + direction + thumbs.length) % thumbs.length;
+        const targetImg = thumbs[nextIdx];
+        
+        // 画像とドットとサムネイルのactive状態を更新
+        mainImg.src = targetImg.src;
+        updateDots(total, nextIdx);
+        thumbs.forEach(t => t.classList.remove('active'));
+        targetImg.classList.add('active');
     }
 
     document.getElementById('itemModal').classList.add('visible');
