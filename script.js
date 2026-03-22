@@ -183,7 +183,16 @@ async function openModalByIdx(originalIdx) {
 
     const suffixList = ['front', 'side', 'back', 'bottom', 'top', 'dye', 'night'];
     let foundCount = 0;
+    const isMobile = window.innerWidth <= 768; // スマホ判定
 
+    // 既存のドットがあれば削除
+    const oldDots = document.getElementById('modalDots');
+    if (oldDots) oldDots.remove();
+    
+    // ドット用コンテナを作成
+    const dotContainer = document.createElement('div');
+    dotContainer.id = 'modalDots';
+    
     for (const suffix of suffixList) {
         const imgUrl = `images/${itemId}_${suffix}.webp`;
         const exists = await new Promise(res => {
@@ -192,15 +201,21 @@ async function openModalByIdx(originalIdx) {
             img.onerror = () => res(false);
             img.src = imgUrl;
         });
+            
         if (exists) {
+            const currentIdx = foundCount;
             foundCount++;
+            
             const tImg = document.createElement('img');
             tImg.src = imgUrl;
             if (suffix === 'front') tImg.className = 'active';
+            
             tImg.onclick = () => {
                 document.getElementById('mainModalImg').src = imgUrl;
                 document.querySelectorAll('.thumb-nav img').forEach(el => el.classList.remove('active'));
                 tImg.classList.add('active');
+                // ドットを同期
+                updateDots(foundCount, currentIdx);
             };
             thumbNav.appendChild(tImg);
         }
@@ -209,6 +224,31 @@ async function openModalByIdx(originalIdx) {
     if (foundCount > 1) {
         bookRight.classList.add('has-multiple-thumbs');
         thumbNav.style.display = 'flex';
+    }
+
+    //ドット更新関数
+    function updateDots(total, current) {
+        if (total <= 1) return;
+        let dotsHtml = '';
+        for (let i = 0; i < total; i++) {
+            const icon = (i === current) ? 'fiber_manual_record' : 'circle';
+            dotsHtml += `<span class="material-symbols-rounded" style="font-size:10px; margin:0 3px; color:${i === current ? 'var(--primary-color)' : '#ccc'}">${icon}</span>`;
+        }
+        dotContainer.innerHTML = dotsHtml;
+    }
+
+// デバイスごとの表示切り替え
+    if (foundCount > 1) {
+        if (isMobile) {
+            thumbNav.style.display = 'none';   // スマホはサムネイルを隠す
+            // 画像エリア（modalPhoto）の直後にドットを挿入
+            document.getElementById('modalPhoto').after(dotContainer);
+            updateDots(foundCount, 0);
+        } else {
+            thumbNav.style.display = 'flex';   // PCはサムネイルを表示
+        }
+    } else {
+        thumbNav.style.display = 'none';
     }
 
     document.getElementById('itemModal').classList.add('visible');
