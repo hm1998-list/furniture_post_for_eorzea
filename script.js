@@ -690,18 +690,3 @@ function showAbout() {
     // ページトップへ戻す（任意）
     window.scrollTo(0, 0);
 }
-
-// セクション切り替えの関数を修正
-function showHome() {
-    const homeView = document.getElementById('home-view');
-    const catalogView = document.getElementById('catalog-view');
-    const aboutView = document.getElementById('about-view');
-
-    if (homeView) homeView.style.display = 'block';
-    if (catalogView) catalogView.style.display = 'none';
-    
-    // CSSの !important で隠している About を、確実に隠し続ける（または消す）
-    if (aboutView) {
-        aboutView.style.setProperty('display', 'none', 'important');
-    }
-}
