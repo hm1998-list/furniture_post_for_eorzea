@@ -965,9 +965,4 @@ h1 {
 
 /* --- 初期状態では絶対に表示させない要素 --- */
 
-/* --- 初回読み込み時のチラつきを完全に封じ込める --- */
-#modalDots, 
-.thumb-nav,
-#about-section {
-    display: none !important;
-}
+
