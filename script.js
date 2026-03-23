@@ -514,7 +514,31 @@ function updateTopTags() {
             html += `<div class="tag-chip ${active ? 'active' : ''}" onclick="filterBy('patch', '${p}')">Patch ${p}</div>`;
         });
     }
-    area.innerHTML = html;
+    if (!html) {
+        area.innerHTML = '';
+        return;
+    }
+    // ★ チップたちを包むコンテナと、その下に開閉バーを置く構造
+    area.innerHTML = `
+        <div id="sub-cat-container" class="sub-cat-content open">
+            ${html}
+        </div>
+        <div class="sub-cat-toggle-bar" onclick="toggleSubCategory()">
+            <i class="fa-solid fa-chevron-up" id="sub-cat-arrow"></i>
+        </div>
+    `;
+}
+
+// ★ 開閉用の関数
+function toggleSubCategory() {
+    const container = document.getElementById('sub-cat-container');
+    const arrow = document.getElementById('sub-cat-arrow');
+
+    // コンテナの開閉（ぬるっと動く用）
+    container.classList.toggle('open');
+    
+    // 矢印の回転用クラスを付け外し
+    arrow.classList.toggle('is-rotated');
 }
 
 function render() {
