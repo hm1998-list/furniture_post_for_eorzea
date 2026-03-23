@@ -255,48 +255,62 @@ async function openModalByIdx(originalIdx) {
     dotContainer.innerHTML = dotsHtml;
 }
 
-// デバイスごとの表示切り替え
+// --- 左右ボタンのイベント設定（215行目付近から差し替え） ---
     const prevBtn = document.querySelector('.nav-prev');
     const nextBtn = document.querySelector('.nav-next');
 
-    if (foundCount > 1) {
-        if (isMobile) {
-            // 【スマホ】サムネイルを隠し、ドットと半円ボタンを表示
-            thumbNav.style.display = 'none';
-            document.getElementById('modalPhoto').after(dotContainer);
-            updateDots(foundCount, 0);
-
-        if (prevBtn && nextBtn) {
-                prevBtn.classList.add('semi-circle');
-                nextBtn.classList.add('semi-circle');
-                // 重要：既存の「次の家具へ」の動きを無効化し、「次の画像へ」に上書き
-                prevBtn.onclick = (e) => {
-                    e.stopPropagation(); // 親要素へのイベント伝播を止める
-                    let current = suffixList.findIndex(s => document.getElementById('mainModalImg').src.includes(`_${s}.webp`));
-                    // 実際に見つかった画像（foundCount分）の中でループさせる処理が必要ですが、
-                    // 一旦シンプルに「前の画像」を探す処理へ
-                    // ※簡易化のため、ここでは「画像の切り替え」に専念させます
-                    changeInternalImage(itemId, suffixList, -1, foundCount);
-                };
-                nextBtn.onclick = (e) => {
-                    e.stopPropagation();
-                    changeInternalImage(itemId, suffixList, 1, foundCount);
-                };
+    if (prevBtn && nextBtn) {
+    if (foundCount > 1 && isMobile) {
+        // 【スマホかつ複数画像あり】
+        // 1. 半円デザインを適用
+        prevBtn.classList.add('semi-circle');
+        nextBtn.classList.add('semi-circle');
+        
+        // 2. スマホ版は「同じ家具内の画像切り替え」を優先
+        prevBtn.onclick = (e) => {
+            e.stopPropagation();
+            changeInternalImage(itemId, suffixList, -1, foundCount);
+        };
+        nextBtn.onclick = (e) => {
+            e.stopPropagation();
+            changeInternalImage(itemId, suffixList, 1, foundCount);
+        };
+    } else {
+        // 【PC版】または【スマホで画像が1枚しかない時】
+        // 1. 半円デザインを解除
+        prevBtn.classList.remove('semi-circle');
+        nextBtn.classList.remove('semi-circle');
+        
+        // 2. 「次の家具・前の家具」へ移動する（closeModalを挟まない！）
+        prevBtn.onclick = (e) => {
+            e.stopPropagation();
+            const idxInList = displayList.indexOf(item);
+            if (idxInList > 0) {
+                // 直接 openModalByIdx を呼ぶことで、Homeに戻らず切り替わる
+                openModalByIdx(allData.indexOf(displayList[idxInList - 1]));
             }
-        } else {
-            // 【PC】サムネイルを表示し、ドットと半円ボタンを隠す（元の挙動に戻す）
-            thumbNav.style.display = 'flex';
-            dotContainer.style.display = 'none';
-
-            if (prevBtn && nextBtn) {
-                prevBtn.classList.remove('semi-circle');
-                nextBtn.classList.remove('semi-circle');
-                // PC版は「次の家具・前の家具」の挙動に戻す
-                prevBtn.onclick = () => changeModalItem(-1);
-                nextBtn.onclick = () => changeModalItem(1);
+        };
+        nextBtn.onclick = (e) => {
+            e.stopPropagation();
+            const idxInList = displayList.indexOf(item);
+            if (idxInList < displayList.length - 1) {
+                openModalByIdx(allData.indexOf(displayList[idxInList + 1]));
             }
-        }
+        };
     }
+}
+
+// サムネイルとドットの表示制御
+if (foundCount > 1) {
+    if (isMobile) {
+        thumbNav.style.display = 'none';
+        if (!document.getElementById('modalDots')) document.getElementById('modalPhoto').after(dotContainer);
+        updateDots(foundCount, 0);
+    } else {
+        thumbNav.style.display = 'flex';
+        if (document.getElementById('modalDots')) document.getElementById('modalDots').style.display = 'none';
+    }
+}
         
 // スマホ用：モーダル内の画像だけを切り替える関数
     async function changeInternalImage(itemId, list, direction, total) {
