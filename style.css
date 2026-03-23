@@ -965,18 +965,9 @@ h1 {
 
 /* --- 初期状態では絶対に表示させない要素 --- */
 
-/* About Me セクション */
+/* --- 初回読み込み時のチラつきを完全に封じ込める --- */
+#modalDots, 
+.thumb-nav,
 #about-section {
     display: none !important;
-}
-
-/* モーダル内の動的要素（ドットやサムネイル） */
-#modalDots, 
-.thumb-nav {
-    display: none;
-}
-
-/* モーダル自体も最初は隠す（これはすでにあるかもしれませんが念のため） */
-#itemModal {
-    display: none;
 }
