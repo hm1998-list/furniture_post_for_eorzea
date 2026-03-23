@@ -175,7 +175,7 @@ h1 {
 .back-to-home { cursor: pointer; color: var(--primary-color); font-weight: bold; margin-bottom: 10px; display: inline-block; font-size: 0.9rem; }
 .tag-container { overflow-x: auto; white-space: nowrap; padding-bottom: 10px; scrollbar-width: none; }
 .tag-container::-webkit-scrollbar { display: none; } 
-.tag-area { display: inline-flex; gap: 8px; }
+.tag-area { display: inline-flex; gap: 8px;  margin-top: -15px ;}
 .tag-chip {
     padding: 8px 18px; background: white; border-radius: 20px;
     font-size: 0.8rem; cursor: pointer; border: 1px solid var(--sidebar-bg); 
@@ -1052,7 +1052,7 @@ h1 {
     align-items: center;
     cursor: pointer;
     border-radius: 8px;
-    margin-top: -15px;
+    margin-top: -4px;
     color: #7d6b5d;
     transition: background-color 0.4s;
 }
