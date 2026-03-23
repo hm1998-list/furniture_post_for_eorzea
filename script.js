@@ -691,19 +691,17 @@ function showAbout() {
     window.scrollTo(0, 0);
 }
 
+// セクション切り替えの関数を修正
 function showHome() {
-    const homeSection = document.getElementById('home-section');
-    const aboutSection = document.getElementById('about-section');
+    const homeView = document.getElementById('home-view');
+    const catalogView = document.getElementById('catalog-view');
+    const aboutView = document.getElementById('about-view');
 
-    if (homeSection) homeSection.style.display = 'block';
-    if (aboutSection) {
-        aboutSection.setAttribute('style', 'display: none !important');
-    }
+    if (homeView) homeView.style.display = 'block';
+    if (catalogView) catalogView.style.display = 'none';
     
-    if (window.innerWidth <= 768) {
-        const sidebar = document.getElementById('sidebar');
-        if (sidebar && sidebar.classList.contains('active')) {
-            toggleSidebar();
-        }
+    // CSSの !important で隠している About を、確実に隠し続ける（または消す）
+    if (aboutView) {
+        aboutView.style.setProperty('display', 'none', 'important');
     }
 }
