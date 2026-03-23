@@ -151,13 +151,14 @@ function loadMoreItems() {
 }
 
 async function openModalByIdx(originalIdx) {
-　　const thumbNav = document.querySelector('.thumb-nav');
-    const dotContainer = document.getElementById('modalDots');
-    const mainImg = document.getElementById('mainModalImg');
+　　const thumbContainer = document.querySelector('.thumb-nav');
+    if (thumbContainer) thumbContainer.innerHTML = ''; 
 
-    if (thumbNav) thumbNav.innerHTML = '';      // 前のサムネイルを消去
-    if (dotContainer) dotContainer.innerHTML = ''; // 前のドットを消去
-    if (mainImg) mainImg.src = '';              // 前の画像を一旦消して白紙に
+    const dotContainer = document.getElementById('modalDots');
+    if (dotContainer) dotContainer.innerHTML = '';
+
+    const mainImg = document.getElementById('mainModalImg');
+    if (mainImg) mainImg.src = '';
  
     currentModalIdx = originalIdx;
     const item = allData[originalIdx];
