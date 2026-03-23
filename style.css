@@ -963,6 +963,40 @@ h1 {
     }
 }
 
-/* --- 初期状態では絶対に表示させない要素 --- */
+/* --- ロード画面のスタイル --- */
+#loading-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.9); /* 黒に近い背景 */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999; /* 何よりも上に表示 */
+    transition: opacity 0.5s ease; /* 消える時のふわっと感 */
+}
 
+/* ぐるぐる本体 */
+.spinner {
+    width: 50px;
+    height: 50px;
+    border: 5px solid rgba(255, 255, 255, 0.1);
+    border-top: 5px solid var(--primary-color); /* サイトのメインカラーに合わせる */
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
 
+.loading-text {
+    color: white;
+    margin-top: 15px;
+    font-family: 'Patrick Hand', cursive; /* サイトで使っているフォント */
+    letter-spacing: 2px;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
