@@ -690,3 +690,33 @@ function showAbout() {
     // ページトップへ戻す（任意）
     window.scrollTo(0, 0);
 }
+
+window.onload = () => {
+    fetch(GAS_URL)
+        .then(res => res.json())
+        .then(data => {
+            // ...既存のフィルタリング処理...
+            let rawData = data.slice(1).reverse(); 
+            allData = rawData.filter(item => {
+                return item['画像UP済み'] === true || item['画像UP済み'] === "TRUE";
+            });
+
+            buildMenu();
+            buildHome();
+            showHome(); 
+
+            // --- 【追加】読み込みが終わったらロード画面を消す ---
+            const loader = document.getElementById('loading-screen');
+            if (loader) {
+                loader.style.opacity = '0'; // ふわっと消す
+                setTimeout(() => {
+                    loader.style.display = 'none'; // 完全に除去
+                }, 500); // transitionの時間と合わせる
+            }
+        })
+        .catch(e => {
+            console.error("データ取得エラー:", e);
+            // エラー時も幕が残り続けると何もできなくなるので消す
+            document.getElementById('loading-screen').style.display = 'none';
+        });
+};
