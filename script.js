@@ -151,14 +151,15 @@ function loadMoreItems() {
 }
 
 async function openModalByIdx(originalIdx) {
-　　const thumbContainer = document.querySelector('.thumb-nav');
-    if (thumbContainer) thumbContainer.innerHTML = ''; 
-
-    const dotContainer = document.getElementById('modalDots');
-    if (dotContainer) dotContainer.innerHTML = '';
-
-    const mainImg = document.getElementById('mainModalImg');
-    if (mainImg) mainImg.src = '';
+　　if (document.querySelector('.thumb-nav')) {
+        document.querySelector('.thumb-nav').innerHTML = '';
+    }
+    if (document.getElementById('modalDots')) {
+        document.getElementById('modalDots').innerHTML = '';
+    }
+    if (document.getElementById('mainModalImg')) {
+        document.getElementById('mainModalImg').src = '';
+    }
  
     currentModalIdx = originalIdx;
     const item = allData[originalIdx];
