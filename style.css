@@ -1052,7 +1052,7 @@ h1 {
     align-items: center;
     cursor: pointer;
     border-radius: 8px;
-    margin-top: 0px;
+    margin-top: -15px;
     color: #7d6b5d;
     transition: background-color 0.4s;
 }
