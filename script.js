@@ -667,3 +667,43 @@ function handleSwipe() {
         changeModalItem(1);
     }
 }
+
+// --- セクション切り替え用の関数 ---
+
+function showAbout() {
+    const homeSection = document.getElementById('home-section');
+    const aboutSection = document.getElementById('about-section');
+
+    if (homeSection) homeSection.style.display = 'none';
+    if (aboutSection) {
+        // CSSで !important をつけて隠している場合に対応
+        aboutSection.setAttribute('style', 'display: block !important');
+    }
+    
+    // スマホの場合はサイドバーを閉じる
+    if (window.innerWidth <= 768) {
+        const sidebar = document.getElementById('sidebar');
+        if (sidebar && sidebar.classList.contains('active')) {
+            toggleSidebar();
+        }
+    }
+    // ページトップへ戻す（任意）
+    window.scrollTo(0, 0);
+}
+
+function showHome() {
+    const homeSection = document.getElementById('home-section');
+    const aboutSection = document.getElementById('about-section');
+
+    if (homeSection) homeSection.style.display = 'block';
+    if (aboutSection) {
+        aboutSection.setAttribute('style', 'display: none !important');
+    }
+    
+    if (window.innerWidth <= 768) {
+        const sidebar = document.getElementById('sidebar');
+        if (sidebar && sidebar.classList.contains('active')) {
+            toggleSidebar();
+        }
+    }
+}
