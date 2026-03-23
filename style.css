@@ -962,3 +962,21 @@ h1 {
         background: rgba(125, 107, 93, 0.9) !important;
     }
 }
+
+/* --- 初期状態では絶対に表示させない要素 --- */
+
+/* About Me セクション */
+#about-section {
+    display: none !important;
+}
+
+/* モーダル内の動的要素（ドットやサムネイル） */
+#modalDots, 
+.thumb-nav {
+    display: none;
+}
+
+/* モーダル自体も最初は隠す（これはすでにあるかもしれませんが念のため） */
+#itemModal {
+    display: none;
+}
