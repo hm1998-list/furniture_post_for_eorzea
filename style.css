@@ -1074,6 +1074,12 @@ h1 {
     transform: rotate(180deg);
 }
 
+/* スマホ版のサイドバーメニューに対して */
+@media (max-width: 768px) {
+    .sidebar-content { /* サイドバーの中身を包んでいるクラス名に合わせてください */
+        padding-bottom: 80px; /* ★ここ！ブラウザのバーを避けるための余白 */
+    }
+}
 .sub-cat-toggle-bar:hover {
     background-color: #dcc6b6;
 }
