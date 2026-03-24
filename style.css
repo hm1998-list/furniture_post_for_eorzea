@@ -825,6 +825,9 @@ h1 {
         z-index: 5000 !important; transition: transform 0.3s ease !important;
         display: block !important;
     }
+    .sidebar { /* サイドバーの中身を包んでいるクラス名に合わせてください */
+        padding-bottom: 100px; 
+    }
     #sidebar.active { transform: translateX(260px) !important; }
     
     #sidebar-overlay.active {
@@ -1072,13 +1075,6 @@ h1 {
 /* 閉じている時は矢印を180度回転させる */
 .sub-cat-content:not(.open) + .sub-cat-toggle-bar #sub-cat-arrow {
     transform: rotate(180deg);
-}
-
-/* スマホ版のサイドバーメニューに対して */
-@media (max-width: 768px) {
-    .sidebar-content { /* サイドバーの中身を包んでいるクラス名に合わせてください */
-        padding-bottom: 80px; /* ★ここ！ブラウザのバーを避けるための余白 */
-    }
 }
 .sub-cat-toggle-bar:hover {
     background-color: #dcc6b6;
