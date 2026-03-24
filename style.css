@@ -824,7 +824,7 @@ h1 {
         width: 260px !important; height: 100vh !important;
         z-index: 5000 !important; transition: transform 0.3s ease !important;
         display: block !important;
-        padding-bottom: 100px !important; /* サイドバー自体の底上げ */
+        padding-bottom: 150px !important; /* サイドバー自体の底上げ */
         overflow-y: auto;}
 
     #sidebar.active { transform: translateX(260px) !important; }
