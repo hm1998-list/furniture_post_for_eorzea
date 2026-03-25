@@ -1075,6 +1075,61 @@ h1 {
 .sub-cat-content:not(.open) + .sub-cat-toggle-bar #sub-cat-arrow {
     transform: rotate(180deg);
 }
+
+/* カード全体を基準にする */
+.cheki-card {
+    position: relative !important;
+}
+
+/* ツールチップを表示するためのコンテナ */
+.tooltip-container, .flag-diamond {
+    position: relative; /* バッジ自体の並びは維持 */
+}
+
+/* ★ここが解決策のコア！ */
+.fixed-tooltip-content::after, 
+.tooltip-trigger::after {
+    content: attr(data-tooltip);
+    
+    /* 親（バッジ）の場所を無視して、カード基準で動くようにする */
+    position: absolute; 
+    
+    /* --- ここが「文字に合わせる」ポイント --- */
+    width: max-content;       /* 文字の長さに幅を合わせる */
+    max-width: 125px;         /* ただし、長すぎるときはここで改行させる */
+    white-space: normal;      /* 基本は改行しない */
+    /* max-widthに達したときだけ改行を許可する設定 */
+    overflow-wrap: break-word;
+
+    /* 【固定位置の指定】カードの左下からのpxで指定 */
+    /* これで、バッジが右にあっても左にあっても、表示場所はここになります */
+    bottom: 25px;  /* アイテム名の横あたりの高さ */
+    right: 0%;    /* カードの左端からの距離 */
+    
+    /* 45度回転している世界から「0度」に戻す */
+    /* bottom/leftで斜めに動く場合は、ここで -45deg を調整 */
+    transform: rotate(0deg) !important; 
+
+    /* --- 見た目（共通） --- */
+    background-color: rgba(0, 0, 0, 0.9);
+    color: #fff;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 11px;
+    text-align: center;
+    z-index: 10000;
+    
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.2s;
+}
+
+/* ホバーで表示 */
+.tooltip-container:hover .fixed-tooltip-content::after,
+.tooltip-trigger:hover::after {
+    opacity: 1;
+    visibility: visible;
+}
 .sub-cat-toggle-bar:hover {
     background-color: #dcc6b6;
 }
