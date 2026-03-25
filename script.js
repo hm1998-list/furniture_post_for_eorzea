@@ -149,8 +149,8 @@ function loadMoreItems() {
                 ${(pvpVal === 'あり') ? `<div class="tooltip-container"><div class="flag-diamond flag-pvp"><img src="ui/pvp.png" alt="PvP"></div>
                 <span class="fixed-tooltip-content" data-tooltip="PvP交換品"></span></div>` : ''}
                 
-                ${(battleVal === 'あり') ? `<div class="tooltip-container"><div class="flag-diamond flag-battle"><img src="ui/battle.png" alt="バトル"></div>
-                <span class="fixed-tooltip-content" data-tooltip="各種バトルコンテンツで入手可能"></span></div>` : ''}
+                ${(pveVal === 'あり') ? `<div class="tooltip-container"><div class="flag-diamond flag-drop"><img src="ui/drop.png" alt="PvE"></div>
+                <span class="fixed-tooltip-content" data-tooltip="ID、討滅戦、宝の地図、特殊フィールド探索等から入手可能"></span></div>` : ''}
                 ${(retainerVal === 'あり') ? `<div class="tooltip-container"><div class="flag-diamond flag-retainer"><img src="ui/rite.png" alt="リテイナー"></div>
                 <span class="fixed-tooltip-content" data-tooltip="リテイナーベンチャーで入手可能"></span></div>` : ''}
                 ${(voyageVal === 'あり') ? `<div class="tooltip-container"><div class="flag-diamond flag-voyage"><img src="ui/voyger.png" alt="潜水艦"></div>
