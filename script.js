@@ -134,13 +134,24 @@ function loadMoreItems() {
             </div>
             <p class="item-name">${item['アイテム名（日）'] || item.name}</p>
             <div class="card-flags">
-                ${(dyeVal && dyeVal !== '不可') ? '<div class="flag-diamond flag-dye"><img src="ui/dye.png" alt="染色"></div>' : ''}
-                ${(marketVal && marketVal !== '不可') ? '<div class="flag-diamond flag-market"><img src="ui/marketbord.png" alt="マケボ"></div>' : ''}
-                ${(craftVal && craftVal !== '-' && craftVal !== '不可' && craftVal !== '') ? '<div class="flag-diamond flag-craft"><img src="ui/craft.png" alt="製作"></div>' : ''}
-                ${(shopVal === 'あり') ? '<div class="flag-diamond flag-shop"><img src="ui/shop.png" alt="ショップ"></div>' : ''}
-                ${(battleVal === 'あり') ? '<div class="flag-diamond flag-battle"><img src="ui/battle.png" alt="バトルコンテンツ"></div>' : ''}
-                ${(retainerVal === 'あり') ? '<div class="flag-diamond flag-retainer"><img src="ui/rite.png" alt="リテイナー"></div>' : ''}
-                ${(voyageVal === 'あり') ? '<div class="flag-diamond flag-voyage"><img src="ui/voyger.png" alt="潜水艦"></div>' : ''}
+                ${(dyeVal && dyeVal !== '不可') ? `
+                <div class="tooltip-container"><div class="flag-diamond flag-dye"><img src="ui/dye.png" alt="染色"></div>
+                <span class="fixed-tooltip-content" data-tooltip="染色可能"></span></div>` : ''}
+                ${(marketVal && marketVal !== '不可') ? `
+                <div class="tooltip-container"><div class="flag-diamond flag-market"><img src="ui/marketbord.png" alt="マケボ"></div>
+                <span class="fixed-tooltip-content" data-tooltip="マケボ入手可能"></span></div>` : ''}
+                ${(craftVal && craftVal !== '-' && craftVal !== '不可' && craftVal !== '') ? `
+                <div class="tooltip-container"><div class="flag-diamond flag-craft"><img src="ui/craft.png" alt="製作"></div>
+                <span class="fixed-tooltip-content" data-tooltip="製作可能"></span></div>` : ''}
+                ${(shopVal === 'あり') ? `<div class="tooltip-container"><div class="flag-diamond flag-shop"><img src="ui/shop.png" alt="ショップ"></div>   
+                <span class="fixed-tooltip-content" data-tooltip="NPCショップで入手可能"></span></div>` : ''}
+                
+                ${(battleVal === 'あり') ? `<div class="tooltip-container"><div class="flag-diamond flag-battle"><img src="ui/battle.png" alt="バトル"></div>
+                <span class="fixed-tooltip-content" data-tooltip="ID等のバトルコンテンツで入手可能"></span></div>` : ''}
+                ${(retainerVal === 'あり') ? `<div class="tooltip-container"><div class="flag-diamond flag-retainer"><img src="ui/rite.png" alt="リテイナー"></div>
+                <span class="fixed-tooltip-content" data-tooltip="リテイナーベンチャーで入手可能"></span></div>` : ''}
+                ${(voyageVal === 'あり') ? `<div class="tooltip-container"><div class="flag-diamond flag-voyage"><img src="ui/voyger.png" alt="潜水艦"></div>
+                <span class="fixed-tooltip-content" data-tooltip="潜水艦で入手可能"></span></div>` : ''}
             </div>
         `;
         grid.appendChild(card);
