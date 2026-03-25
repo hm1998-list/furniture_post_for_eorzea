@@ -116,7 +116,8 @@ function loadMoreItems() {
         const marketVal = item['マケボ'] || item.market || item['マケボ取引'];
         const craftVal = item['製作'] || item.recipe || item['製作可否'];
         const shopVal = (item['ショップ'] || "").toString().trim();
-        const battleVal = (item['バトルコンテンツ'] || "").toString().trim();
+        const pvpVal = (item['PvP'] || "").toString().trim();
+        const pveVal = (item['PvE'] || "").toString().trim();
         const retainerVal = (item['リテイナー'] || "").toString().trim();
         const voyageVal = (item['潜水艦'] || "").toString().trim();    
         const itemId = item.ItemID || item['アイテムID'];
@@ -144,10 +145,12 @@ function loadMoreItems() {
                 <div class="tooltip-container"><div class="flag-diamond flag-craft"><img src="ui/craft.png" alt="製作"></div>
                 <span class="fixed-tooltip-content" data-tooltip="製作可能"></span></div>` : ''}
                 ${(shopVal === 'あり') ? `<div class="tooltip-container"><div class="flag-diamond flag-shop"><img src="ui/shop.png" alt="ショップ"></div>   
-                <span class="fixed-tooltip-content" data-tooltip="NPCショップで入手可能"></span></div>` : ''}
+                <span class="fixed-tooltip-content" data-tooltip="NPCショップで購入or交換"></span></div>` : ''}
+                ${(pvpVal === 'あり') ? `<div class="tooltip-container"><div class="flag-diamond flag-pvp"><img src="ui/pvp.png" alt="PvP"></div>
+                <span class="fixed-tooltip-content" data-tooltip="PvP交換品"></span></div>` : ''}
                 
                 ${(battleVal === 'あり') ? `<div class="tooltip-container"><div class="flag-diamond flag-battle"><img src="ui/battle.png" alt="バトル"></div>
-                <span class="fixed-tooltip-content" data-tooltip="ID等のバトルコンテンツで入手可能"></span></div>` : ''}
+                <span class="fixed-tooltip-content" data-tooltip="各種バトルコンテンツで入手可能"></span></div>` : ''}
                 ${(retainerVal === 'あり') ? `<div class="tooltip-container"><div class="flag-diamond flag-retainer"><img src="ui/rite.png" alt="リテイナー"></div>
                 <span class="fixed-tooltip-content" data-tooltip="リテイナーベンチャーで入手可能"></span></div>` : ''}
                 ${(voyageVal === 'あり') ? `<div class="tooltip-container"><div class="flag-diamond flag-voyage"><img src="ui/voyger.png" alt="潜水艦"></div>
