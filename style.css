@@ -451,9 +451,9 @@ h1 {
 .flag-craft {background: linear-gradient(135deg, #b091d2, #484e7c);}
 .flag-craft img {width: 20px; height: 20px; top: -3px; left: -1px;}
 .flag-drop {background: linear-gradient(135deg, #7d0f0f, #4e0114); width: 18px; height: 18px;}
-.flag-drop img {width: 25px; height: 25px; top: -1px; left: 1px;}    
+.flag-drop img {width: 25px; height: 25px; top: -1px; left: -1px;}    
 .flag-pvp {background: linear-gradient(135deg, #a52a2a, #800020); width: 18px; height: 18px;}
-.flag-pvp img {top: -1px;  left: 0px;}
+.flag-pvp img {top: 0px;  left: -1pxpx;}
 .flag-retainer {background: linear-gradient(135deg, #98a3ae, #36454f);}   
 .flag-retainer img {width: 23px; height: 23px;}   
 .flag-shop {background: linear-gradient(135deg, #ffcb4b, #c37547);}
