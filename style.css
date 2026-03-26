@@ -449,7 +449,7 @@ h1 {
 .flag-market {background: linear-gradient(135deg, #a2d149, #2e7d32);}
 .flag-dye img {width: 17px; height: 17px;}
 .flag-craft {background: linear-gradient(135deg, #b091d2, #484e7c);}
-.flag-craft img {width: 20px; height: 20px; top: -1px; left: -2px;}
+.flag-craft img {width: 25px; height: 25px; top: -1px; left: -2px;}
 .flag-drop {background: linear-gradient(135deg, #7d0f0f, #4e0114); width: 18px; height: 18px;}
 .flag-drop img {width: 25px; height: 25px; top: -1px; left: -1px;}    
 .flag-pvp {background: linear-gradient(135deg, #a52a2a, #800020); width: 18px; height: 18px;}
