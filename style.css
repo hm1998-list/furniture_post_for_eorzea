@@ -444,49 +444,18 @@ h1 {
 }
 
 /* 1. 染色可能 (水色〜濃い水色) ← ★色を変更しました */
-.flag-dye {
-    background: linear-gradient(135deg, #a0f0ff, #0099cc); /* 爽やかな水色のグラデーション */
-}
-.flag-dye img {
-    width: 17px;      /* アイコンのサイズ（枠に合わせて調整） */
-    height: 17px;
-}
-/* 2. マケボ可能 (黄緑〜緑) ← 色はそのまま */
-.flag-market {
-    background: linear-gradient(135deg, #a2d149, #2e7d32);
-}
+.flag-dye {background: linear-gradient(135deg, #a0f0ff, #0099cc); /* 爽やかな水色のグラデーション */}
+.flag-dye img {width: 17px; height: 17px;}
+.flag-market {background: linear-gradient(135deg, #a2d149, #2e7d32);}
+.flag-craft {background: linear-gradient(135deg, #b091d2, #484e7c);}
+.flag-craft img {width: 18px; height: 18px; position: relative; top: -2px; left: -1px;}
+.flag-pve {background: linear-gradient(135deg, #a52a2a, #800020); width: 18px; height: 18px; position: relative; top: 0px;  left: -1px;}
+.flag-pvp {background: linear-gradient(135deg, #a52a2a, #800020); width: 18px; height: 18px; position: relative; top: 0px;  left: -1px;}
+.flag-retainer {background: linear-gradient(135deg, #98a3ae, #36454f);}   
+.flag-shop {background: linear-gradient(135deg, #ffcb4b, #c37547);}
+.flag-shop img {width: 20px; height: 20px;}   
+.flag-voyage {background: linear-gradient(135deg, #1e40af, #030712);}
 
-/* 3. 製作可能 (紫〜紺) ← 色はそのまま */
-.flag-craft {
-    background: linear-gradient(135deg, #b091d2, #484e7c);
-}
-.flag-craft img {
-    width: 18px;      /* アイコンのサイズ（枠に合わせて調整） */
-    height: 18px;
-    position: relative;
-    top: -2px; 
-    left: -1px;
-}
-
-.flag-battle {
-    background: linear-gradient(135deg, #a52a2a, #800020);
-}
-    
-.flag-retainer {
-    background: linear-gradient(135deg, #98a3ae, #36454f);
-}
-    
-.flag-shop {
-    background: linear-gradient(135deg, #ffcb4b, #c37547);
-}
-.flag-shop img {
-    width: 20px;      /* アイコンのサイズ（枠に合わせて調整） */
-    height: 20px;
-}
-    
-.flag-voyage {
-    background: linear-gradient(135deg, #1e40af, #030712);
-}
 
 /* カード自体の設定に position: relative を追加（右下配置の基準にするため） */
 /* --- チェキカード自体の設定（下側のパディングを少し広げる） --- */
