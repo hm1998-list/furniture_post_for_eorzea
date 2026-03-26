@@ -449,11 +449,11 @@ h1 {
 .flag-market {background: linear-gradient(135deg, #a2d149, #2e7d32);}
 .flag-dye img {width: 17px; height: 17px;}
 .flag-craft {background: linear-gradient(135deg, #b091d2, #484e7c);}
-.flag-craft img {width: 20px; height: 20px; position: relative; top: -3px; left: 0px;}
+.flag-craft img {width: 20px; height: 20px; position: relative; top: -3px; left: 1px;}
 .flag-drop {background: linear-gradient(135deg, #7d0f0f, #4e0114); width: 18px; height: 18px;}
-.flag-drop img {width: 25px; height: 25px; position: relative; top: 2px; left: 0px;}   
+.flag-drop img {width: 25px; height: 25px; position: relative; top: 0px; left: 1px;}   
 .flag-pvp {background: linear-gradient(135deg, #a52a2a, #800020); width: 18px; height: 18px;}
-.flag-pvp img {position: relative; top: 0px;  left: -1px;}
+.flag-pvp img {position: relative; top: 0px;  left: 1px;}
 .flag-retainer {background: linear-gradient(135deg, #98a3ae, #36454f);}   
 .flag-retainer img {width: 23px; height: 23px;}   
 .flag-shop {background: linear-gradient(135deg, #ffcb4b, #c37547);}
