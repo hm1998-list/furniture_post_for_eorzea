@@ -1103,6 +1103,143 @@ h1 {
     opacity: 1;
     visibility: visible;
 }
+
+/* --- About Me 全体の部屋 --- */
+#about-view {
+    position: relative; /* 子要素の基準にする */
+    width: 100%;
+    height: 100vh; /* 画面いっぱいの高さ */
+    overflow: hidden; /* 部屋全体はスクロールさせない */
+    background-color: #f7f3e8; /* 以前相談した手紙に合う背景色 */
+}
+
+/* --- 1. 背面の固定文字 (Watermark) --- */
+.about-watermark {
+    position: fixed; /* ★画面に固定！ */
+    top: -47px;       /* 上からの位置（ヘッダーがあるなら調整） */
+    font-size: 9rem; /* 超巨大 */
+    font-weight: bold;
+    font-family: 'Patrick Hand', cursive; /* 手書き風 */
+    color: rgba(139, 121, 94, 0.17); /* ★超うすーいセピア色 */
+    white-space: nowrap; /* 改行しない */
+    z-index: 1; /* 手紙より下に置く */
+    pointer-events: none; /* 文字をクリックできないようにする（邪魔しない） */
+}
+
+/* --- 2. スクロールする手紙エリア（外箱） --- */
+.about-letter-scaler {
+    position: relative;
+    z-index: 2; 
+    height: 100%;
+    padding: 91px 40px;
+    
+    /* ★ここが重要！中身が溢れたらスクロールさせる */
+    overflow-y: auto; 
+    
+}
+
+/* --- 2. 手紙の本体 (Card) --- */
+.about-letter-card {
+    background: white;
+    max-width: 800px; /* 横に広がりすぎないように */
+    margin: 0 auto;  /* 中央寄せ */
+    padding: 50px;
+    border-radius: 8px; /* 角を少し丸める */
+    box-shadow: 0 10px 30px rgba(139, 121, 94, 0.1); /* ふんわりとした影 */
+}
+
+/* 手紙の中の見出しと本文 */
+.letter-title {
+    font-family: 'Noto Sans JP', sans-serif;
+    color: #8b795e;
+    border-bottom: 1px dashed #e2d7c5; /* 点線の区切り線 */
+    padding-bottom: 15px;
+    margin-bottom: 30px;
+}
+.letter-text {
+    color: #4a433b;
+    line-height: 2; /* 行間を広げて読みやすく */
+    font-size: 1rem;
+}
+
+.copyright-section {
+    margin-top: -50px;
+    padding-top: 25px;
+    font-style: italic; /* 少し斜体にするのもお洒落 */
+}
+
+/* styles.css に追加するとお洒落になる設定 */
+
+.how-to-item {
+    background-color: rgba(139, 121, 94, 0.03); /* ほんの少しだけ色をつける */
+    padding: 1px 17px 1px;
+    border-radius: 6px;
+    margin-top: 10px;
+}
+
+.how-to-item strong {
+    color: #a8756b;
+    line-height: 25px; /* 高さと同じ数値にすると、文字が上下中央にきます */
+    text-align: center; /* 左右中央 */
+}
+
+/* リンクなどがある場合の色（もし将来的にGitHubやXを載せるなら） */
+/* .letter-text a {
+    color: #5a79a5;
+    text-decoration: underline;
+    text-underline-offset: 4px;
+}*/
+
+.custom-form {
+    max-width: 500px;
+    margin: 0 auto;
+    text-align: left;
+}
+
+.form-group {
+    margin-bottom: 29px;
+}
+
+.form-group label {
+    display: block;
+    font-size: 0.9rem;
+    color: #666;
+    margin-bottom: 8px;
+}
+
+.form-group select,
+.form-group textarea {
+    width: 100%;
+    padding: 9px;
+    border: 1px solid #ddd; /* 画像のような薄いグレーの枠 */
+    border-radius: 4px;
+    background-color: #fff;
+    font-size: 1rem;
+    color: #333;
+    outline: none;
+    transition: border-color 0.3s;
+}
+
+.form-group select:focus,
+.form-group textarea:focus {
+    border-color: #7d6b5d; /* フォーカス時にサイトのアクセントカラーに */
+}
+
+.form-submit-btn {
+    background-color: #e0e0e0; /* 画像のような薄いグレー */
+    color: #666;
+    border: none;
+    padding: 10px 60px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background 0.3s, color 0.3s;
+}
+
+.form-submit-btn:hover {
+    background-color: #7f3030; /* ホバーで色が変わる */
+    color: #fff;
+}
 .sub-cat-toggle-bar:hover {
     background-color: #dcc6b6;
 }
