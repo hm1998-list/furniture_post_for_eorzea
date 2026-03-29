@@ -29,6 +29,12 @@ let isLoading = false;
 let currentModalIdx = -1;
 let latestPatch = "0";
 
+// 1. ページ読み込み時に実行される部分
+window.onload = function() {
+    // ここでスプレッドシートなどからデータを取ってくる処理があるはずです
+    // 例：fetchData(); 
+};
+
 // 2. データを「受け取った瞬間」に実行する関数（ここに追加！）
 function initData(data) {
     allData = data;
@@ -48,6 +54,31 @@ function normalizeText(str) {
         .replace(/[・\s　]/g, "") // 中点とスペースを完全に消去
         .toLowerCase(); // 英字を小文字に
 }
+
+window.onload = async function() {
+    const CACHE_KEY = 'eorzea_furniture_data_final_v2';
+    const cachedData = localStorage.getItem(CACHE_KEY);
+
+    if (cachedData) {
+        allData = JSON.parse(cachedData);
+        buildMenu();
+        buildHome();
+    } else {
+        try {
+            const response = await fetch(GAS_URL);
+            let data = await response.json();
+            let rawData = data.slice(1).reverse();
+            allData = rawData.filter(item => {
+                const id = item.ItemID || item['アイテムID'];
+                return id && id.toString().trim() !== "";
+            });
+            localStorage.setItem(CACHE_KEY, JSON.stringify(allData));
+            buildMenu();
+            buildHome();
+        } catch (e) { console.error("データ取得エラー:", e); }
+    }
+    showHome();
+};
 
 function formatPatch(p) {
     const s = p.toString().replace('Patch', '').trim();
@@ -85,8 +116,8 @@ function loadMoreItems() {
         const marketVal = item['マケボ'] || item.market || item['マケボ取引'];
         const craftVal = item['製作'] || item.recipe || item['製作可否'];
         const shopVal = (item['ショップ'] || "").toString().trim();
-        const pvpVal = (item.PvP || "").toString().trim();
-        const pveVal = (item.POSITIVE_INFINITY || "").toString().trim();
+        const pvpVal = (item['PvP'] || "").toString().trim();
+        const pveVal = (item['PvE'] || "").toString().trim();
         const retainerVal = (item['リテイナー'] || "").toString().trim();
         const voyageVal = (item['潜水艦'] || "").toString().trim();    
         const itemId = item.ItemID || item['アイテムID'];
@@ -100,28 +131,28 @@ function loadMoreItems() {
         card.innerHTML = `
             ${newBadge}
             <div class="photo-area" onclick="openModalByIdx(${allData.indexOf(item)})">
-                <img src="images/${itemId}_front.webp" class="slide-img active" onerror="this.src='https://placehold.jp/200x200?text=NoImage'" loading="lazy">
+                <img src="images/${itemId}_front.webp" class="slide-img active" onerror="this.src='https://placehold.jp/200x200?text=NoImage'">
             </div>
             <p class="item-name">${item['アイテム名（日）'] || item.name}</p>
             <div class="card-flags">
                 ${(dyeVal && dyeVal !== '不可') ? `
-                <div class="tooltip-container"><div class="flag-diamond flag-dye"><img src="ui/dye.png" alt="染色" loading="lazy"></div>
+                <div class="tooltip-container"><div class="flag-diamond flag-dye"><img src="ui/dye.png" alt="染色"></div>
                 <span class="fixed-tooltip-content" data-tooltip="染色可能"></span></div>` : ''}
                 ${(marketVal && marketVal !== '不可') ? `
-                <div class="tooltip-container"><div class="flag-diamond flag-market"><img src="ui/marketbord.png" alt="マケボ" loading="lazy"></div>
+                <div class="tooltip-container"><div class="flag-diamond flag-market"><img src="ui/marketbord.png" alt="マケボ"></div>
                 <span class="fixed-tooltip-content" data-tooltip="マケボ入手可能"></span></div>` : ''}
                 ${(craftVal && craftVal !== '-' && craftVal !== '不可' && craftVal !== '') ? `
-                <div class="tooltip-container"><div class="flag-diamond flag-craft"><img src="ui/craft.png" alt="製作" loading="lazy"></div>
+                <div class="tooltip-container"><div class="flag-diamond flag-craft"><img src="ui/craft.png" alt="製作"></div>
                 <span class="fixed-tooltip-content" data-tooltip="製作可能"></span></div>` : ''}
-                ${(shopVal === 'あり') ? `<div class="tooltip-container"><div class="flag-diamond flag-shop"><img src="ui/shop.png" alt="ショップ" loading="lazy"></div>   
+                ${(shopVal === 'あり') ? `<div class="tooltip-container"><div class="flag-diamond flag-shop"><img src="ui/shop.png" alt="ショップ"></div>   
                 <span class="fixed-tooltip-content" data-tooltip="NPCショップで購入or交換"></span></div>` : ''}
-                ${(pvpVal === 'あり') ? `<div class="tooltip-container"><div class="flag-diamond flag-pvp"><img src="ui/pvp.png" alt="PvP" loading="lazy"></div>
+                ${(pvpVal === 'あり') ? `<div class="tooltip-container"><div class="flag-diamond flag-pvp"><img src="ui/pvp.png" alt="PvP"></div>
                 <span class="fixed-tooltip-content" data-tooltip="PvP交換品"></span></div>` : ''}
-                ${(pveVal === 'あり') ? `<div class="tooltip-container"><div class="flag-diamond flag-drop"><img src="ui/drop.png" alt="PvE" loading="lazy"></div>
+                ${(pveVal === 'あり') ? `<div class="tooltip-container"><div class="flag-diamond flag-drop"><img src="ui/drop.png" alt="PvE"></div>
                 <span class="fixed-tooltip-content" data-tooltip="ID、討滅戦、宝の地図、特殊フィールド探索等から入手可能"></span></div>` : ''}
-                ${(retainerVal === 'あり') ? `<div class="tooltip-container"><div class="flag-diamond flag-retainer"><img src="ui/rite.png" alt="リテイナー" loading="lazy"></div>
+                ${(retainerVal === 'あり') ? `<div class="tooltip-container"><div class="flag-diamond flag-retainer"><img src="ui/rite.png" alt="リテイナー"></div>
                 <span class="fixed-tooltip-content" data-tooltip="リテイナーベンチャーで入手可能"></span></div>` : ''}
-                ${(voyageVal === 'あり') ? `<div class="tooltip-container"><div class="flag-diamond flag-voyage"><img src="ui/voyger.png" alt="潜水艦" loading="lazy"></div>
+                ${(voyageVal === 'あり') ? `<div class="tooltip-container"><div class="flag-diamond flag-voyage"><img src="ui/voyger.png" alt="潜水艦"></div>
                 <span class="fixed-tooltip-content" data-tooltip="潜水艦で入手可能"></span></div>` : ''}
             </div>
         `;
@@ -150,14 +181,14 @@ async function openModalByIdx(originalIdx) {
     document.getElementById('modalTitle').innerText = item['アイテム名（日）'] || item.name;
     document.getElementById('modalMainCategory').innerText = item.category || "";
     document.getElementById('modalSubCategory').innerText = item['FF14サブカテゴリー'] || "";
-    document.getElementById('modalDye').innerText = item.dyeable || item['染色'] || "不可";
-    document.getElementById('modalMarket').innerText = item.market || item['マケボ'] || "不可";
-    document.getElementById('modalCraft').innerText = item.recipe || item['製作'] || "-";
+    document.getElementById('modalDye').innerText = item['dyeable'] || item['染色'] || "不可";
+    document.getElementById('modalMarket').innerText = item['market'] || item['マケボ'] || "不可";
+    document.getElementById('modalCraft').innerText = item['recipe'] || item['製作'] || "-";
     document.getElementById('modalHowToGet').innerText = item['入手方法'] || "確認中";
-    document.getElementById('modalComment').innerText = item.note || "備考はありません";
+    document.getElementById('modalComment').innerText = item['note'] || "備考はありません";
 
     const photoArea = document.getElementById('modalPhoto');
-    photoArea.innerHTML = `<img src="images/${itemId}_front.webp" id="mainModalImg" onerror="this.src='https://placehold.jp/200x200?text=NoImage'" loading="lazy">`;
+    photoArea.innerHTML = `<img src="images/${itemId}_front.webp" id="mainModalImg" onerror="this.src='https://placehold.jp/200x200?text=NoImage'">`;
 
     // --- 左右切り替えボタンの表示制御 ---
     const idxInList = displayList.indexOf(item);
@@ -186,33 +217,31 @@ async function openModalByIdx(originalIdx) {
     const isMobile = window.innerWidth <= 768;
 
     for (const suffix of suffixList) {
-    const imgUrl = `images/${itemId}_${suffix}.webp`;
-    
-    const tImg = document.createElement('img');
-    tImg.src = imgUrl;
-    tImg.loading = "lazy";
+        const imgUrl = `images/${itemId}_${suffix}.webp`;
+        const exists = await new Promise(res => {
+            const img = new Image();
+            img.onload = () => res(true);
+            img.onerror = () => res(false);
+            img.src = imgUrl;
+        });
 
-    tImg.onload = () => {
-        if (suffix === 'front') tImg.className = 'active';
+        if (exists) {
+            const currentIdx = foundCount;
+            foundCount++;
 
-    // 2. もし画像が存在しなかったら、その場で自分を消す
-        tImg.onerror = () => {
-            tImg.remove();
-    };
+            const tImg = document.createElement('img');
+            tImg.src = imgUrl;
+            if (suffix === 'front') tImg.className = 'active';
 
-    tImg.onclick = () => {
-            document.getElementById('mainModalImg').src = imgUrl;
-            document.querySelectorAll('.thumb-nav img').forEach(el => el.classList.remove('active'));
-            tImg.classList.add('active');
-            // updateDotsなどは、ここですべてのサムネイルの数を数え直すと確実です
-            const allThumbs = document.querySelectorAll('.thumb-nav img');
-            updateDots(allThumbs.length, Array.from(allThumbs).indexOf(tImg));
-        };
-        thumbNav.appendChild(tImg);
-    };
-    tImg.onerror = () => {
-    };
-}
+            tImg.onclick = () => {
+                document.getElementById('mainModalImg').src = imgUrl;
+                document.querySelectorAll('.thumb-nav img').forEach(el => el.classList.remove('active'));
+                tImg.classList.add('active');
+                updateDots(foundCount, currentIdx);
+            };
+            thumbNav.appendChild(tImg);
+        }
+    }
     // ドット更新関数
     function updateDots(total, current) {
     if (total <= 1) {
@@ -728,54 +757,34 @@ function showAbout() {
     }
 }
 
-window.onload = async function() {
-    const CACHE_KEY = 'eorzea_furniture_data_final_v2';
-    const loader = document.getElementById('loading-screen');
-    const cachedData = localStorage.getItem(CACHE_KEY);
-
-    // ロード画面を消す関数（共通化）
-    const hideLoader = () => {
-        if (loader) {
-            loader.style.opacity = '0';
-            setTimeout(() => { loader.style.display = 'none'; }, 500);
-        }
-    };
-
-    if (cachedData) {
-        // 【1】キャッシュがある場合：即座に表示して幕を引く
-        console.log("キャッシュから読み込みます");
-        allData = JSON.parse(cachedData);
-        showHome();
-        hideLoader();
-        buildMenu();
-        buildHome();
-        
-    } else {
-        // 【2】キャッシュがない場合：GASから取ってくる
-        try {
-            console.log("GASからデータを取得します");
-            const response = await fetch(GAS_URL);
-            const data = await response.json();
-            
-            let rawData = data.slice(1).reverse();
-            // IDチェックと画像UP済みチェックを同時に行う
+window.onload = () => {
+    fetch(GAS_URL)
+        .then(res => res.json())
+        .then(data => {
+            // ...既存のフィルタリング処理...
+            let rawData = data.slice(1).reverse(); 
             allData = rawData.filter(item => {
-                const id = item.ItemID || item['アイテムID'];
-                const isUploaded = item['画像UP済み'] === true || item['画像UP済み'] === "TRUE";
-                return id && id.toString().trim() !== "" && isUploaded;
+                return item['画像UP済み'] === true || item['画像UP済み'] === "TRUE";
             });
 
-            localStorage.setItem(CACHE_KEY, JSON.stringify(allData));
-            
             buildMenu();
             buildHome();
-            showHome();
-            hideLoader();
-        } catch (e) {
+            showHome(); 
+
+            // --- 【追加】読み込みが終わったらロード画面を消す ---
+            const loader = document.getElementById('loading-screen');
+            if (loader) {
+                loader.style.opacity = '0'; // ふわっと消す
+                setTimeout(() => {
+                    loader.style.display = 'none'; // 完全に除去
+                }, 500); // transitionの時間と合わせる
+            }
+        })
+        .catch(e => {
             console.error("データ取得エラー:", e);
-            hideLoader(); // エラーでも幕は消す
-        }
-    }
+            // エラー時も幕が残り続けると何もできなくなるので消す
+            document.getElementById('loading-screen').style.display = 'none';
+        });
 };
 
 document.getElementById('message-form').addEventListener('submit', function(e) {
