@@ -419,6 +419,8 @@ function showHome() {
 
     document.getElementById('btn-home').classList.add('active');
     document.getElementById('btn-about').classList.remove('active');
+    
+    history.pushState({ page: 'home' }, '', './');
 }
 
 function buildMenu() {
@@ -716,7 +718,7 @@ function showAbout() {
     const aboutView = document.getElementById('about-view');
 
     // 1. Homeを隠す
-    if (homeView) homeView.style.display = 'none'; 
+    if (homeView) homeView.style.display = 'none';
     // 2. カタログ（家具一覧）を隠す
     if (catalogView) catalogView.style.display = 'none';
     // 3. Aboutを表示する
@@ -732,6 +734,7 @@ function showAbout() {
     }
     // ページトップへ戻す（任意）
     window.scrollTo(0, 0);
+    history.pushState({ page: 'about' }, '', '#about');
 }
 
 window.onload = () => {
@@ -794,4 +797,21 @@ document.getElementById('message-form').addEventListener('submit', function(e) {
         submitBtn.innerText = "送信";
         submitBtn.disabled = false;
     });
+});
+// ブラウザの戻る・進むボタンが押された時の処理
+window.addEventListener('popstate', function(e) {
+    // 履歴（state）の中に保存した 'page' のデータがあるか確認
+    if (e.state && e.state.page) {
+        if (e.state.page === 'home') {
+            // ここで showHome() を呼ぶと、また履歴が追加されてしまうので
+            // 表示だけを切り替える処理を行うのが理想的ですが、
+            // まずはシンプルに既存の関数を呼んで動きを確認しましょう！
+            showHome(); 
+        } else if (e.state.page === 'about') {
+            showAbout();
+        }
+    } else {
+        // 履歴がない（最初の状態）場合は Home を出す
+        showHome();
+    }
 });
