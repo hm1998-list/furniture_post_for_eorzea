@@ -411,7 +411,6 @@ if (foundCount > 1) {
     const photoArea = document.querySelector('.book-right');
     if (!document.getElementById('modalDots')) photoArea.appendChild(dotContainer);
     }
-}
 
 function changeModalItem(dir) {
     const currentItem = allData[currentModalIdx];
