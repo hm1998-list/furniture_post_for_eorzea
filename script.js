@@ -116,8 +116,8 @@ function loadMoreItems() {
         const marketVal = item['マケボ'] || item.market || item['マケボ取引'];
         const craftVal = item['製作'] || item.recipe || item['製作可否'];
         const shopVal = (item['ショップ'] || "").toString().trim();
-        const pvpVal = (item['PvP'] || "").toString().trim();
-        const pveVal = (item['PvE'] || "").toString().trim();
+        const pvpVal = (item.PvP || "").toString().trim();
+        const pveVal = (item.POSITIVE_INFINITY || "").toString().trim();
         const retainerVal = (item['リテイナー'] || "").toString().trim();
         const voyageVal = (item['潜水艦'] || "").toString().trim();    
         const itemId = item.ItemID || item['アイテムID'];
@@ -181,11 +181,11 @@ async function openModalByIdx(originalIdx) {
     document.getElementById('modalTitle').innerText = item['アイテム名（日）'] || item.name;
     document.getElementById('modalMainCategory').innerText = item.category || "";
     document.getElementById('modalSubCategory').innerText = item['FF14サブカテゴリー'] || "";
-    document.getElementById('modalDye').innerText = item['dyeable'] || item['染色'] || "不可";
-    document.getElementById('modalMarket').innerText = item['market'] || item['マケボ'] || "不可";
-    document.getElementById('modalCraft').innerText = item['recipe'] || item['製作'] || "-";
+    document.getElementById('modalDye').innerText = item.dyeable || item['染色'] || "不可";
+    document.getElementById('modalMarket').innerText = item.market || item['マケボ'] || "不可";
+    document.getElementById('modalCraft').innerText = item.recipe || item['製作'] || "-";
     document.getElementById('modalHowToGet').innerText = item['入手方法'] || "確認中";
-    document.getElementById('modalComment').innerText = item['note'] || "備考はありません";
+    document.getElementById('modalComment').innerText = item.note || "備考はありません";
 
     const photoArea = document.getElementById('modalPhoto');
     photoArea.innerHTML = `<img src="images/${itemId}_front.webp" id="mainModalImg" onerror="this.src='https://placehold.jp/200x200?text=NoImage'" loading="lazy">`;
@@ -221,14 +221,14 @@ async function openModalByIdx(originalIdx) {
     
     // 1. 最初からimg要素を作ってしまう（existsを待たない）
     const tImg = document.createElement('img');
-    tImg.src = imgUrl;
-    tImg.loading = "lazy"; // ここでも遅延読み込みを忘れずに！
+        tImg.src = imgUrl;
+        tImg.loading = "lazy"; // ここでも遅延読み込みを忘れずに！
 
     if (suffix === 'front') tImg.className = 'active';
 
     // 2. もし画像が存在しなかったら、その場で自分を消す
-    tImg.onerror = () => {
-        tImg.remove();
+        tImg.onerror = () => {
+            tImg.remove();
     };
 
     // 3. クリックイベントなどはそのまま
