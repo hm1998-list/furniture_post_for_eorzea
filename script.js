@@ -725,7 +725,6 @@ function showAbout() {
     }
 }
 
-// 全てを1つに統合！
 window.onload = async function() {
     const CACHE_KEY = 'eorzea_furniture_data_final_v2';
     const loader = document.getElementById('loading-screen');
@@ -743,10 +742,11 @@ window.onload = async function() {
         // 【1】キャッシュがある場合：即座に表示して幕を引く
         console.log("キャッシュから読み込みます");
         allData = JSON.parse(cachedData);
+        showHome();
+        hideLoader();
         buildMenu();
         buildHome();
-        showHome();
-        hideLoader(); // キャッシュがあれば一瞬で消える！
+        
     } else {
         // 【2】キャッシュがない場合：GASから取ってくる
         try {
