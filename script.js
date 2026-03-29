@@ -217,31 +217,30 @@ async function openModalByIdx(originalIdx) {
     const isMobile = window.innerWidth <= 768;
 
     for (const suffix of suffixList) {
-        const imgUrl = `images/${itemId}_${suffix}.webp`;
-        const exists = await new Promise(res => {
-            const img = new Image();
-            img.onload = () => res(true);
-            img.onerror = () => res(false);
-            img.src = imgUrl;
-        });
+    const imgUrl = `images/${itemId}_${suffix}.webp`;
+    
+    // 1. 最初からimg要素を作ってしまう（existsを待たない）
+    const tImg = document.createElement('img');
+    tImg.src = imgUrl;
+    tImg.loading = "lazy"; // ここでも遅延読み込みを忘れずに！
 
-        if (exists) {
-            const currentIdx = foundCount;
-            foundCount++;
+    if (suffix === 'front') tImg.className = 'active';
 
-            const tImg = document.createElement('img');
-            tImg.src = imgUrl;
-            if (suffix === 'front') tImg.className = 'active';
+    // 2. もし画像が存在しなかったら、その場で自分を消す
+    tImg.onerror = () => {
+        tImg.remove();
+    };
 
-            tImg.onclick = () => {
-                document.getElementById('mainModalImg').src = imgUrl;
-                document.querySelectorAll('.thumb-nav img').forEach(el => el.classList.remove('active'));
-                tImg.classList.add('active');
-                updateDots(foundCount, currentIdx);
-            };
-            thumbNav.appendChild(tImg);
-        }
-    }
+    // 3. クリックイベントなどはそのまま
+    tImg.onclick = () => {
+        document.getElementById('mainModalImg').src = imgUrl;
+        document.querySelectorAll('.thumb-nav img').forEach(el => el.classList.remove('active'));
+        tImg.classList.add('active');
+        // updateDots(foundCount, currentIdx); // カウントが動的な場合はここを調整
+    };
+
+    thumbNav.appendChild(tImg);
+}
     // ドット更新関数
     function updateDots(total, current) {
     if (total <= 1) {
