@@ -412,9 +412,13 @@ function buildHome() {
 }
 
 
-function showHome() { 
-    document.getElementById('home-view').style.display='block'; 
-    document.getElementById('catalog-view').style.display='none'; 
+function showHome() {
+    document.getElementById('home-view').style.display = 'block';
+    document.getElementById('catalog-view').style.display = 'none';
+    document.getElementById('about-view').style.display = 'none'; // これを追記
+
+    document.getElementById('btn-home').classList.add('active');
+    document.getElementById('btn-about').classList.remove('active');
 }
 
 function buildMenu() {
@@ -704,19 +708,21 @@ function handleSwipe() {
         changeModalItem(1);
     }
 }
-
 // --- セクション切り替え用の関数 ---
-
 function showAbout() {
-    const homeSection = document.getElementById('home-section');
-    const aboutSection = document.getElementById('about-section');
+    // HTMLにある実際のIDを捕まえる
+    const homeView = document.getElementById('home-view');
+    const catalogView = document.getElementById('catalog-view');
+    const aboutView = document.getElementById('about-view');
 
-    if (homeSection) homeSection.style.display = 'none';
-    if (aboutSection) {
-        // CSSで !important をつけて隠している場合に対応
-        aboutSection.setAttribute('style', 'display: block !important');
+    // 1. Homeを隠す
+    if (homeView) homeView.style.display = 'none'; 
+    // 2. カタログ（家具一覧）を隠す
+    if (catalogView) catalogView.style.display = 'none';
+    // 3. Aboutを表示する
+    if (aboutView) {
+        aboutView.style.setProperty('display', 'block', 'important');
     }
-
     // スマホの場合はサイドバーを閉じる
     if (window.innerWidth <= 768) {
         const sidebar = document.getElementById('sidebar');
