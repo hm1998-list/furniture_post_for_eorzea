@@ -29,12 +29,6 @@ let isLoading = false;
 let currentModalIdx = -1;
 let latestPatch = "0";
 
-// 1. ページ読み込み時に実行される部分
-window.onload = function() {
-    // ここでスプレッドシートなどからデータを取ってくる処理があるはずです
-    // 例：fetchData(); 
-};
-
 // 2. データを「受け取った瞬間」に実行する関数（ここに追加！）
 function initData(data) {
     allData = data;
@@ -57,27 +51,57 @@ function normalizeText(str) {
 
 window.onload = async function() {
     const CACHE_KEY = 'eorzea_furniture_data_final_v2';
+    const loader = document.getElementById('loading-screen');
     const cachedData = localStorage.getItem(CACHE_KEY);
 
+    // ロード画面を消す共通関数
+    const hideLoader = () => {
+        if (loader) {
+            loader.style.opacity = '0';
+            setTimeout(() => { loader.style.display = 'none'; }, 500);
+        }
+    };
+
     if (cachedData) {
+        // --- 【パターンA】キャッシュがある場合：即座に表示 ---
+        console.log("Using cached data");
         allData = JSON.parse(cachedData);
+        
+        // 画面を作る（この順序が大事！）
         buildMenu();
         buildHome();
+        showHome();
+        
+        // すぐに幕を引く
+        hideLoader();
     } else {
+        // --- 【パターンB】初回：GASからデータを取得 ---
         try {
+            console.log("Fetching from GAS...");
             const response = await fetch(GAS_URL);
-            let data = await response.json();
+            const data = await response.json();
+            
+            // データの整形（リバースして有効なIDのみ抽出）
             let rawData = data.slice(1).reverse();
             allData = rawData.filter(item => {
                 const id = item.ItemID || item['アイテムID'];
-                return id && id.toString().trim() !== "";
+                const isUploaded = item['画像UP済み'] === true || item['画像UP済み'] === "TRUE";
+                return id && id.toString().trim() !== "" && isUploaded;
             });
+
+            // 次回のために保存
             localStorage.setItem(CACHE_KEY, JSON.stringify(allData));
+            
             buildMenu();
             buildHome();
-        } catch (e) { console.error("データ取得エラー:", e); }
+            showHome();
+            hideLoader();
+        } catch (e) {
+            console.error("Data Fetch Error:", e);
+            // エラー時も操作不能にならないよう幕を消す
+            hideLoader();
+        }
     }
-    showHome();
 };
 
 function formatPatch(p) {
@@ -164,20 +188,17 @@ function loadMoreItems() {
 }
 
 async function openModalByIdx(originalIdx) {
-　　if (document.querySelector('.thumb-nav')) {
-        document.querySelector('.thumb-nav').innerHTML = '';
-    }
-    if (document.getElementById('modalDots')) {
-        document.getElementById('modalDots').innerHTML = '';
-    }
-    if (document.getElementById('mainModalImg')) {
-        document.getElementById('mainModalImg').src = '';
-    }
+    // 1. お掃除
+    if (document.querySelector('.thumb-nav')) document.querySelector('.thumb-nav').innerHTML = '';
+    const oldDots = document.getElementById('modalDots');
+    if (oldDots) oldDots.remove();
+    if (document.getElementById('mainModalImg')) document.getElementById('mainModalImg').src = '';
 
     currentModalIdx = originalIdx;
     const item = allData[originalIdx];
     const itemId = item.ItemID || item['アイテムID'];
 
+    // 2. テキスト情報のセット
     document.getElementById('modalTitle').innerText = item['アイテム名（日）'] || item.name;
     document.getElementById('modalMainCategory').innerText = item.category || "";
     document.getElementById('modalSubCategory').innerText = item['FF14サブカテゴリー'] || "";
@@ -187,15 +208,18 @@ async function openModalByIdx(originalIdx) {
     document.getElementById('modalHowToGet').innerText = item['入手方法'] || "確認中";
     document.getElementById('modalComment').innerText = item['note'] || "備考はありません";
 
+    // 3. メイン画像エリアの初期化
     const photoArea = document.getElementById('modalPhoto');
-    photoArea.innerHTML = `<img src="images/${itemId}_front.webp" id="mainModalImg" onerror="this.src='https://placehold.jp/200x200?text=NoImage'">`;
+    photoArea.innerHTML = `<img src="images/${itemId}_front.webp" id="mainModalImg" onerror="this.src='https://placehold.jp/200x200?text=NoImage'" loading="lazy">`;
 
-    // --- 左右切り替えボタンの表示制御 ---
+    // 4. ナビゲーション（左右ボタン）の準備
     const idxInList = displayList.indexOf(item);
-    // 最初のアイテムならPrevを隠す、最後ならNextを隠す
-    document.querySelector('.nav-prev').style.display = (idxInList > 0) ? 'flex' : 'none';
-    document.querySelector('.nav-next').style.display = (idxInList < displayList.length - 1) ? 'flex' : 'none';
+    const prevBtn = document.querySelector('.nav-prev');
+    const nextBtn = document.querySelector('.nav-next');
+    if (prevBtn) prevBtn.style.display = (idxInList > 0) ? 'flex' : 'none';
+    if (nextBtn) nextBtn.style.display = (idxInList < displayList.length - 1) ? 'flex' : 'none';
 
+    // 5. サムネイルとドットの準備
     const bookRight = document.querySelector('.book-right');
     bookRight.classList.remove('has-multiple-thumbs');
     let thumbNav = document.querySelector('.thumb-nav') || document.createElement('div');
@@ -204,70 +228,87 @@ async function openModalByIdx(originalIdx) {
     thumbNav.innerHTML = '';
     thumbNav.style.display = 'none';
 
-    // 1. 既存のドットやナビを掃除（二重表示防止）
-    const oldDots = document.getElementById('modalDots');
-    if (oldDots) oldDots.remove();
-
-    // 2. ドット用コンテナ作成
     const dotContainer = document.createElement('div');
     dotContainer.id = 'modalDots';
 
+    // 6. 画像の動的読み込みとイベント設定
     const suffixList = ['front', 'side', 'back', 'bottom', 'top', 'dye', 'night'];
-    let foundCount = 0;
     const isMobile = window.innerWidth <= 768;
+
+    // ドットを更新する内部関数
+    const refreshDots = () => {
+        const allThumbs = Array.from(thumbNav.querySelectorAll('img'));
+        const activeIdx = allThumbs.findIndex(img => img.classList.contains('active'));
+        if (allThumbs.length > 1) {
+            if (isMobile) {
+                if (!document.getElementById('modalDots')) document.getElementById('modalPhoto').after(dotContainer);
+                updateDots(allThumbs.length, activeIdx >= 0 ? activeIdx : 0);
+            } else {
+                thumbNav.style.display = 'flex';
+            }
+        }
+    };
 
     for (const suffix of suffixList) {
         const imgUrl = `images/${itemId}_${suffix}.webp`;
-        const exists = await new Promise(res => {
-            const img = new Image();
-            img.onload = () => res(true);
-            img.onerror = () => res(false);
-            img.src = imgUrl;
-        });
+        const tImg = document.createElement('img');
+        tImg.src = imgUrl;
+        tImg.loading = "lazy";
 
-        if (exists) {
-            const currentIdx = foundCount;
-            foundCount++;
-
-            const tImg = document.createElement('img');
-            tImg.src = imgUrl;
+        tImg.onload = () => {
             if (suffix === 'front') tImg.className = 'active';
 
             tImg.onclick = () => {
                 document.getElementById('mainModalImg').src = imgUrl;
-                document.querySelectorAll('.thumb-nav img').forEach(el => el.classList.remove('active'));
+                thumbNav.querySelectorAll('img').forEach(el => el.classList.remove('active'));
                 tImg.classList.add('active');
-                updateDots(foundCount, currentIdx);
+                refreshDots();
             };
+
             thumbNav.appendChild(tImg);
-        }
+            if (thumbNav.children.length > 1) {
+                bookRight.classList.add('has-multiple-thumbs');
+            }
+            refreshDots();
+        };
+
+        tImg.onerror = () => { tImg.remove(); refreshDots(); };
     }
-    // ドット更新関数
+
+    // 7. 左右ボタンの挙動を確定
+    if (prevBtn && nextBtn) {
+        // PC/スマホ共通で「次の家具/前の家具」へ移動
+        // ※スマホ専用の「内部画像切り替え」が必要な場合はここを調整
+        prevBtn.onclick = (e) => {
+            e.stopPropagation();
+            if (idxInList > 0) openModalByIdx(allData.indexOf(displayList[idxInList - 1]));
+        };
+        nextBtn.onclick = (e) => {
+            e.stopPropagation();
+            if (idxInList < displayList.length - 1) openModalByIdx(allData.indexOf(displayList[idxInList + 1]));
+        };
+    }
+
+    // ドット表示用の既存関数を利用
     function updateDots(total, current) {
-    if (total <= 1) {
-        dotContainer.style.display = 'none';
-        return;
+        if (total <= 1) {
+            dotContainer.style.display = 'none';
+            return;
+        }
+        dotContainer.style.display = 'flex';
+        let dotsHtml = '';
+        for (let i = 0; i < total; i++) {
+            const isCurrent = (i === current);
+            const fillValue = isCurrent ? 1 : 0;
+            const color = isCurrent ? 'var(--primary-color)' : '#999';
+            const opacity = isCurrent ? '1' : '0.5';
+            dotsHtml += `<span class="material-symbols-rounded" style="font-size:10px; margin:0 4px; color:${color}; opacity:${opacity}; font-variation-settings: 'FILL' ${fillValue}, 'wght' 400; transition: all 0.2s ease;">circle</span>`;
+        }
+        dotContainer.innerHTML = dotsHtml;
     }
-    dotContainer.style.display = 'flex';
-    let dotsHtml = '';
-    for (let i = 0; i < total; i++) {
-        const isCurrent = (i === current);
 
-        // 現在地だけ「FILL: 1」で塗りつぶし、他は「FILL: 0」で白抜きにする
-        const fillValue = isCurrent ? 1 : 0;
-        const color = isCurrent ? 'var(--primary-color)' : '#999';
-        const opacity = isCurrent ? '1' : '0.5';
-
-        dotsHtml += `<span class="material-symbols-rounded" 
-            style="font-size:10px; margin:0 4px; color:${color}; opacity:${opacity};
-            font-variation-settings: 'FILL' ${fillValue}, 'wght' 400, 'GRAD' 0, 'opsz' 24; 
-            transition: all 0.2s ease;">
-            circle
-        </span>`;
-    }
-    dotContainer.innerHTML = dotsHtml;
+    document.getElementById('itemModal').classList.add('visible');
 }
-
 // --- 左右ボタンのイベント設定（215行目付近から差し替え） ---
     const prevBtn = document.querySelector('.nav-prev');
     const nextBtn = document.querySelector('.nav-next');
@@ -756,37 +797,6 @@ function showAbout() {
         history.pushState({ page: 'about' }, '', '#about');
     }
 }
-
-window.onload = () => {
-    fetch(GAS_URL)
-        .then(res => res.json())
-        .then(data => {
-            // ...既存のフィルタリング処理...
-            let rawData = data.slice(1).reverse(); 
-            allData = rawData.filter(item => {
-                return item['画像UP済み'] === true || item['画像UP済み'] === "TRUE";
-            });
-
-            buildMenu();
-            buildHome();
-            showHome(); 
-
-            // --- 【追加】読み込みが終わったらロード画面を消す ---
-            const loader = document.getElementById('loading-screen');
-            if (loader) {
-                loader.style.opacity = '0'; // ふわっと消す
-                setTimeout(() => {
-                    loader.style.display = 'none'; // 完全に除去
-                }, 500); // transitionの時間と合わせる
-            }
-        })
-        .catch(e => {
-            console.error("データ取得エラー:", e);
-            // エラー時も幕が残り続けると何もできなくなるので消す
-            document.getElementById('loading-screen').style.display = 'none';
-        });
-};
-
 document.getElementById('message-form').addEventListener('submit', function(e) {
     e.preventDefault(); // ページのリロードを防ぐ
     
