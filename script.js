@@ -29,12 +29,6 @@ let isLoading = false;
 let currentModalIdx = -1;
 let latestPatch = "0";
 
-// 1. ページ読み込み時に実行される部分
-window.onload = function() {
-    // ここでスプレッドシートなどからデータを取ってくる処理があるはずです
-    // 例：fetchData(); 
-};
-
 // 2. データを「受け取った瞬間」に実行する関数（ここに追加！）
 function initData(data) {
     allData = data;
@@ -54,31 +48,6 @@ function normalizeText(str) {
         .replace(/[・\s　]/g, "") // 中点とスペースを完全に消去
         .toLowerCase(); // 英字を小文字に
 }
-
-window.onload = async function() {
-    const CACHE_KEY = 'eorzea_furniture_data_final_v2';
-    const cachedData = localStorage.getItem(CACHE_KEY);
-
-    if (cachedData) {
-        allData = JSON.parse(cachedData);
-        buildMenu();
-        buildHome();
-    } else {
-        try {
-            const response = await fetch(GAS_URL);
-            let data = await response.json();
-            let rawData = data.slice(1).reverse();
-            allData = rawData.filter(item => {
-                const id = item.ItemID || item['アイテムID'];
-                return id && id.toString().trim() !== "";
-            });
-            localStorage.setItem(CACHE_KEY, JSON.stringify(allData));
-            buildMenu();
-            buildHome();
-        } catch (e) { console.error("データ取得エラー:", e); }
-    }
-    showHome();
-};
 
 function formatPatch(p) {
     const s = p.toString().replace('Patch', '').trim();
@@ -757,36 +726,54 @@ function showAbout() {
     }
 }
 
-window.onload = () => {
-    fetch(GAS_URL)
-        .then(res => res.json())
-        .then(data => {
-            // ...既存のフィルタリング処理...
-            let rawData = data.slice(1).reverse(); 
+window.onload = async function() {
+    const CACHE_KEY = 'eorzea_furniture_data_final_v2';
+    const loader = document.getElementById('loading-screen');
+    const cachedData = localStorage.getItem(CACHE_KEY);
+
+    // ロード画面を消す関数（共通化）
+    const hideLoader = () => {
+        if (loader) {
+            loader.style.opacity = '0';
+            setTimeout(() => { loader.style.display = 'none'; }, 500);
+        }
+    };
+
+    if (cachedData) {
+        // 【1】キャッシュがある場合：即座に表示して幕を引く
+        console.log("キャッシュから読み込みます");
+        allData = JSON.parse(cachedData);
+        buildMenu();
+        buildHome();
+        showHome();
+        hideLoader();
+    } else {
+        // 【2】キャッシュがない場合：GASから取ってくる
+        try {
+            console.log("GASからデータを取得します");
+            const response = await fetch(GAS_URL);
+            const data = await response.json();
+            
+            let rawData = data.slice(1).reverse();
+            // IDチェックと画像UP済みチェックを同時に行う
             allData = rawData.filter(item => {
-                return item['画像UP済み'] === true || item['画像UP済み'] === "TRUE";
+                const id = item.ItemID || item['アイテムID'];
+                const isUploaded = item['画像UP済み'] === true || item['画像UP済み'] === "TRUE";
+                return id && id.toString().trim() !== "" && isUploaded;
             });
 
+            localStorage.setItem(CACHE_KEY, JSON.stringify(allData));
+            
             buildMenu();
             buildHome();
-            showHome(); 
-
-            // --- 【追加】読み込みが終わったらロード画面を消す ---
-            const loader = document.getElementById('loading-screen');
-            if (loader) {
-                loader.style.opacity = '0'; // ふわっと消す
-                setTimeout(() => {
-                    loader.style.display = 'none'; // 完全に除去
-                }, 500); // transitionの時間と合わせる
-            }
-        })
-        .catch(e => {
+            showHome();
+            hideLoader();
+        } catch (e) {
             console.error("データ取得エラー:", e);
-            // エラー時も幕が残り続けると何もできなくなるので消す
-            document.getElementById('loading-screen').style.display = 'none';
-        });
+            hideLoader(); // エラーでも幕は消す
+        }
+    }
 };
-
 document.getElementById('message-form').addEventListener('submit', function(e) {
     e.preventDefault(); // ページのリロードを防ぐ
     
