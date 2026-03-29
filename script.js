@@ -16,7 +16,6 @@ const SUB_CATEGORY_ORDER = [
         "古代世界", "星外宙域",
         "ヨカ・トラル", "サカ・トラル", "アンロスト・ワールド",
         "その他"
-        // リストにないものはこの後ろに自動で並びます
     ];    
 const PACKAGE_NAMES = { "7": "黄金のレガシー", "6": "暁月のフィナーレ", "5": "漆黒のヴィランズ", "4": "紅蓮のリベレーター", "3": "蒼天のイシュガルド", "2": "新生エオルゼア" };
 
@@ -32,12 +31,9 @@ let latestPatch = "0";
 // 2. データを「受け取った瞬間」に実行する関数（ここに追加！）
 function initData(data) {
     allData = data;
-
-    // 全データの中から最新パッチを特定
-    // item['パッチ'] の部分は、スプレッドシートの列名に合わせて「item.patch」などに変えてね
     latestPatch = Math.max(...allData.map(item => parseFloat(item['パッチ'] || item.patch) || 0)).toString();
 
-    render(); // データをセットし終わったら描画開始
+    render();
 }
 
 // 検索用の正規化（ひらがな化、中点・スペース除去）
@@ -45,8 +41,8 @@ function normalizeText(str) {
     if (!str) return "";
     return str
         .replace(/[ァ-ヶ]/g, s => String.fromCharCode(s.charCodeAt(0) - 0x60)) // カタカナをひらがなに
-        .replace(/[・\s　]/g, "") // 中点とスペースを完全に消去
-        .toLowerCase(); // 英字を小文字に
+        .replace(/[・\s　]/g, "") 
+        .toLowerCase();
 }
 
 function formatPatch(p) {
@@ -62,13 +58,10 @@ function loadMoreItems() {
     const grid = document.getElementById('grid');
     const next = displayList.slice(currentIndex, currentIndex + itemsPerPage);
 
-    // 最新パッチの特定（バッジ用）
     const latestPatch = Math.max(...allData.map(item => parseFloat(item.patch || item['パッチ']) || 0)).toString();
 
     next.forEach(item => {
         const itemPatch = (item.patch || item['パッチ'] || "").toString().trim();
-
-        // 【追加！】前のアイテムとパッチが違ったら、見出し（セパレーター）を差し込む
         const isPatchFilter = (currentFilter.type === 'patch' || currentFilter.type === 'patch-group');
 
         if (isPatchFilter && itemPatch !== lastRenderedPatch) {
@@ -133,6 +126,10 @@ function loadMoreItems() {
 }
 
 async function openModalByIdx(originalIdx) {
+　　if (!allData || allData.length === 0 || !allData[originalIdx]) {
+        console.warn("データ準備中のため、モーダルを開けません。");
+        return; 
+    }
 　　if (document.querySelector('.thumb-nav')) {
         document.querySelector('.thumb-nav').innerHTML = '';
     }
@@ -161,7 +158,6 @@ async function openModalByIdx(originalIdx) {
 
     // --- 左右切り替えボタンの表示制御 ---
     const idxInList = displayList.indexOf(item);
-    // 最初のアイテムならPrevを隠す、最後ならNextを隠す
     document.querySelector('.nav-prev').style.display = (idxInList > 0) ? 'flex' : 'none';
     document.querySelector('.nav-next').style.display = (idxInList < displayList.length - 1) ? 'flex' : 'none';
 
@@ -268,7 +264,6 @@ async function openModalByIdx(originalIdx) {
             e.stopPropagation();
             const idxInList = displayList.indexOf(item);
             if (idxInList > 0) {
-                // 直接 openModalByIdx を呼ぶことで、Homeに戻らず切り替わる
                 openModalByIdx(allData.indexOf(displayList[idxInList - 1]));
             }
         };
@@ -299,11 +294,9 @@ if (foundCount > 1) {
         const mainImg = document.getElementById('mainModalImg');
         const currentSrc = mainImg.src;
 
-        // 現在のサフィックスを特定
         let currentIndex = -1;
         const activeSuffixes = []; // 実際に存在するサフィックスだけのリストを作る
 
-        // 存在する画像だけを抽出（同期的に判定し直すのは重いので、表示中の要素から判断）
         const thumbs = document.querySelectorAll('.thumb-nav img');
         thumbs.forEach((img, idx) => {
             if (currentSrc.includes(img.src)) currentIndex = idx;
@@ -312,7 +305,6 @@ if (foundCount > 1) {
         let nextIdx = (currentIndex + direction + thumbs.length) % thumbs.length;
         const targetImg = thumbs[nextIdx];
 
-        // 画像とドットとサムネイルのactive状態を更新
         mainImg.src = targetImg.src;
         updateDots(total, nextIdx);
         thumbs.forEach(t => t.classList.remove('active'));
@@ -335,7 +327,6 @@ if (foundCount > 1) {
     }
         dotContainer.innerHTML = dotsHtml;
 
-    // 画像エリアのすぐ下に挿入
     const photoArea = document.querySelector('.book-right');
     if (!document.getElementById('modalDots')) photoArea.appendChild(dotContainer);
     }
@@ -353,7 +344,6 @@ function changeModalItem(dir) {
 function closeModal() { document.getElementById('itemModal').classList.remove('visible'); }
 
 function buildHome() {
-    // 1. Nozomi選定：和モダン・アイコン対応表
     const categoryIcons = {
         "内装建材": "meeting_room",
         "調度品(一般)": "chair",
@@ -369,7 +359,6 @@ function buildHome() {
     let cats = [...new Set(allData.map(i => i.category))].filter(Boolean);
     cats = cats.sort((a,b) => (CATEGORY_ORDER.indexOf(a) - CATEGORY_ORDER.indexOf(b)));
 
-    // 2. HTML生成：アイコンを「上」、文字を「下」に配置
     document.getElementById('home-cat-list').innerHTML = cats.map(c => {
         const iconName = categoryIcons[c] || "inventory_2";
         return `
@@ -389,7 +378,6 @@ function showHome(addHistory = true) {
     document.getElementById('btn-home').classList.add('active');
     document.getElementById('btn-about').classList.remove('active');
     
-    // 引数が true の時だけ履歴を積む
     if (addHistory) {
         history.pushState({ page: 'home' }, '', './');
     }
@@ -406,7 +394,6 @@ function buildMenu() {
             let indexA = SUB_CATEGORY_ORDER.indexOf(a);
             let indexB = SUB_CATEGORY_ORDER.indexOf(b);
 
-            // リストにないものは一番後ろ（大きな数値）にする
             if (indexA === -1) indexA = 999;
             if (indexB === -1) indexB = 999;
 
@@ -435,11 +422,9 @@ function toggleSubMenu(btn, val) {
     const sub = btn.nextElementSibling;
     if (!sub) return;
 
-    // 1. 【修正】他の開いているメニューをすべて探して閉じる
     document.querySelectorAll('.sub-menu.open').forEach(el => {
         if (el !== sub) {
             el.classList.remove('open');
-            // 他が閉じる時も「ぬるっ」とさせるためにmax-heightを0にする
             el.style.maxHeight = '0'; 
         }
     });
@@ -448,7 +433,6 @@ function toggleSubMenu(btn, val) {
     const isOpen = sub.classList.contains('open');
     if (!isOpen) {
         sub.classList.add('open');
-        // 自分のmax-heightを1000pxにして「ぬるっ」と開く
         sub.style.maxHeight = '1000px';
 
         // フィルター実行（既存のロジック）
@@ -458,7 +442,6 @@ function toggleSubMenu(btn, val) {
             filterBy('category', val);
         }
     } else {
-        // すでに開いているものをもう一度押したら閉じる
         sub.classList.remove('open');
         sub.style.maxHeight = '0';
     }
@@ -479,7 +462,6 @@ function filterBy(type, val, sub = 'all', addHistory = true) {
     render();
     window.scrollTo(0,0);
 
-    // カテゴリー選択時も履歴を積む
     if (addHistory) {
         history.pushState({ 
             page: 'catalog', 
@@ -537,11 +519,7 @@ function updateTopTags() {
 function toggleSubCategory() {
     const container = document.getElementById('sub-cat-container');
     const arrow = document.getElementById('sub-cat-arrow');
-
-    // コンテナの開閉（ぬるっと動く用）
     container.classList.toggle('open');
-
-    // 矢印の回転用クラスを付け外し
     arrow.classList.toggle('is-rotated');
 }
 
@@ -551,20 +529,16 @@ function render() {
     currentIndex = 0;
 
     displayList = allData.filter(item => {
-        // --- 検索モードなどはそのまま ---
         if (currentFilter.type === 'search') {
             const sKey = normalizeText(currentFilter.value);
             const itemName = normalizeText(item['アイテム名（日）'] || item.name || "");
             return itemName.includes(sKey);
         }
-        // --- 【修正！】パッチごとのフィルタリング ---
         if (currentFilter.type === 'patch') {
             const itemPatch = (item.patch || "").toString().replace('Patch', '').trim();
             const filterValue = currentFilter.value.toString().replace('Patch', '').trim();            
-            // 例: ボタンが「7.4」なら、「7.4」で始まるパッチ（7.4、7.45など）をすべて通す
             return itemPatch.startsWith(filterValue);
         }
-        // --- カテゴリー判定などはそのまま ---
         const matchMain = (currentFilter.type === 'category' ? item.category === currentFilter.value : 
                           currentFilter.type === 'patch-group' ? item.patch.toString().startsWith(currentFilter.value + '.') : true);
         const matchSub = (currentFilter.subValue === 'all' || item['FF14サブカテゴリー'] === currentFilter.subValue);        
@@ -584,32 +558,21 @@ function handleSearch(e) {
     // Enterキーが押された時だけ実行
     if (e.key === 'Enter') {
         const val = e.target.value.trim();
-        if (!val) return; // 空欄なら何もしない
-
-        // 1. フィルター状態を「検索モード」にする
+        if (!val) return;
         currentFilter = { type: 'search', value: val, subValue: 'all' };
-
-        // 2. 画面の表示切り替え（ここが重要！）
         document.getElementById('home-view').style.display = 'none';
         document.getElementById('catalog-view').style.display = 'block';
-
-        // 3. タイトルを「検索結果: 〇〇」に変更
         document.getElementById('view-title').innerText = `検索結果: ${val}`;
-
-        // 4. カテゴリ用タグエリアを一旦空にする（検索結果画面の見た目用）
         document.getElementById('tag-area').innerHTML = '';
 
-        // 5. 描画を実行
         render();
 
-        // 6. 画面の一番上へスクロール
         window.scrollTo(0, 0);
     }
 }
 
 function scrollToTop() { window.scrollTo({ top: 0, behavior: 'smooth' }); }
 
-// スクロールイベントを一つに集約
 window.addEventListener('scroll', () => {
     const { scrollTop, scrollHeight, clientHeight } = document.documentElement;
     if (scrollTop + clientHeight >= scrollHeight - 300) {
@@ -632,14 +595,11 @@ window.addEventListener('keydown', (e) => {
 fetch('https://script.google.com/macros/s/AKfycbwQxlFPFKuE2zYda8BBdt0hPyfrqlUzI2xUrc1Ui_lbyHlrQtyWlL7oUfTtW8OPpcr61Q/exec')
     .then(res => res.json())
     .then(data => {
-        // 1. 画像UP済みが TRUE のものだけを抜き出す
-        // data.slice(1) を入れることでスプシの見出し行を除外します
         let rawData = data.slice(1).reverse(); 
         allData = rawData.filter(item => {
             return item['画像UP済み'] === true || item['画像UP済み'] === "TRUE";
         });
 
-        // 2. メニューとHome画面を構築する（ここが正解！）
         buildMenu();
         buildHome();
         showHome(); 
@@ -685,32 +645,25 @@ modalContent.addEventListener('touchend', (e) => {
 
 function handleSwipe() {
     const swipeDistance = touchEndX - touchStartX;
-    const threshold = 50; // 50px以上動かしたらスワイプとみなす
+    const threshold = 50;
 
     if (swipeDistance > threshold) {
-        // 右にスワイプ ＝ 前のアイテムへ
         changeModalItem(-1);
     } else if (swipeDistance < -threshold) {
-        // 左にスワイプ ＝ 次のアイテムへ
         changeModalItem(1);
     }
 }
 // --- セクション切り替え用の関数 ---
 function showAbout() {
-    // HTMLにある実際のIDを捕まえる
     const homeView = document.getElementById('home-view');
     const catalogView = document.getElementById('catalog-view');
     const aboutView = document.getElementById('about-view');
 
-    // 1. Homeを隠す
     if (homeView) homeView.style.display = 'none';
-    // 2. カタログ（家具一覧）を隠す
     if (catalogView) catalogView.style.display = 'none';
-    // 3. Aboutを表示する
     if (aboutView) {
         aboutView.style.setProperty('display', 'block', 'important');
     }
-    // スマホの場合はサイドバーを閉じる
     if (window.innerWidth <= 768) {
         const sidebar = document.getElementById('sidebar');
         if (sidebar && sidebar.classList.contains('active')) {
@@ -720,7 +673,6 @@ function showAbout() {
     // ページトップへ戻す（任意）
     window.scrollTo(0, 0);
     history.pushState({ page: 'about' }, '', '#about');
-    // 引数が true の時だけ履歴を積む
     if (addHistory) {
         history.pushState({ page: 'about' }, '', '#about');
     }
@@ -731,7 +683,6 @@ window.onload = async function() {
     const loader = document.getElementById('loading-screen');
     const cachedData = localStorage.getItem(CACHE_KEY);
 
-    // ロード画面を消す関数（共通化）
     const hideLoader = () => {
         if (loader) {
             loader.style.opacity = '0';
@@ -740,7 +691,6 @@ window.onload = async function() {
     };
 
     if (cachedData) {
-        // 【1】キャッシュがある場合：即座に表示して幕を引く
         console.log("キャッシュから読み込みます");
         allData = JSON.parse(cachedData);
         buildMenu();
@@ -748,14 +698,13 @@ window.onload = async function() {
         showHome();
         hideLoader();
     } else {
-        // 【2】キャッシュがない場合：GASから取ってくる
         try {
             console.log("GASからデータを取得します");
             const response = await fetch(GAS_URL);
             const data = await response.json();
             
             let rawData = data.slice(1).reverse();
-            // IDチェックと画像UP済みチェックを同時に行う
+  
             allData = rawData.filter(item => {
                 const id = item.ItemID || item['アイテムID'];
                 const isUploaded = item['画像UP済み'] === true || item['画像UP済み'] === "TRUE";
@@ -770,18 +719,17 @@ window.onload = async function() {
             hideLoader();
         } catch (e) {
             console.error("データ取得エラー:", e);
-            hideLoader(); // エラーでも幕は消す
+            hideLoader();
         }
     }
 };
 document.getElementById('message-form').addEventListener('submit', function(e) {
-    e.preventDefault(); // ページのリロードを防ぐ
+    e.preventDefault();
     
     const submitBtn = document.getElementById('submit-btn');
     const responseMsg = document.getElementById('form-response');
     const gasUrl = "https://script.google.com/macros/s/AKfycbyFl7P8CYPDNBsvWWx34NSTAxocAp6m6N0r4jrrnBLb8NnxfW7PqxQJDwRXAC0CqsvMRw/exec";
 
-    // 送信中表示
     submitBtn.innerText = "送信中...";
     submitBtn.disabled = true;
 
@@ -796,8 +744,8 @@ document.getElementById('message-form').addEventListener('submit', function(e) {
     })
     .then(res => {
         submitBtn.style.display = 'none';
-        this.style.display = 'none'; // フォームを隠す
-        responseMsg.style.display = 'block'; // 完了メッセージを出す
+        this.style.display = 'none';
+        responseMsg.style.display = 'block';
     })
     .catch(err => {
         alert("送信に失敗しました。時間をおいて再度お試しください。");
@@ -809,11 +757,10 @@ document.getElementById('message-form').addEventListener('submit', function(e) {
 window.addEventListener('popstate', function(e) {
     if (e.state) {
         if (e.state.page === 'home') {
-            showHome(false); // 履歴を積まないモードで実行
+            showHome(false);
         } else if (e.state.page === 'about') {
             showAbout(false);
         } else if (e.state.page === 'catalog') {
-            // カタログの状態（カテゴリーやサブカテゴリー）を復元
             filterBy(e.state.type, e.state.value, e.state.subValue, false);
         }
     } else {
