@@ -758,3 +758,223 @@ window.onload = () => {
             document.getElementById('loading-screen').style.display = 'none';
         });
 };
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Furniture Post for Eorzea</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Patrick+Hand&family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
+    
+    <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+<div id="loading-screen">
+    <div class="spinner"></div>
+    <p class="loading-text">Loading...</p>
+</div>
+    
+<button id="menu-toggle" onclick="toggleSidebar()">
+    <span class="material-symbols-rounded">menu</span>
+</button>
+    <div id="sidebar-overlay" onclick="toggleSidebar()"></div>
+
+<nav id="sidebar">
+    <div class="sidebar-mobile-header">
+        <h1 style="font-family: 'Patrick Hand', cursive; font-size: 1.5rem; margin:0;">Main menu</h1>
+            <button id="menu-close" onclick="toggleSidebar()">
+                <span class="material-symbols-rounded">close</span>
+            </button>
+    </div>
+
+     <div class="nav-group">
+    <span class="nav-label">General</span>
+    <button class="nav-item-parent active" id="btn-home" onclick="showHome()">
+        <span><i class="fa-solid fa-house" style="margin-right:8px;"></i>Home</span>
+    </button>
+    <button class="nav-item-parent" id="btn-about" onclick="showAbout()">
+        <span><i class="fa-solid fa-circle-info" style="margin-right:8px;"></i>About Me</span>
+    </button>
+</div>
+        
+    <div class="nav-group">
+        <span class="nav-label">Categories</span>
+        <div id="side-cat-list"></div>
+    </div>
+
+    <div class="nav-group">
+        <span class="nav-label">Patch Version</span>
+        <div id="side-patch-list"></div>
+     </div>
+
+</nav>
+    
+<main id="main-content">
+    <div id="home-view">
+        <h1>Furniture <span class="accent-p">P</span>ost for Eorzea</h1>
+        <div class="search-box">
+           <input type="text" id="homeSearch" placeholder="家具の名前で検索..." onkeydown="handleSearch(event)">
+        </div>
+        <div class="home-cat-grid" id="home-cat-list"></div>
+    </div>
+
+    <div id="catalog-view" style="display: none;">
+        <div class="sticky-header">
+            <div class="back-to-home" onclick="showHome()"><i class="fa-solid fa-chevron-left"></i> Homeへ戻る</div>
+            <h2 id="view-title" style="margin:0 0 15px; color:var(--primary-color);"></h2>
+            <div class="tag-container">
+                <div class="tag-area" id="tag-area"></div>
+            </div>
+        </div>
+        <div class="content-body">
+            <div class="grid" id="grid"></div>
+        </div>
+    </div>
+    
+    <div id="about-view" style="display: none;">
+    
+    <div class="about-watermark">About Me</div>
+
+    <div class="about-letter-scaler">
+        <div class="about-letter-card">
+            <h2 class="letter-title">About This Site</h2>
+            <div class="letter-text">
+        <p>
+            このサイト『FF14ハウジング』は、FF14（FINAL FANTASY XIV）のハウジング家具をまとめた、非公式ファンサイトです。<br>
+            エオルゼアの世界を彩る調度品や庭具のスクリーンショットをカタログ形式でまとめています。
+        </p>
+        <p>
+            掲載している画像は管理人が一点ずつ撮影しているため、更新はゆっくりとなりますが、ハウジングを愛する方々、また初めてハウジングに触れる方にも、使いやすく見やすいサイトを目指しております。
+        </p>
+        <h3 style="margin-top: 40px; color: #8b795e; font-size: 1.1rem; border-left: 3px solid #e2d7c5; padding-left: 10px;">
+            How to Use</h3>
+        <div class="how-to-item" style="margin-bottom: 20px;">
+            <p><strong>1. カテゴリーから探す</strong><br>
+            <span style="font-size: 0.9rem;">サイドバーやHome画面のアイコンから、「卓上」「壁掛」などの種別ごとに一覧を表示できます。</span></p>
+        </div>
+
+        <div class="how-to-item" style="margin-bottom: 20px;">
+            <p><strong>2. サブカテゴリーフィルター</strong><br>
+            <span style="font-size: 0.9rem;">画面上部のサブカテゴリーボタンをクリックすることで、簡単に絞り込みができます。</span></p>
+        </div>
+                
+        <div class="how-to-item" style="margin-bottom: 20px;">
+            <p><strong>3. アイコンバッチ</strong><br>
+            <span style="font-size: 0.9rem;">家具カードの右下についているアイコンバッチを見ることで、簡単な情報がわかります。<br>
+                アイコンバッチにマウスカーソルを合わせると、アイコンバッチが何を示しているのかがわかります。<br>
+                （スマホの場合はタッチしてください）</span></p>
+        </div>
+
+        <div class="how-to-item" style="margin-bottom: 20px;">
+            <p><strong>4. 実装時期で絞り込む</strong><br>
+            <span style="font-size: 0.9rem;">最新のパッチから過去のアップデートまで、実装された時期を指定して探すことが可能です。</span></p>
+        </div>
+                
+        <h3 style="margin-top: 40px; color: #8b795e; font-size: 1.1rem;">ご利用にあたって</h3>
+        <p style="font-size: 0.9rem; color: #666;">
+            ・当サイトはJavaScriptを使用して動作しています。正常に表示されない場合は、ブラウザの設定でJavaScriptをONにしてご覧ください。<br>
+            ・コンテンツの内容に関しては、その妥当性や正確性を保証するものではありません。当サイトの利用により発生したトラブル等について、管理人は一切の責任を負いかねますことを予めご了承ください。<br>
+            ・情報の間違いや、ご意見ご要望等がある方は、下記のメッセージフォームをご利用ください。
+        </p>
+        <hr style="border: none; border-top: 1px dashed #e2d7c5; margin: 20px 0;">
+        <div class="contact-section" style="margin-top: 30px;">
+    <h3 style="color: #8b795e; font-size: 1.1rem; margin-bottom: 20px; text-align: center;">Message Form</h3>
+    
+    <form id="message-form" class="custom-form">
+        <div class="form-group">
+            <label>題名</label>
+            <select name="subject" required>
+                <option value="" disabled selected>選択してください</option>
+                <option value="ご意見">ご意見</option>
+                <option value="こんな機能が欲しい">こんな機能が欲しい</option>
+                <option value="その他">その他</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>メッセージ本文 (任意)</label>
+            <textarea name="message" rows="5" placeholder="こちらに入力してください"></textarea>
+        </div>
+
+        <div style="text-align: center; margin-top: 20px;">
+            <button type="submit" id="submit-btn" class="form-submit-btn">送信</button>
+        </div>
+    </form>
+    
+    <div id="form-response" style="display:none; text-align:center; color:#5a79a5; margin-top:20px;">
+        メッセージを送信しました。ありがとうございます！
+    </div>
+</div>
+
+        <hr style="border: none; border-top: 1px dashed #e2d7c5; margin: 40px 0;">
+
+        <div class="copyright-section" style="font-size: 0.8rem; color: #888; line-height: 1.6;">
+            <p>© SQUARE ENIX CO., LTD. All Rights Reserved.</p>
+            <p>
+                記載されている会社名・製品名・システム名などは、各社の商標、または登録商標です。
+            </p>
+        </div>
+    </div>
+    </div>
+    </div>
+
+    
+</div>
+</main>
+
+<div id="itemModal" class="modal" onclick="closeModal()">
+
+    <div class="modal-nav nav-prev" onclick="event.stopPropagation(); changeModalItem(-1)">
+        <i class="fa-solid fa-chevron-left"></i>
+    </div>
+    <div class="modal-nav nav-next" onclick="event.stopPropagation(); changeModalItem(1)">
+        <i class="fa-solid fa-chevron-right"></i>
+    </div>
+    
+        <div class="book-layout" onclick="event.stopPropagation()">
+            <span class="close-modal" onclick="closeModal()">&times;</span>
+            <div class="book-right">
+                <div id="modalPhoto"></div>
+            </div>
+            <div class="book-left">
+        <h2 id="modalTitle" style="margin-top:0; color:var(--primary-color);"></h2>
+
+        <div id="modalCategoryArea" style="margin-bottom: 20px; display: flex; gap: 5px;">
+            <span id="modalMainCategory" class="tag-badge"></span>
+            <span id="modalSubCategory" class="tag-badge"></span>
+        </div>
+
+        <hr class="modal-divider">
+
+        <div class="status-grid">
+            <div class="status-item"><span>染色</span><span id="modalDye"></span></div>
+            <div class="status-item"><span>マケボ取引</span><span id="modalMarket"></span></div>
+            <div class="status-item"><span>製作</span><span id="modalCraft"></span></div>
+        </div>
+
+        <div class="info-section">
+            <h3 class="section-title">
+            <span class="symbol">✦</span> 入手方法 <span class="symbol">✦</span>
+        </h3>
+            <div id="modalHowToGet" class="section-content"></div>
+        </div>
+
+        <hr class="modal-divider">
+
+        <div class="info-section">
+            <h3 class="section-title">
+            <span class="symbol">✦</span> 備考 <span class="symbol">✦</span>
+        </h3>
+            <div id="modalComment" class="section-content"></div>
+        </div>
+    </div> </div> </div>
+
+<script src="script.js"></script>
+    
+    <div id="backToTop" onclick="scrollToTop()"><i class="fa-solid fa-chevron-up"></i></div>
+</body>
+</html>
