@@ -32,11 +32,14 @@
     </div>
 
      <div class="nav-group">
-        <span class="nav-label">General</span>
-            <button class="nav-item-parent" id="btn-home" onclick="showHome()">
-                <span><i class="fa-solid fa-house" style="margin-right:8px;"></i>Home</span>
-            </button>
-     </div>
+    <span class="nav-label">General</span>
+    <button class="nav-item-parent active" id="btn-home" onclick="showHome()">
+        <span><i class="fa-solid fa-house" style="margin-right:8px;"></i>Home</span>
+    </button>
+    <button class="nav-item-parent" id="btn-about" onclick="showAbout()">
+        <span><i class="fa-solid fa-circle-info" style="margin-right:8px;"></i>About Me</span>
+    </button>
+</div>
         
     <div class="nav-group">
         <span class="nav-label">Categories</span>
@@ -59,7 +62,7 @@
         <div class="home-cat-grid" id="home-cat-list"></div>
     </div>
 
-    <div id="catalog-view">
+    <div id="catalog-view" style="display: none;">
         <div class="sticky-header">
             <div class="back-to-home" onclick="showHome()"><i class="fa-solid fa-chevron-left"></i> Homeへ戻る</div>
             <h2 id="view-title" style="margin:0 0 15px; color:var(--primary-color);"></h2>
@@ -71,6 +74,96 @@
             <div class="grid" id="grid"></div>
         </div>
     </div>
+    
+    <div id="about-view" style="display: none;">
+    
+    <div class="about-watermark">About Me</div>
+
+    <div class="about-letter-scaler">
+        <div class="about-letter-card">
+            <h2 class="letter-title">About This Site</h2>
+            <div class="letter-text">
+        <p>
+            このサイト『FF14ハウジング』は、FF14（FINAL FANTASY XIV）のハウジング家具をまとめた、非公式ファンサイトです。<br>
+            エオルゼアの世界を彩る調度品や庭具のスクリーンショットをカタログ形式でまとめています。
+        </p>
+        <p>
+            掲載している画像は管理人が一点ずつ撮影しているため、更新はゆっくりとなりますが、ハウジングを愛する方々、また初めてハウジングに触れる方にも、使いやすく見やすいサイトを目指しております。
+        </p>
+        <h3 style="margin-top: 40px; color: #8b795e; font-size: 1.1rem; border-left: 3px solid #e2d7c5; padding-left: 10px;">
+            How to Use</h3>
+        <div class="how-to-item" style="margin-bottom: 20px;">
+            <p><strong>1. カテゴリーから探す</strong><br>
+            <span style="font-size: 0.9rem;">サイドバーやHome画面のアイコンから、「卓上」「壁掛」などの種別ごとに一覧を表示できます。</span></p>
+        </div>
+
+        <div class="how-to-item" style="margin-bottom: 20px;">
+            <p><strong>2. サブカテゴリーフィルター</strong><br>
+            <span style="font-size: 0.9rem;">画面上部のサブカテゴリーボタンをクリックすることで、簡単に絞り込みができます。</span></p>
+        </div>
+                
+        <div class="how-to-item" style="margin-bottom: 20px;">
+            <p><strong>3. アイコンバッチ</strong><br>
+            <span style="font-size: 0.9rem;">家具カードの右下についているアイコンバッチを見ることで、簡単な情報がわかります。<br>
+                アイコンバッチにマウスカーソルを合わせると、アイコンバッチが何を示しているのかがわかります。<br>
+                （スマホの場合はタッチしてください）</span></p>
+        </div>
+
+        <div class="how-to-item" style="margin-bottom: 20px;">
+            <p><strong>4. 実装時期で絞り込む</strong><br>
+            <span style="font-size: 0.9rem;">最新のパッチから過去のアップデートまで、実装された時期を指定して探すことが可能です。</span></p>
+        </div>
+                
+        <h3 style="margin-top: 40px; color: #8b795e; font-size: 1.1rem;">ご利用にあたって</h3>
+        <p style="font-size: 0.9rem; color: #666;">
+            ・当サイトはJavaScriptを使用して動作しています。正常に表示されない場合は、ブラウザの設定でJavaScriptをONにしてご覧ください。<br>
+            ・コンテンツの内容に関しては、その妥当性や正確性を保証するものではありません。当サイトの利用により発生したトラブル等について、管理人は一切の責任を負いかねますことを予めご了承ください。<br>
+            ・情報の間違いや、ご意見ご要望等がある方は、下記のメッセージフォームをご利用ください。
+        </p>
+        <hr style="border: none; border-top: 1px dashed #e2d7c5; margin: 20px 0;">
+        <div class="contact-section" style="margin-top: 30px;">
+    <h3 style="color: #8b795e; font-size: 1.1rem; margin-bottom: 20px; text-align: center;">Message Form</h3>
+    
+    <form id="message-form" class="custom-form">
+        <div class="form-group">
+            <label>題名</label>
+            <select name="subject" required>
+                <option value="" disabled selected>選択してください</option>
+                <option value="ご意見">ご意見</option>
+                <option value="こんな機能が欲しい">こんな機能が欲しい</option>
+                <option value="その他">その他</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>メッセージ本文 (任意)</label>
+            <textarea name="message" rows="5" placeholder="こちらに入力してください"></textarea>
+        </div>
+
+        <div style="text-align: center; margin-top: 20px;">
+            <button type="submit" id="submit-btn" class="form-submit-btn">送信</button>
+        </div>
+    </form>
+    
+    <div id="form-response" style="display:none; text-align:center; color:#5a79a5; margin-top:20px;">
+        メッセージを送信しました。ありがとうございます！
+    </div>
+</div>
+
+        <hr style="border: none; border-top: 1px dashed #e2d7c5; margin: 40px 0;">
+
+        <div class="copyright-section" style="font-size: 0.8rem; color: #888; line-height: 1.6;">
+            <p>© SQUARE ENIX CO., LTD. All Rights Reserved.</p>
+            <p>
+                記載されている会社名・製品名・システム名などは、各社の商標、または登録商標です。
+            </p>
+        </div>
+    </div>
+    </div>
+    </div>
+
+    
+</div>
 </main>
 
 <div id="itemModal" class="modal" onclick="closeModal()">
