@@ -38,11 +38,11 @@ window.onload = function() {
 // 2. データを「受け取った瞬間」に実行する関数（ここに追加！）
 function initData(data) {
     allData = data;
-    
+
     // 全データの中から最新パッチを特定
     // item['パッチ'] の部分は、スプレッドシートの列名に合わせて「item.patch」などに変えてね
     latestPatch = Math.max(...allData.map(item => parseFloat(item['パッチ'] || item.patch) || 0)).toString();
-    
+
     render(); // データをセットし終わったら描画開始
 }
 
@@ -107,7 +107,7 @@ function loadMoreItems() {
         separator.className = 'patch-separator';
         separator.innerHTML = `<span>|| Patch ${itemPatch}</span>`;
         grid.appendChild(separator);
-        
+
         lastRenderedPatch = itemPatch;
     }
 
@@ -148,7 +148,6 @@ function loadMoreItems() {
                 <span class="fixed-tooltip-content" data-tooltip="NPCショップで購入or交換"></span></div>` : ''}
                 ${(pvpVal === 'あり') ? `<div class="tooltip-container"><div class="flag-diamond flag-pvp"><img src="ui/pvp.png" alt="PvP"></div>
                 <span class="fixed-tooltip-content" data-tooltip="PvP交換品"></span></div>` : ''}
-                
                 ${(pveVal === 'あり') ? `<div class="tooltip-container"><div class="flag-diamond flag-drop"><img src="ui/drop.png" alt="PvE"></div>
                 <span class="fixed-tooltip-content" data-tooltip="ID、討滅戦、宝の地図、特殊フィールド探索等から入手可能"></span></div>` : ''}
                 ${(retainerVal === 'あり') ? `<div class="tooltip-container"><div class="flag-diamond flag-retainer"><img src="ui/rite.png" alt="リテイナー"></div>
@@ -174,7 +173,7 @@ async function openModalByIdx(originalIdx) {
     if (document.getElementById('mainModalImg')) {
         document.getElementById('mainModalImg').src = '';
     }
- 
+
     currentModalIdx = originalIdx;
     const item = allData[originalIdx];
     const itemId = item.ItemID || item['アイテムID'];
@@ -196,7 +195,7 @@ async function openModalByIdx(originalIdx) {
     // 最初のアイテムならPrevを隠す、最後ならNextを隠す
     document.querySelector('.nav-prev').style.display = (idxInList > 0) ? 'flex' : 'none';
     document.querySelector('.nav-next').style.display = (idxInList < displayList.length - 1) ? 'flex' : 'none';
-    
+
     const bookRight = document.querySelector('.book-right');
     bookRight.classList.remove('has-multiple-thumbs');
     let thumbNav = document.querySelector('.thumb-nav') || document.createElement('div');
@@ -208,7 +207,7 @@ async function openModalByIdx(originalIdx) {
     // 1. 既存のドットやナビを掃除（二重表示防止）
     const oldDots = document.getElementById('modalDots');
     if (oldDots) oldDots.remove();
-    
+
     // 2. ドット用コンテナ作成
     const dotContainer = document.createElement('div');
     dotContainer.id = 'modalDots';
@@ -225,15 +224,15 @@ async function openModalByIdx(originalIdx) {
             img.onerror = () => res(false);
             img.src = imgUrl;
         });
-            
+
         if (exists) {
             const currentIdx = foundCount;
             foundCount++;
-            
+
             const tImg = document.createElement('img');
             tImg.src = imgUrl;
             if (suffix === 'front') tImg.className = 'active';
-            
+
             tImg.onclick = () => {
                 document.getElementById('mainModalImg').src = imgUrl;
                 document.querySelectorAll('.thumb-nav img').forEach(el => el.classList.remove('active'));
@@ -253,7 +252,7 @@ async function openModalByIdx(originalIdx) {
     let dotsHtml = '';
     for (let i = 0; i < total; i++) {
         const isCurrent = (i === current);
-        
+
         // 現在地だけ「FILL: 1」で塗りつぶし、他は「FILL: 0」で白抜きにする
         const fillValue = isCurrent ? 1 : 0;
         const color = isCurrent ? 'var(--primary-color)' : '#999';
@@ -279,7 +278,7 @@ async function openModalByIdx(originalIdx) {
         // 1. 半円デザインを適用
         prevBtn.classList.add('semi-circle');
         nextBtn.classList.add('semi-circle');
-        
+
         // 2. スマホ版は「同じ家具内の画像切り替え」を優先
         prevBtn.onclick = (e) => {
             e.stopPropagation();
@@ -294,7 +293,7 @@ async function openModalByIdx(originalIdx) {
         // 1. 半円デザインを解除
         prevBtn.classList.remove('semi-circle');
         nextBtn.classList.remove('semi-circle');
-        
+
         // 2. 「次の家具・前の家具」へ移動する（closeModalを挟まない！）
         prevBtn.onclick = (e) => {
             e.stopPropagation();
@@ -325,16 +324,16 @@ if (foundCount > 1) {
         if (document.getElementById('modalDots')) document.getElementById('modalDots').style.display = 'none';
     }
 }
-        
+
 // スマホ用：モーダル内の画像だけを切り替える関数
     async function changeInternalImage(itemId, list, direction, total) {
         const mainImg = document.getElementById('mainModalImg');
         const currentSrc = mainImg.src;
-        
+
         // 現在のサフィックスを特定
         let currentIndex = -1;
         const activeSuffixes = []; // 実際に存在するサフィックスだけのリストを作る
-        
+
         // 存在する画像だけを抽出（同期的に判定し直すのは重いので、表示中の要素から判断）
         const thumbs = document.querySelectorAll('.thumb-nav img');
         thumbs.forEach((img, idx) => {
@@ -343,7 +342,7 @@ if (foundCount > 1) {
 
         let nextIdx = (currentIndex + direction + thumbs.length) % thumbs.length;
         const targetImg = thumbs[nextIdx];
-        
+
         // 画像とドットとサムネイルのactive状態を更新
         mainImg.src = targetImg.src;
         updateDots(total, nextIdx);
@@ -366,7 +365,7 @@ if (foundCount > 1) {
         dotsHtml += `<span class="material-symbols-rounded" style="font-size:12px; margin:0 3px; color:${i === current ? 'var(--primary-color)' : '#ccc'}">${icon}</span>`;
     }
         dotContainer.innerHTML = dotsHtml;
-    
+
     // 画像エリアのすぐ下に挿入
     const photoArea = document.querySelector('.book-right');
     if (!document.getElementById('modalDots')) photoArea.appendChild(dotContainer);
@@ -412,33 +411,30 @@ function buildHome() {
     }).join('');
 }
 
-function showHome() {
-    document.getElementById('home-view').style.display = 'block';
-    document.getElementById('catalog-view').style.display = 'none';
-    document.getElementById('about-view').style.display = 'none'; // これを追記
 
-    document.getElementById('btn-home').classList.add('active');
-    document.getElementById('btn-about').classList.remove('active');
+function showHome() { 
+    document.getElementById('home-view').style.display='block'; 
+    document.getElementById('catalog-view').style.display='none'; 
 }
 
 function buildMenu() {
     let cats = [...new Set(allData.map(i => i.category))].filter(Boolean);
     cats = cats.sort((a,b) => (CATEGORY_ORDER.indexOf(a) - CATEGORY_ORDER.indexOf(b)));
     document.getElementById('side-cat-list').innerHTML = cats.map(c => {
-        
+
         let subs = [...new Set(allData.filter(i => i.category === c).map(i => i['FF14サブカテゴリー']))].filter(Boolean);
-        
+
         subs.sort((a, b) => {
             let indexA = SUB_CATEGORY_ORDER.indexOf(a);
             let indexB = SUB_CATEGORY_ORDER.indexOf(b);
-            
+
             // リストにないものは一番後ろ（大きな数値）にする
             if (indexA === -1) indexA = 999;
             if (indexB === -1) indexB = 999;
-            
+
             return indexA - indexB;
         });
-        
+
         return `<div class="nav-item-container"><button class="nav-item-parent" onclick="toggleSubMenu(this, '${c}')"><span><i class="fa-solid fa-angle-right"></i> ${c}</span></button><div class="sub-menu"><button class="nav-item-sub" onclick="filterBy('category', '${c}', 'all')">すべて表示</button>${subs.map(s => `<button class="nav-item-sub" onclick="filterBy('category', '${c}', '${s}')">${s}</button>`).join('')}</div></div>`;
     }).join('');
 
@@ -476,7 +472,7 @@ function toggleSubMenu(btn, val) {
         sub.classList.add('open');
         // 自分のmax-heightを1000pxにして「ぬるっ」と開く
         sub.style.maxHeight = '1000px';
-        
+
         // フィルター実行（既存のロジック）
         if (val && val.startsWith('patch-group:')) {
             filterBy('patch-group', val.split(':')[1]);
@@ -507,9 +503,9 @@ function updateTopTags() {
     const area = document.getElementById('tag-area');
     let html = '';
     if(currentFilter.type === 'category') {
-        
+
         const subs = [...new Set(allData.filter(i => i.category === currentFilter.value).map(i => i['FF14サブカテゴリー']))].filter(Boolean);
-        
+
         subs.sort((a, b) => {
             let indexA = SUB_CATEGORY_ORDER.indexOf(a);
             let indexB = SUB_CATEGORY_ORDER.indexOf(b);
@@ -517,7 +513,7 @@ function updateTopTags() {
             if (indexB === -1) indexB = 999;
             return indexA - indexB;
         });
-        
+
         html += `<div class="tag-chip ${currentFilter.subValue === 'all' ? 'active' : ''}" onclick="filterBy('category', '${currentFilter.value}', 'all')">すべて</div>`;
         subs.forEach(s => { html += `<div class="tag-chip ${currentFilter.subValue === s ? 'active' : ''}" onclick="filterBy('category', '${currentFilter.value}', '${s}')">${s}</div>`; });
     } else if(currentFilter.type === 'patch-group' || currentFilter.type === 'patch') {
@@ -553,7 +549,7 @@ function toggleSubCategory() {
 
     // コンテナの開閉（ぬるっと動く用）
     container.classList.toggle('open');
-    
+
     // 矢印の回転用クラスを付け外し
     arrow.classList.toggle('is-rotated');
 }
@@ -605,16 +601,16 @@ function handleSearch(e) {
         // 2. 画面の表示切り替え（ここが重要！）
         document.getElementById('home-view').style.display = 'none';
         document.getElementById('catalog-view').style.display = 'block';
-        
+
         // 3. タイトルを「検索結果: 〇〇」に変更
         document.getElementById('view-title').innerText = `検索結果: ${val}`;
-        
+
         // 4. カテゴリ用タグエリアを一旦空にする（検索結果画面の見た目用）
         document.getElementById('tag-area').innerHTML = '';
 
         // 5. 描画を実行
         render();
-        
+
         // 6. 画面の一番上へスクロール
         window.scrollTo(0, 0);
     }
@@ -665,7 +661,7 @@ fetch('https://script.google.com/macros/s/AKfycbwQxlFPFKuE2zYda8BBdt0hPyfrqlUzI2
 function toggleSidebar() {
     const sidebar = document.getElementById('sidebar');
     const overlay = document.getElementById('sidebar-overlay');
-    
+
     sidebar.classList.toggle('active');
     overlay.classList.toggle('active');
 }
@@ -712,22 +708,15 @@ function handleSwipe() {
 // --- セクション切り替え用の関数 ---
 
 function showAbout() {
-    // HTMLにある実際のIDを捕まえる
-    const homeView = document.getElementById('home-view');
-    const catalogView = document.getElementById('catalog-view');
-    const aboutView = document.getElementById('about-view');
+    const homeSection = document.getElementById('home-section');
+    const aboutSection = document.getElementById('about-section');
 
-    // 1. Homeを隠す
-    if (homeView) homeView.style.display = 'none';
-    
-    // 2. カタログ（家具一覧）を隠す
-    if (catalogView) catalogView.style.display = 'none';
-    
-    // 3. Aboutを表示する
-    if (aboutView) {
-        aboutView.style.setProperty('display', 'block', 'important');
+    if (homeSection) homeSection.style.display = 'none';
+    if (aboutSection) {
+        // CSSで !important をつけて隠している場合に対応
+        aboutSection.setAttribute('style', 'display: block !important');
     }
-    
+
     // スマホの場合はサイドバーを閉じる
     if (window.innerWidth <= 768) {
         const sidebar = document.getElementById('sidebar');
