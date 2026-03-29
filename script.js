@@ -412,15 +412,18 @@ function buildHome() {
 }
 
 
-function showHome() {
+function showHome(addHistory = true) {
     document.getElementById('home-view').style.display = 'block';
     document.getElementById('catalog-view').style.display = 'none';
-    document.getElementById('about-view').style.display = 'none'; // これを追記
+    document.getElementById('about-view').style.display = 'none';
 
     document.getElementById('btn-home').classList.add('active');
     document.getElementById('btn-about').classList.remove('active');
     
-    history.pushState({ page: 'home' }, '', './');
+    // 引数が true の時だけ履歴を積む
+    if (addHistory) {
+        history.pushState({ page: 'home' }, '', './');
+    }
 }
 
 function buildMenu() {
@@ -492,17 +495,30 @@ function toggleSubMenu(btn, val) {
     }
 }
 
-function filterBy(type, val, sub = 'all') {
+function filterBy(type, val, sub = 'all', addHistory = true) {
     currentFilter = { type, value: val, subValue: sub };
     document.getElementById('home-view').style.display = 'none';
     document.getElementById('catalog-view').style.display = 'block';
+    document.getElementById('about-view').style.display = 'none'; // Aboutが開いてるかもしれないので念のため
+    
     let title = val;
     if(type === 'patch-group') title = (PACKAGE_NAMES[val] || val) + ` (${val}.x)`;
     else if(type === 'patch') title = formatPatch(val);
     document.getElementById('view-title').innerText = title;
+
     updateTopTags();
     render();
     window.scrollTo(0,0);
+
+    // カテゴリー選択時も履歴を積む
+    if (addHistory) {
+        history.pushState({ 
+            page: 'catalog', 
+            type: type, 
+            value: val, 
+            subValue: sub 
+        }, '', `#${type}=${val}`);
+    }
 }
 
 function updateTopTags() {
@@ -735,6 +751,10 @@ function showAbout() {
     // ページトップへ戻す（任意）
     window.scrollTo(0, 0);
     history.pushState({ page: 'about' }, '', '#about');
+    // 引数が true の時だけ履歴を積む
+    if (addHistory) {
+        history.pushState({ page: 'about' }, '', '#about');
+    }
 }
 
 window.onload = () => {
@@ -800,18 +820,16 @@ document.getElementById('message-form').addEventListener('submit', function(e) {
 });
 // ブラウザの戻る・進むボタンが押された時の処理
 window.addEventListener('popstate', function(e) {
-    // 履歴（state）の中に保存した 'page' のデータがあるか確認
-    if (e.state && e.state.page) {
+    if (e.state) {
         if (e.state.page === 'home') {
-            // ここで showHome() を呼ぶと、また履歴が追加されてしまうので
-            // 表示だけを切り替える処理を行うのが理想的ですが、
-            // まずはシンプルに既存の関数を呼んで動きを確認しましょう！
-            showHome(); 
+            showHome(false); // 履歴を積まないモードで実行
         } else if (e.state.page === 'about') {
-            showAbout();
+            showAbout(false);
+        } else if (e.state.page === 'catalog') {
+            // カタログの状態（カテゴリーやサブカテゴリー）を復元
+            filterBy(e.state.type, e.state.value, e.state.subValue, false);
         }
     } else {
-        // 履歴がない（最初の状態）場合は Home を出す
-        showHome();
+        showHome(false);
     }
 });
