@@ -131,28 +131,28 @@ function loadMoreItems() {
         card.innerHTML = `
             ${newBadge}
             <div class="photo-area" onclick="openModalByIdx(${allData.indexOf(item)})">
-                <img src="images/${itemId}_front.webp" class="slide-img active" onerror="this.src='https://placehold.jp/200x200?text=NoImage'">
+                <img src="images/${itemId}_front.webp" class="slide-img active" onerror="this.src='https://placehold.jp/200x200?text=NoImage'" loading="lazy">
             </div>
             <p class="item-name">${item['アイテム名（日）'] || item.name}</p>
             <div class="card-flags">
                 ${(dyeVal && dyeVal !== '不可') ? `
-                <div class="tooltip-container"><div class="flag-diamond flag-dye"><img src="ui/dye.png" alt="染色"></div>
+                <div class="tooltip-container"><div class="flag-diamond flag-dye"><img src="ui/dye.png" alt="染色" loading="lazy"></div>
                 <span class="fixed-tooltip-content" data-tooltip="染色可能"></span></div>` : ''}
                 ${(marketVal && marketVal !== '不可') ? `
-                <div class="tooltip-container"><div class="flag-diamond flag-market"><img src="ui/marketbord.png" alt="マケボ"></div>
+                <div class="tooltip-container"><div class="flag-diamond flag-market"><img src="ui/marketbord.png" alt="マケボ" loading="lazy"></div>
                 <span class="fixed-tooltip-content" data-tooltip="マケボ入手可能"></span></div>` : ''}
                 ${(craftVal && craftVal !== '-' && craftVal !== '不可' && craftVal !== '') ? `
-                <div class="tooltip-container"><div class="flag-diamond flag-craft"><img src="ui/craft.png" alt="製作"></div>
+                <div class="tooltip-container"><div class="flag-diamond flag-craft"><img src="ui/craft.png" alt="製作" loading="lazy"></div>
                 <span class="fixed-tooltip-content" data-tooltip="製作可能"></span></div>` : ''}
-                ${(shopVal === 'あり') ? `<div class="tooltip-container"><div class="flag-diamond flag-shop"><img src="ui/shop.png" alt="ショップ"></div>   
+                ${(shopVal === 'あり') ? `<div class="tooltip-container"><div class="flag-diamond flag-shop"><img src="ui/shop.png" alt="ショップ" loading="lazy"></div>   
                 <span class="fixed-tooltip-content" data-tooltip="NPCショップで購入or交換"></span></div>` : ''}
-                ${(pvpVal === 'あり') ? `<div class="tooltip-container"><div class="flag-diamond flag-pvp"><img src="ui/pvp.png" alt="PvP"></div>
+                ${(pvpVal === 'あり') ? `<div class="tooltip-container"><div class="flag-diamond flag-pvp"><img src="ui/pvp.png" alt="PvP" loading="lazy"></div>
                 <span class="fixed-tooltip-content" data-tooltip="PvP交換品"></span></div>` : ''}
-                ${(pveVal === 'あり') ? `<div class="tooltip-container"><div class="flag-diamond flag-drop"><img src="ui/drop.png" alt="PvE"></div>
+                ${(pveVal === 'あり') ? `<div class="tooltip-container"><div class="flag-diamond flag-drop"><img src="ui/drop.png" alt="PvE" loading="lazy"></div>
                 <span class="fixed-tooltip-content" data-tooltip="ID、討滅戦、宝の地図、特殊フィールド探索等から入手可能"></span></div>` : ''}
-                ${(retainerVal === 'あり') ? `<div class="tooltip-container"><div class="flag-diamond flag-retainer"><img src="ui/rite.png" alt="リテイナー"></div>
+                ${(retainerVal === 'あり') ? `<div class="tooltip-container"><div class="flag-diamond flag-retainer"><img src="ui/rite.png" alt="リテイナー" loading="lazy"></div>
                 <span class="fixed-tooltip-content" data-tooltip="リテイナーベンチャーで入手可能"></span></div>` : ''}
-                ${(voyageVal === 'あり') ? `<div class="tooltip-container"><div class="flag-diamond flag-voyage"><img src="ui/voyger.png" alt="潜水艦"></div>
+                ${(voyageVal === 'あり') ? `<div class="tooltip-container"><div class="flag-diamond flag-voyage"><img src="ui/voyger.png" alt="潜水艦" loading="lazy"></div>
                 <span class="fixed-tooltip-content" data-tooltip="潜水艦で入手可能"></span></div>` : ''}
             </div>
         `;
@@ -188,7 +188,7 @@ async function openModalByIdx(originalIdx) {
     document.getElementById('modalComment').innerText = item['note'] || "備考はありません";
 
     const photoArea = document.getElementById('modalPhoto');
-    photoArea.innerHTML = `<img src="images/${itemId}_front.webp" id="mainModalImg" onerror="this.src='https://placehold.jp/200x200?text=NoImage'">`;
+    photoArea.innerHTML = `<img src="images/${itemId}_front.webp" id="mainModalImg" onerror="this.src='https://placehold.jp/200x200?text=NoImage'" loading="lazy">`;
 
     // --- 左右切り替えボタンの表示制御 ---
     const idxInList = displayList.indexOf(item);
