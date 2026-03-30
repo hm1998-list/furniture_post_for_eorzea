@@ -683,6 +683,7 @@ window.onload = async function() {
     const loader = document.getElementById('loading-screen');
     const cachedData = localStorage.getItem(CACHE_KEY);
 
+    // ロード画面を消す関数（共通化）
     const hideLoader = () => {
         if (loader) {
             loader.style.opacity = '0';
@@ -690,21 +691,34 @@ window.onload = async function() {
         }
     };
 
+    // 画面を表示するか判断する共通処理
+    const safelyShowHome = () => {
+        const modal = document.getElementById('itemModal');
+        const isModalOpen = modal && modal.classList.contains('visible');
+        
+        // データが存在し、かつ詳細画面（モーダル）が開いていない時だけHomeを表示
+        if (allData && allData.length > 0 && !isModalOpen) {
+            showHome();
+        }
+    };
+
     if (cachedData) {
+        // 【1】キャッシュがある場合：即座に表示して幕を引く
         console.log("キャッシュから読み込みます");
         allData = JSON.parse(cachedData);
         buildMenu();
         buildHome();
-        showHome();
+        safelyShowHome(); // 安全にHomeを表示
         hideLoader();
     } else {
+        // 【2】キャッシュがない場合：GASから取ってくる
         try {
             console.log("GASからデータを取得します");
             const response = await fetch(GAS_URL);
             const data = await response.json();
             
             let rawData = data.slice(1).reverse();
-  
+            // IDチェックと画像UP済みチェックを同時に行う
             allData = rawData.filter(item => {
                 const id = item.ItemID || item['アイテムID'];
                 const isUploaded = item['画像UP済み'] === true || item['画像UP済み'] === "TRUE";
@@ -715,11 +729,12 @@ window.onload = async function() {
             
             buildMenu();
             buildHome();
-            showHome();
-            hideLoader();
+            safelyShowHome(); // データが届いた瞬間に操作を邪魔しないよう判定
+            
         } catch (e) {
             console.error("データ取得エラー:", e);
-            hideLoader();
+        } finally {
+            hideLoader(); // 成功しても失敗しても幕は消す
         }
     }
 };
