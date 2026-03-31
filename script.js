@@ -233,49 +233,31 @@ async function openModalByIdx(originalIdx) {
     dotContainer.innerHTML = dotsHtml;
 }
 
-// --- 左右ボタンのイベント設定（215行目付近から差し替え） ---
-    const prevBtn = document.querySelector('.nav-prev');
-    const nextBtn = document.querySelector('.nav-next');
+// --- 左右ボタンのイベント設定（修正版：常に家具を切り替える） ---
+const prevBtn = document.querySelector('.nav-prev');
+const nextBtn = document.querySelector('.nav-next');
 
-    if (prevBtn && nextBtn) {
-    if (foundCount > 1 && isMobile) {
-        // 【スマホかつ複数画像あり】
-        // 1. 半円デザインを適用
-        prevBtn.classList.add('semi-circle');
-        nextBtn.classList.add('semi-circle');
+if (prevBtn && nextBtn) {
+    // 1. スマホ版の「半円デザイン」などの特殊設定をリセット
+    prevBtn.classList.remove('semi-circle');
+    nextBtn.classList.remove('semi-circle');
 
-        // 2. スマホ版は「同じ家具内の画像切り替え」を優先
-        prevBtn.onclick = (e) => {
-            e.stopPropagation();
-            changeInternalImage(itemId, suffixList, -1, foundCount);
-        };
-        nextBtn.onclick = (e) => {
-            e.stopPropagation();
-            changeInternalImage(itemId, suffixList, 1, foundCount);
-        };
-    } else {
-        // 【PC版】または【スマホで画像が1枚しかない時】
-        // 1. 半円デザインを解除
-        prevBtn.classList.remove('semi-circle');
-        nextBtn.classList.remove('semi-circle');
-
-        // 2. 「次の家具・前の家具」へ移動する（closeModalを挟まない！）
-        prevBtn.onclick = (e) => {
-            e.stopPropagation();
-            const idxInList = displayList.indexOf(item);
-            if (idxInList > 0) {
-                openModalByIdx(allData.indexOf(displayList[idxInList - 1]));
-            }
-        };
-        nextBtn.onclick = (e) => {
-            e.stopPropagation();
-            const idxInList = displayList.indexOf(item);
-            if (idxInList < displayList.length - 1) {
-                openModalByIdx(allData.indexOf(displayList[idxInList + 1]));
-            }
-        };
-    }
-}
+    // 2. 常に「次の家具・前の家具」へ移動するロジックに統一
+    prevBtn.onclick = (e) => {
+        e.stopPropagation();
+        const idxInList = displayList.indexOf(item);
+        if (idxInList > 0) {
+            openModalByIdx(allData.indexOf(displayList[idxInList - 1]));
+        }
+    };
+    nextBtn.onclick = (e) => {
+        e.stopPropagation();
+        const idxInList = displayList.indexOf(item);
+        if (idxInList < displayList.length - 1) {
+            openModalByIdx(allData.indexOf(displayList[idxInList + 1]));
+        }
+    };
+}   
 
 // サムネイルとドットの表示制御
 if (foundCount > 1) {
