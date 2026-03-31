@@ -207,32 +207,7 @@ async function openModalByIdx(originalIdx) {
             thumbNav.appendChild(tImg);
         }
     }
-    // ドット更新関数
-    function updateDots(total, current) {
-    if (total <= 1) {
-        dotContainer.style.display = 'none';
-        return;
-    }
-    dotContainer.style.display = 'flex';
-    let dotsHtml = '';
-    for (let i = 0; i < total; i++) {
-        const isCurrent = (i === current);
-
-        // 現在地だけ「FILL: 1」で塗りつぶし、他は「FILL: 0」で白抜きにする
-        const fillValue = isCurrent ? 1 : 0;
-        const color = isCurrent ? 'var(--primary-color)' : '#999';
-        const opacity = isCurrent ? '1' : '0.5';
-
-        dotsHtml += `<span class="material-symbols-rounded" 
-            style="font-size:10px; margin:0 4px; color:${color}; opacity:${opacity};
-            font-variation-settings: 'FILL' ${fillValue}, 'wght' 400, 'GRAD' 0, 'opsz' 24; 
-            transition: all 0.2s ease;">
-            circle
-        </span>`;
-    }
-    dotContainer.innerHTML = dotsHtml;
-}
-
+    
 // --- 左右ボタンのイベント設定（修正版：常に家具を切り替える） ---
 const prevBtn = document.querySelector('.nav-prev');
 const nextBtn = document.querySelector('.nav-next');
@@ -270,9 +245,6 @@ if (foundCount > 1) {
         if (document.getElementById('modalDots')) document.getElementById('modalDots').style.display = 'none';
     }
 }
-
-
-
     document.getElementById('itemModal').classList.add('visible');
 
 // モーダルを開く処理の中に追記イメージ
@@ -612,6 +584,33 @@ document.addEventListener('touchend', (e) => {
     // 座標が記録されたら、判定関数を呼ぶ
     handleSwipe();
 }, {passive: true});
+// ドット更新関数
+    function updateDots(total, current) {
+        const dotContainer = document.getElementById('modalDots'); // ここで要素を取得
+            if (!dotContainer) return; // コンテナがなければ何もしない
+            if (total <= 1) {
+                dotContainer.style.display = 'none';
+                return;
+            }
+    dotContainer.style.display = 'flex';
+            let dotsHtml = '';
+            for (let i = 0; i < total; i++) {
+                const isCurrent = (i === current);
+
+        // 現在地だけ「FILL: 1」で塗りつぶし、他は「FILL: 0」で白抜きにする
+        const fillValue = isCurrent ? 1 : 0;
+        const color = isCurrent ? 'var(--primary-color)' : '#999';
+        const opacity = isCurrent ? '1' : '0.5';
+
+        dotsHtml += `<span class="material-symbols-rounded" 
+            style="font-size:10px; margin:0 4px; color:${color}; opacity:${opacity};
+            font-variation-settings: 'FILL' ${fillValue}, 'wght' 400, 'GRAD' 0, 'opsz' 24; 
+            transition: all 0.2s ease;">
+            circle
+        </span>`;
+    }
+    dotContainer.innerHTML = dotsHtml;
+}
 
 // スマホ用：モーダル内の画像だけを切り替える関数
     async function changeInternalImage(itemId, list, direction, total) {
