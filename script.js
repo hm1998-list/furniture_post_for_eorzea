@@ -615,20 +615,26 @@ document.addEventListener('click', (e) => {
     }
 });
 
-/* --- スワイプ切り替え機能 --- */
+/* --- スワイプ切り替え機能（修正版） --- */
 let touchStartX = 0;
 let touchEndX = 0;
 
-// 特定の要素ではなく、document全体（またはモーダル全体）で検知するのが確実です
+// 特定の要素ではなく、document全体で指の動きを監視する
 document.addEventListener('touchstart', (e) => {
-    // モーダルが表示されている時だけ座標を記録
-    if (!document.getElementById('itemModal').classList.contains('visible')) return;
+    // モーダルが開いている時だけ反応させる
+    const modal = document.getElementById('itemModal');
+    if (!modal || !modal.classList.contains('visible')) return;
+    
     touchStartX = e.changedTouches[0].screenX;
 }, {passive: true});
 
 document.addEventListener('touchend', (e) => {
-    if (!document.getElementById('itemModal').classList.contains('visible')) return;
+    const modal = document.getElementById('itemModal');
+    if (!modal || !modal.classList.contains('visible')) return;
+
     touchEndX = e.changedTouches[0].screenX;
+    
+    // 座標が記録されたら、判定関数を呼ぶ
     handleSwipe();
 }, {passive: true});
 
