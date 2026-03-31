@@ -273,25 +273,30 @@ if (foundCount > 1) {
 
 // スマホ用：モーダル内の画像だけを切り替える関数
     async function changeInternalImage(itemId, list, direction, total) {
-        const mainImg = document.getElementById('mainModalImg');
-        const currentSrc = mainImg.src;
+    const mainImg = document.getElementById('mainModalImg');
+    if (!mainImg) return;
 
-        let currentIndex = -1;
-        const activeSuffixes = []; // 実際に存在するサフィックスだけのリストを作る
+    const thumbs = document.querySelectorAll('.thumb-nav img');
+    if (thumbs.length === 0) return;
 
-        const thumbs = document.querySelectorAll('.thumb-nav img');
-        thumbs.forEach((img, idx) => {
-            if (currentSrc.includes(img.src)) currentIndex = idx;
-        });
+    // 現在アクティブなサムネイルのインデックスを探す
+    let currentIndex = -1;
+    thumbs.forEach((img, idx) => {
+        if (img.classList.contains('active')) currentIndex = idx;
+    });
 
-        let nextIdx = (currentIndex + direction + thumbs.length) % thumbs.length;
-        const targetImg = thumbs[nextIdx];
+    // 次のインデックスを計算（ループ対応）
+    let nextIdx = (currentIndex + direction + thumbs.length) % thumbs.length;
+    const targetImg = thumbs[nextIdx];
 
-        mainImg.src = targetImg.src;
-        updateDots(total, nextIdx);
-        thumbs.forEach(t => t.classList.remove('active'));
-        targetImg.classList.add('active');
-    }
+    // メイン画像の差し替えとアクティブクラスの更新
+    mainImg.src = targetImg.src;
+    thumbs.forEach(t => t.classList.remove('active'));
+    targetImg.classList.add('active');
+
+    // ドットのインジケーターも連動させる
+    updateDots(total, nextIdx);
+}
 
     document.getElementById('itemModal').classList.add('visible');
 
@@ -614,13 +619,15 @@ document.addEventListener('click', (e) => {
 let touchStartX = 0;
 let touchEndX = 0;
 
-const modalContent = document.querySelector('.book-layout');
-
-modalContent.addEventListener('touchstart', (e) => {
+// 特定の要素ではなく、document全体（またはモーダル全体）で検知するのが確実です
+document.addEventListener('touchstart', (e) => {
+    // モーダルが表示されている時だけ座標を記録
+    if (!document.getElementById('itemModal').classList.contains('visible')) return;
     touchStartX = e.changedTouches[0].screenX;
 }, {passive: true});
 
-modalContent.addEventListener('touchend', (e) => {
+document.addEventListener('touchend', (e) => {
+    if (!document.getElementById('itemModal').classList.contains('visible')) return;
     touchEndX = e.changedTouches[0].screenX;
     handleSwipe();
 }, {passive: true});
@@ -628,22 +635,22 @@ modalContent.addEventListener('touchend', (e) => {
 function handleSwipe() {
     const swipeDistance = touchEndX - touchStartX;
     const threshold = 50;
-
-    // モーダルが表示されており、かつ画像が複数ある場合のみ実行
-    const itemModal = document.getElementById('itemModal');
-    if (!itemModal.classList.contains('visible')) return;
-
+    // モーダルが開いていない、またはスワイプ距離が足りない場合は無視
+    if (!document.getElementById('itemModal').classList.contains('visible')) return;
+    if (Math.abs(swipeDistance) < threshold) return;
+    // 現在開いているアイテムのデータを特定
+    const item = allData[currentModalIdx];
+    const itemId = item.ItemID || item['アイテムID'];
+    const suffixList = ['front', 'side', 'back', 'bottom', 'top', 'dye', 'night'];    
+    // サムネイル（画像）が1枚しかなければスワイプ不要なので終了
     const thumbs = document.querySelectorAll('.thumb-nav img');
     if (thumbs.length <= 1) return;
 
-    const itemId = allData[currentModalIdx].ItemID || allData[currentModalIdx]['アイテムID'];
-    const suffixList = ['front', 'side', 'back', 'bottom', 'top', 'dye', 'night'];
-
     if (swipeDistance > threshold) {
-        // 右スワイプで前の画像へ
+        // 右スワイプ → 前の画像へ
         changeInternalImage(itemId, suffixList, -1, thumbs.length);
-    } else if (swipeDistance < -threshold) {
-        // 左スワイプで次の画像へ
+    } else {
+        // 左スワイプ → 次の画像へ
         changeInternalImage(itemId, suffixList, 1, thumbs.length);
     }
 }
