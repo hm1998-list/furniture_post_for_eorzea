@@ -647,10 +647,22 @@ function handleSwipe() {
     const swipeDistance = touchEndX - touchStartX;
     const threshold = 50;
 
+    // モーダルが表示されており、かつ画像が複数ある場合のみ実行
+    const itemModal = document.getElementById('itemModal');
+    if (!itemModal.classList.contains('visible')) return;
+
+    const thumbs = document.querySelectorAll('.thumb-nav img');
+    if (thumbs.length <= 1) return;
+
+    const itemId = allData[currentModalIdx].ItemID || allData[currentModalIdx]['アイテムID'];
+    const suffixList = ['front', 'side', 'back', 'bottom', 'top', 'dye', 'night'];
+
     if (swipeDistance > threshold) {
-        changeModalItem(-1);
+        // 右スワイプで前の画像へ
+        changeInternalImage(itemId, suffixList, -1, thumbs.length);
     } else if (swipeDistance < -threshold) {
-        changeModalItem(1);
+        // 左スワイプで次の画像へ
+        changeInternalImage(itemId, suffixList, 1, thumbs.length);
     }
 }
 // --- セクション切り替え用の関数 ---
