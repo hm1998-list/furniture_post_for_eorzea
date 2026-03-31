@@ -271,32 +271,7 @@ if (foundCount > 1) {
     }
 }
 
-// スマホ用：モーダル内の画像だけを切り替える関数
-    async function changeInternalImage(itemId, list, direction, total) {
-    const mainImg = document.getElementById('mainModalImg');
-    if (!mainImg) return;
 
-    const thumbs = document.querySelectorAll('.thumb-nav img');
-    if (thumbs.length === 0) return;
-
-    // 現在アクティブなサムネイルのインデックスを探す
-    let currentIndex = -1;
-    thumbs.forEach((img, idx) => {
-        if (img.classList.contains('active')) currentIndex = idx;
-    });
-
-    // 次のインデックスを計算（ループ対応）
-    let nextIdx = (currentIndex + direction + thumbs.length) % thumbs.length;
-    const targetImg = thumbs[nextIdx];
-
-    // メイン画像の差し替えとアクティブクラスの更新
-    mainImg.src = targetImg.src;
-    thumbs.forEach(t => t.classList.remove('active'));
-    targetImg.classList.add('active');
-
-    // ドットのインジケーターも連動させる
-    updateDots(total, nextIdx);
-}
 
     document.getElementById('itemModal').classList.add('visible');
 
@@ -637,6 +612,33 @@ document.addEventListener('touchend', (e) => {
     // 座標が記録されたら、判定関数を呼ぶ
     handleSwipe();
 }, {passive: true});
+
+// スマホ用：モーダル内の画像だけを切り替える関数
+    async function changeInternalImage(itemId, list, direction, total) {
+    const mainImg = document.getElementById('mainModalImg');
+    if (!mainImg) return;
+
+    const thumbs = document.querySelectorAll('.thumb-nav img');
+    if (thumbs.length === 0) return;
+
+    // 現在アクティブなサムネイルのインデックスを探す
+    let currentIndex = -1;
+    thumbs.forEach((img, idx) => {
+        if (img.classList.contains('active')) currentIndex = idx;
+    });
+
+    // 次のインデックスを計算（ループ対応）
+    let nextIdx = (currentIndex + direction + thumbs.length) % thumbs.length;
+    const targetImg = thumbs[nextIdx];
+
+    // メイン画像の差し替えとアクティブクラスの更新
+    mainImg.src = targetImg.src;
+    thumbs.forEach(t => t.classList.remove('active'));
+    targetImg.classList.add('active');
+
+    // ドットのインジケーターも連動させる
+    updateDots(total, nextIdx);
+}
 
 function handleSwipe() {
     const swipeDistance = touchEndX - touchStartX;
