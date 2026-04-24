@@ -96,7 +96,7 @@ function loadMoreItems() {
                 <img src="images/${itemId}_front.webp" class="slide-img active" onerror="this.src='https://placehold.jp/200x200?text=NoImage'">
             </div>
             <p class="item-name">${item['アイテム名（日）'] || item.name}</p>
-            <div class="photo-area" onclick="openModalByIdx(${allData.indexOf(item)}, event)">
+            <div class="card-flags">
                 ${(dyeVal && dyeVal !== '不可') ? `
                 <div class="tooltip-container"><div class="flag-diamond flag-dye"><img src="ui/dye.png" alt="染色"></div>
                 <span class="fixed-tooltip-content" data-tooltip="染色可能"></span></div>` : ''}
