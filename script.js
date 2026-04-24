@@ -93,28 +93,28 @@ function loadMoreItems() {
         card.innerHTML = `
             ${newBadge}
             <div class="photo-area" onclick="openModalByIdx(${allData.indexOf(item)})">
-                <img src="images/${itemId}_front.webp" class="slide-img active" onerror="this.src='https://placehold.jp/200x200?text=NoImage'">
+                <img src="images/${itemId}_front.webp" class="slide-img active" loading="lazy" onerror="this.src='https://placehold.jp/200x200?text=NoImage'">
             </div>
             <p class="item-name">${item['アイテム名（日）'] || item.name}</p>
             <div class="card-flags">
                 ${(dyeVal && dyeVal !== '不可') ? `
-                <div class="tooltip-container"><div class="flag-diamond flag-dye"><img src="ui/dye.png" alt="染色"></div>
+                <div class="tooltip-container"><div class="flag-diamond flag-dye"><img src="ui/dye.png" alt="染色" loading="lazy"></div>
                 <span class="fixed-tooltip-content" data-tooltip="染色可能"></span></div>` : ''}
                 ${(marketVal && marketVal !== '不可') ? `
-                <div class="tooltip-container"><div class="flag-diamond flag-market"><img src="ui/marketbord.png" alt="マケボ"></div>
+                <div class="tooltip-container"><div class="flag-diamond flag-market"><img src="ui/marketbord.png" alt="マケボ" loading="lazy"></div>
                 <span class="fixed-tooltip-content" data-tooltip="マケボ入手可能"></span></div>` : ''}
                 ${(craftVal && craftVal !== '-' && craftVal !== '不可' && craftVal !== '') ? `
-                <div class="tooltip-container"><div class="flag-diamond flag-craft"><img src="ui/craft.png" alt="製作"></div>
+                <div class="tooltip-container"><div class="flag-diamond flag-craft"><img src="ui/craft.png" alt="製作" loading="lazy"></div>
                 <span class="fixed-tooltip-content" data-tooltip="製作可能"></span></div>` : ''}
-                ${(shopVal === 'あり') ? `<div class="tooltip-container"><div class="flag-diamond flag-shop"><img src="ui/shop.png" alt="ショップ"></div>   
+                ${(shopVal === 'あり') ? `<div class="tooltip-container"><div class="flag-diamond flag-shop"><img src="ui/shop.png" alt="ショップ" loading="lazy"></div>   
                 <span class="fixed-tooltip-content" data-tooltip="NPCショップで購入or交換"></span></div>` : ''}
-                ${(pvpVal === 'あり') ? `<div class="tooltip-container"><div class="flag-diamond flag-pvp"><img src="ui/pvp.png" alt="PvP"></div>
+                ${(pvpVal === 'あり') ? `<div class="tooltip-container"><div class="flag-diamond flag-pvp"><img src="ui/pvp.png" alt="PvP" loading="lazy"></div>
                 <span class="fixed-tooltip-content" data-tooltip="PvP交換品"></span></div>` : ''}
-                ${(pveVal === 'あり') ? `<div class="tooltip-container"><div class="flag-diamond flag-drop"><img src="ui/drop.png" alt="PvE"></div>
+                ${(pveVal === 'あり') ? `<div class="tooltip-container"><div class="flag-diamond flag-drop"><img src="ui/drop.png" alt="PvE" loading="lazy"></div>
                 <span class="fixed-tooltip-content" data-tooltip="ID、討滅戦、宝の地図、特殊フィールド探索等から入手可能"></span></div>` : ''}
-                ${(retainerVal === 'あり') ? `<div class="tooltip-container"><div class="flag-diamond flag-retainer"><img src="ui/rite.png" alt="リテイナー"></div>
+                ${(retainerVal === 'あり') ? `<div class="tooltip-container"><div class="flag-diamond flag-retainer"><img src="ui/rite.png" alt="リテイナー" loading="lazy"></div>
                 <span class="fixed-tooltip-content" data-tooltip="リテイナーベンチャーで入手可能"></span></div>` : ''}
-                ${(voyageVal === 'あり') ? `<div class="tooltip-container"><div class="flag-diamond flag-voyage"><img src="ui/voyger.png" alt="潜水艦"></div>
+                ${(voyageVal === 'あり') ? `<div class="tooltip-container"><div class="flag-diamond flag-voyage"><img src="ui/voyger.png" alt="潜水艦" loading="lazy"></div>
                 <span class="fixed-tooltip-content" data-tooltip="潜水艦で入手可能"></span></div>` : ''}
             </div>
         `;
@@ -125,11 +125,28 @@ function loadMoreItems() {
     isLoading = false;
 }
 
-async function openModalByIdx(originalIdx) {
-　　if (!allData || allData.length === 0 || !allData[originalIdx]) {
-        console.warn("データ準備中のため、モーダルを開けません。");
-        return; 
+async function openModalByIdx(originalIdx, retryCount = 0) {
+    // データが空、または指定のインデックスが存在しない場合
+    if (!allData || allData.length === 0 || !allData[originalIdx]) {
+        if (retryCount > 20) { // 10秒待ってもダメなら
+            console.error("データの読み込みがタイムアウトしました。");
+            return;
+        }
+        console.log(`データ受信待ち... (${retryCount + 1}回目)`);
+        setTimeout(() => openModalByIdx(originalIdx, retryCount + 1), 500); 
+        return;
     }
+
+    // お掃除処理
+    const thumbNavContainer = document.querySelector('.thumb-nav');
+    if (thumbNavContainer) thumbNavContainer.innerHTML = '';
+    
+    const dotsContainer = document.getElementById('modalDots');
+    if (dotsContainer) dotsContainer.innerHTML = '';
+
+    const mainImg = document.getElementById('mainModalImg');
+    if (mainImg) mainImg.src = '';
+        
 　　if (document.querySelector('.thumb-nav')) {
         document.querySelector('.thumb-nav').innerHTML = '';
     }
@@ -153,9 +170,10 @@ async function openModalByIdx(originalIdx) {
     document.getElementById('modalHowToGet').innerText = item['入手方法'] || "確認中";
     document.getElementById('modalComment').innerText = item['note'] || "備考はありません";
 
+// 【修正】onerror で外部サイトに繋がず、シンプルにする
     const photoArea = document.getElementById('modalPhoto');
-    photoArea.innerHTML = `<img src="images/${itemId}_front.webp" id="mainModalImg" onerror="this.src='https://placehold.jp/200x200?text=NoImage'">`;
-
+    photoArea.innerHTML = `<img src="images/${itemId}_front.webp" id="mainModalImg" loading="lazy" onerror="this.style.display='none';">`;
+        
     // --- 左右切り替えボタンの表示制御 ---
     const idxInList = displayList.indexOf(item);
     document.querySelector('.nav-prev').style.display = (idxInList > 0) ? 'flex' : 'none';
@@ -196,6 +214,7 @@ async function openModalByIdx(originalIdx) {
 
             const tImg = document.createElement('img');
             tImg.src = imgUrl;
+        　　tImg.loading = "lazy"
             if (suffix === 'front') tImg.className = 'active';
 
             tImg.onclick = () => {
@@ -529,10 +548,18 @@ window.addEventListener('keydown', (e) => {
 fetch('https://script.google.com/macros/s/AKfycbwQxlFPFKuE2zYda8BBdt0hPyfrqlUzI2xUrc1Ui_lbyHlrQtyWlL7oUfTtW8OPpcr61Q/exec')
     .then(res => res.json())
     .then(data => {
-        let rawData = data.slice(1).reverse(); 
-        allData = rawData.filter(item => {
-            return item['画像UP済み'] === true || item['画像UP済み'] === "TRUE";
+        const filteredData = rawData.filter(item => {
+        const id = item.ItemID || item['アイテムID'];
+        const isUploaded = item['画像UP済み'] === true || item['画像UP済み'] === "TRUE";
+        return id && id.toString().trim() !== "" && isUploaded;
         });
+    
+    window.allData = filteredData;
+    console.log("データ受信完了！件数:", window.allData.length);
+    
+    if (window.allData.length === 0) {
+        console.warn("注意：条件に合うデータが0件です。スプレッドシートの『画像UP済み』列を確認してください。");
+        }
 
         buildMenu();
         buildHome();
@@ -693,7 +720,7 @@ window.onload = async function() {
     const loader = document.getElementById('loading-screen');
     const cachedData = localStorage.getItem(CACHE_KEY);
 
-    // ロード画面を消す関数（共通化）
+    // ロード画面を消す関数
     const hideLoader = () => {
         if (loader) {
             loader.style.opacity = '0';
@@ -701,52 +728,45 @@ window.onload = async function() {
         }
     };
 
-    const safelyShowHome = () => {
-        const modal = document.getElementById('itemModal');
-        const isModalOpen = modal && modal.classList.contains('visible');
-        const hasHash = window.location.hash.length > 1;
-        
-        if (allData && allData.length > 0 && !isModalOpen && !hasHash) {
-        showHome();
-        }
-    };
-
+    // --- 【修正ポイント】キャッシュがあれば即座に変数に入れる ---
     if (cachedData) {
-        // 【1】キャッシュがある場合：即座に表示して幕を引く
-        console.log("キャッシュから読み込みます");
+        console.log("キャッシュから即座に復元します");
         allData = JSON.parse(cachedData);
         buildMenu();
         buildHome();
-        safelyShowHome(); // 安全にHomeを表示
+        // キャッシュがあれば先に幕を引いてOK（爆速体験）
         hideLoader();
-    } else {
-        // 【2】キャッシュがない場合：GASから取ってくる
-        try {
-            console.log("GASからデータを取得します");
-            const response = await fetch(GAS_URL);
-            const data = await response.json();
-            
-            let rawData = data.slice(1).reverse();
-            // IDチェックと画像UP済みチェックを同時に行う
-            allData = rawData.filter(item => {
-                const id = item.ItemID || item['アイテムID'];
-                const isUploaded = item['画像UP済み'] === true || item['画像UP済み'] === "TRUE";
-                return id && id.toString().trim() !== "" && isUploaded;
-            });
+    }
 
-            localStorage.setItem(CACHE_KEY, JSON.stringify(allData));
-            
-            buildMenu();
-            buildHome();
-            safelyShowHome(); // データが届いた瞬間に操作を邪魔しないよう判定
-            
-        } catch (e) {
-            console.error("データ取得エラー:", e);
-        } finally {
-            hideLoader(); // 成功しても失敗しても幕は消す
-        }
+    // 裏で最新データを取得しにいく（キャッシュがあっても、最新に更新するため）
+    try {
+        console.log("最新データをGASからチェックします...");
+        const response = await fetch(GAS_URL);
+        const data = await response.json();
+        
+        let rawData = data.slice(1).reverse();
+        const freshData = rawData.filter(item => {
+            const id = item.ItemID || item['アイテムID'];
+            const isUploaded = item['画像UP済み'] === true || item['画像UP済み'] === "TRUE";
+            return id && id.toString().trim() !== "" && isUploaded;
+        });
+
+        // 取得したデータで上書きし、キャッシュを更新
+        allData = freshData;
+        localStorage.setItem(CACHE_KEY, JSON.stringify(allData));
+        
+        // メニューなどを最新状態で再構築（裏でこっそり更新）
+        buildMenu();
+        buildHome();
+        
+    } catch (e) {
+        console.error("最新データの取得に失敗しましたが、キャッシュがあれば続行可能です:", e);
+    } finally {
+        // キャッシュがなかった場合のみ、ここで幕を引く
+        if (!cachedData) hideLoader();
     }
 };
+
 document.getElementById('message-form').addEventListener('submit', function(e) {
     e.preventDefault();
     
