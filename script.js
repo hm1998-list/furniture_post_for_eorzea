@@ -704,9 +704,8 @@ window.onload = async function() {
         const isModalOpen = modal && modal.classList.contains('visible');
         const hasHash = window.location.hash.length > 1;
         
-        // データが存在し、かつ詳細画面（モーダル）が開いていない時だけHomeを表示
-        if (allData && allData.length > 0 && !isModalOpen) {
-            showHome();
+        if (allData && allData.length > 0 && !isModalOpen && !hasHash) {
+        showHome();
         }
     };
 
