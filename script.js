@@ -536,7 +536,9 @@ fetch('https://script.google.com/macros/s/AKfycbwQxlFPFKuE2zYda8BBdt0hPyfrqlUzI2
 
         buildMenu();
         buildHome();
-        showHome(); 
+        if (!window.location.hash || window.location.hash === '#home') {
+        showHome();
+    }
     })
     .catch(e => {
         console.error("データ取得エラー:", e);
