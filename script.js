@@ -699,10 +699,10 @@ window.onload = async function() {
         }
     };
 
-    // 画面を表示するか判断する共通処理
     const safelyShowHome = () => {
         const modal = document.getElementById('itemModal');
         const isModalOpen = modal && modal.classList.contains('visible');
+        const hasHash = window.location.hash.length > 1;
         
         // データが存在し、かつ詳細画面（モーダル）が開いていない時だけHomeを表示
         if (allData && allData.length > 0 && !isModalOpen) {
