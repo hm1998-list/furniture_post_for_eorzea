@@ -125,11 +125,7 @@ function loadMoreItems() {
     isLoading = false;
 }
 
-async function openModalByIdx(originalIdx, event) {
-    if (event) {
-        event.preventDefault();
-        event.stopPropagation();
-    }
+async function openModalByIdx(originalIdx) {
 　　if (!allData || allData.length === 0 || !allData[originalIdx]) {
         console.warn("データ準備中のため、モーダルを開けません。");
         return; 
