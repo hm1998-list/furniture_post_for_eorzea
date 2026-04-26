@@ -195,7 +195,7 @@ async function openModalByIdx(originalIdx, retryCount = 0) {
     const dotContainer = document.createElement('div');
     dotContainer.id = 'modalDots';
 
-    const suffixList = ['front', 'side', 'back', 'bottom', 'top', 'dye', 'night'];
+    const suffixList = ['front', 'side', 'side2', 'back', 'bottom', 'top', 'dye', 'night'];
     let foundCount = 0;
     const isMobile = window.innerWidth <= 768;
 
@@ -677,7 +677,7 @@ function handleSwipe() {
     // 現在開いているアイテムのデータを特定
     const item = allData[currentModalIdx];
     const itemId = item.ItemID || item['アイテムID'];
-    const suffixList = ['front', 'side', 'back', 'bottom', 'top', 'dye', 'night'];    
+    const suffixList = ['front', 'side', 'side2', 'back', 'bottom', 'top', 'dye', 'night'];    
     // サムネイル（画像）が1枚しかなければスワイプ不要なので終了
     const thumbs = document.querySelectorAll('.thumb-nav img');
     if (thumbs.length <= 1) return;
