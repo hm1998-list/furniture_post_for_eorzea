@@ -33,6 +33,10 @@ const SUB_CATEGORY_ORDER = [
     { id: "内壁", en: "Internal Wall", fr: "Tapisserie", de: "Innenwand" },
     { id: "床材", en: "Flooring", fr: "Sol", de: "Boden" },
     { id: "機能家具", en: "Interactive Furnishing", fr: "Meubles fonctionnels", de: "Funktionales" },
+    { id: "スクエア", en: "Square", fr: "Carrés", de: "Quadratisch" },
+    { id: "長方形", en: "Rectangular", fr: "Rectangulaires", de: "Rechteckig" },
+    { id: "円", en: "Round", fr: "Ronds", de: "Rund" },
+    { id: "楕円", en: "Oval", fr: "Ovales", de: "Oval" },
     { id: "その他", en: "Miscellaneous", fr: "Divers", de: "Allerlei" },
     
     { id: "ラノシア", en: "La Noscea", fr: "Noscea", de: "La Noscea" },
