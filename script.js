@@ -254,6 +254,7 @@ async function openModalByIdx(originalIdx, retryCount = 0) {
     const catName = (currentLang === 'ja') ? item.cat_ja : item.cat_en;
     const subCatName = (currentLang === 'ja') ? item.sub_ja : item.sub_en;
     const dyeVal = (currentLang === 'ja') ? item.dyeable_ja : item.dyeable_en;
+    const recipeDetail = item[`recipe_${currentLang}`] || item.recipe_en || item.recipe_ja;
     const marketVal = (currentLang === 'ja') ? item.market_ja : item.market_en;
     const howto = (currentLang === 'ja') ? item.howto_ja : (item.howto_en || item.howto_ja);
     const note = item.note || ""; // 備考も将来的に翻訳するなら item[`note_${currentLang}`] || item.note
@@ -304,7 +305,7 @@ async function openModalByIdx(originalIdx, retryCount = 0) {
     document.getElementById('modalSubCategory').innerText = subCatName;
     document.getElementById('modalDye').innerText = dyeVal || (currentLang === 'ja' ? "不可" : "No");
     document.getElementById('modalMarket').innerText = marketVal || (currentLang === 'ja' ? "不可" : "No");
-    document.getElementById('modalCraft').innerText = item.recipe || "-";
+    document.getElementById('modalCraft').innerText = (recipeDetail && recipeDetail !== "-") ? recipeDetail : (currentLang === 'ja' ? "不可" : "No");
     document.getElementById('modalHowToGet').innerText = howto || (currentLang === 'ja' ? "確認中" : "Under review");
     document.getElementById('modalComment').innerText = note || (currentLang === 'ja' ? "備考はありません" : "No notes available.");
     
