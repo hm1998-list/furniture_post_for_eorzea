@@ -36,6 +36,7 @@ const SUB_CATEGORY_ORDER = [
     { id: "スクエア", en: "Square", fr: "Carrés", de: "Quadratisch" },
     { id: "長方形", en: "Rectangular", fr: "Rectangulaires", de: "Rechteckig" },
     { id: "円", en: "Round", fr: "Ronds", de: "Rund" },
+    { id: "半円", en: "Half-round", fr: "Demi-lune", de: "Halbrunnd" },
     { id: "楕円", en: "Oval", fr: "Ovales", de: "Oval" },
     { id: "その他", en: "Miscellaneous", fr: "Divers", de: "Allerlei" },
     
