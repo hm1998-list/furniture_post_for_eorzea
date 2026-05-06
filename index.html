@@ -1,16 +1,8 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-    <script defer src="https://cloud.umami.is/script.js" data-website-id="cadc59c2-b84a-4482-bf05-68646df3ea62"></script>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta property="og:title" content="Furniture Post for Eorzea">
-    <meta property="og:description" content="FF14の家具カタログサイト">
-    <meta property="og:image" content="https://hm1998-list.github.io/furniture_post_for_eorzea/ui/uiog-main-image.webp"> 
-    <meta property="og:type" content="website">
-    <meta property="og:url" content="https://hm1998-list.github.io/furniture_post_for_eorzea/">
-    <meta name="twitter:card" content="summary_large_image">
-    
     <title>Furniture Post for Eorzea</title>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
@@ -31,7 +23,7 @@
     <span class="material-symbols-rounded">menu</span>
 </button>
     <div id="sidebar-overlay" onclick="toggleSidebar()"></div>
-
+    
 <nav id="sidebar">
     <div class="sidebar-mobile-header">
         <h1 style="font-family: 'Patrick Hand', cursive; font-size: 1.5rem; margin:0;">Main menu</h1>
@@ -48,6 +40,36 @@
     <button class="nav-item-parent" id="btn-about" onclick="showAbout()">
         <span><i class="fa-solid fa-circle-info" style="margin-right:8px;"></i>About Me</span>
     </button>
+    
+         
+    <div class="lang-accordion" id="lang-accordion">
+    <!-- 現在の言語を表示する場所（ここをクリックして開閉） -->
+    <div class="selected-lang" onclick="toggleAccordion()">
+        <img src="ui/jp.png" alt="JP" class="flag-img" id="current-flag">
+        <span class="lang-text" id="current-text">日本語</span>
+        <span class="arrow-icon">▼</span>
+    </div>
+
+    <!-- 隠れている選択肢 -->
+    <div class="lang-dropdown" id="lang-dropdown">
+        <button onclick="switchLang('ja')" class="lang-btn">
+            <img src="ui/jp.png" alt="JP" class="flag-img">
+            <span class="lang-text">日本語</span>
+        </button>
+        <button onclick="switchLang('en')" class="lang-btn">
+            <img src="ui/us.png" alt="EN" class="flag-img">
+            <span class="lang-text">English</span>
+        </button>
+        <button onclick="switchLang('fr')" class="lang-btn">
+            <img src="ui/fr.png" alt="FR" class="flag-img">
+            <span class="lang-text">Français</span>
+        </button>
+        <button onclick="switchLang('de')" id="btn-de" class="lang-btn">
+            <img src="ui/de.png" alt="DE" class="flag-img">
+            <span class="lang-text">Deutsch</span>
+        </button>
+    </div>
+</div>
 </div>
         
     <div class="nav-group">
@@ -73,7 +95,9 @@
 
     <div id="catalog-view" style="display: none;">
         <div class="sticky-header">
-            <div class="back-to-home" onclick="showHome()"><i class="fa-solid fa-chevron-left"></i> Homeへ戻る</div>
+            <div class="back-to-home" onclick="showHome()">
+            <i class="fa-solid fa-chevron-left"></i> <span id="back-home-text">Homeへ戻る</span>
+            </div>
             <h2 id="view-title" style="margin:0 0 15px; color:var(--primary-color);"></h2>
             <div class="tag-container">
                 <div class="tag-area" id="tag-area"></div>
@@ -85,78 +109,206 @@
     </div>
     
     <div id="about-view" style="display: none;">
-    
-    <div class="about-watermark">About Me</div>
-
+    <div class="about-watermark" id="about-watermark">About Me</div>
+        
     <div class="about-letter-scaler">
         <div class="about-letter-card">
-            <h2 class="letter-title">About This Site</h2>
+            <h2 class="letter-title" id="about-title">About This Site</h2>
             <div class="letter-text">
-        <p>
-            このサイト『FF14ハウジング』は、FF14（FINAL FANTASY XIV）のハウジング家具をまとめた、非公式ファンサイトです。<br>
-            エオルゼアの世界を彩る調度品や庭具のスクリーンショットをカタログ形式でまとめています。
-        </p>
-        <p>
-            掲載している画像は管理人が一点ずつ撮影しているため、更新はゆっくりとなりますが、ハウジングを愛する方々、また初めてハウジングに触れる方にも、使いやすく見やすいサイトを目指しております。
-        </p>
-        <p>
-            また、サイト機能についても少しずつ実装していこうと思っております。<br>
-            ご要望ございましたら、ページ下のメッセージフォームにご記入ください。
-        </p>
-        <p>
-        <h3 style="margin-top: 40px; color: #8b795e; font-size: 1.1rem; border-left: 3px solid #e2d7c5; padding-left: 10px;">
-            How to Use</h3>
-        <div class="how-to-item" style="margin-bottom: 20px;">
-            <p><strong>1. カテゴリーから探す</strong><br>
-            <span style="font-size: 0.9rem;">サイドバーやHome画面のアイコンから、「卓上」「壁掛」などの種別ごとに一覧を表示できます。</span></p>
-        </div>
+                <div class="about-content lang-ja">
+                    <p style="background: rgba(139, 121, 94, 0.05); border: 1px dashed #d1c5b4; padding: 15px; border-radius: 8px; font-size: 0.9rem; color: #6d5b4b; line-height: 1.6;">
+            <strong>※ 読み込みに関するお知らせ</strong><br>
+                当サイトは最新の家具データをリアルタイムで取得しているため、初回の表示に<b>3〜5秒ほど</b>お時間がかかる場合がございます。Loading画面が消えるまで、そのまま少しだけお待ちください。
+            </p> 
+            <p>
+                このサイト『FF14ハウジング』は、FF14（FINAL FANTASY XIV）のハウジング家具をまとめた、非公式ファンサイトです。<br>
+                エオルゼアの世界を彩る調度品や庭具のスクリーンショットをカタログ形式でまとめています。
+            </p>
+            <p>
+                掲載している画像は管理人が一点ずつ撮影しているため、更新はゆっくりとなりますが、ハウジングを愛する方々、また初めてハウジングに触れる方にも、使いやすく見やすいサイトを目指しております。
+            </p>
+            <h3 style="margin-top: 40px; color: #8b795e; font-size: 1.1rem; border-left: 3px solid #e2d7c5; padding-left: 10px;">
+                How to Use</h3>
+            <div class="how-to-item" style="margin-bottom: 20px;">
+                <p><strong>1. カテゴリーから探す</strong><br>
+                <span style="font-size: 0.9rem;">サイドバーやHome画面のアイコンから、「卓上」「壁掛」などの種別ごとに一覧を表示できます。</span></p>
+            </div>
 
-        <div class="how-to-item" style="margin-bottom: 20px;">
-            <p><strong>2. サブカテゴリーフィルター</strong><br>
-            <span style="font-size: 0.9rem;">画面上部のサブカテゴリーボタンをクリックすることで、簡単に絞り込みができます。</span></p>
-        </div>
-                
-        <div class="how-to-item" style="margin-bottom: 20px;">
-            <p><strong>3. アイコンバッチ</strong><br>
-            <span style="font-size: 0.9rem;">家具カードの右下についているアイコンバッチを見ることで、簡単な情報がわかります。<br>
-                アイコンバッチにマウスカーソルを合わせると、アイコンバッチが何を示しているのかがわかります。<br>
-                （スマホの場合はタッチしてください）</span></p>
-        </div>
+            <div class="how-to-item" style="margin-bottom: 20px;">
+                <p><strong>2. サブカテゴリーフィルター</strong><br>
+                <span style="font-size: 0.9rem;">画面上部のサブカテゴリーボタンをクリックすることで、簡単に絞り込みができます。</span></p>
+            </div>
 
-        <div class="how-to-item" style="margin-bottom: 20px;">
-            <p><strong>4. 実装時期で絞り込む</strong><br>
-            <span style="font-size: 0.9rem;">最新のパッチから過去のアップデートまで、実装された時期を指定して探すことが可能です。</span></p>
-        </div>
-        <div style="font-size: 0.85rem; color: #8b795e; line-height: 1.7;">
+            <div class="how-to-item" style="margin-bottom: 20px;">
+                <p><strong>3. アイコンバッチ</strong><br>
+                <span style="font-size: 0.9rem;">家具カードの右下についているアイコンバッチを見ることで、簡単な情報がわかります。<br>
+                    アイコンバッチにマウスカーソルを合わせると、アイコンバッチが何を示しているのかがわかります。<br>
+                    （スマホの場合はタッチしてください）</span></p>
+            </div>
+
+            <div class="how-to-item" style="margin-bottom: 20px;">
+                <p><strong>4. 実装時期で絞り込む</strong><br>
+                <span style="font-size: 0.9rem;">最新のパッチから過去のアップデートまで、実装された時期を指定して探すことが可能です。</span></p>
+            </div>
+            <div style="font-size: 0.85rem; color: #8b795e; line-height: 1.7;">
+
+                <p><strong>💡 動作が不安定なときは</strong><br>
+                ・リロード直後などはデータの準備を行っているため、詳細画面の画像切り替えが正しく動作しない場合があります。数秒待ってから再度お試しください。<br>
+                ・一度読み込みが完了すると、2回目以降はキャッシュ機能によりスムーズに閲覧いただけます。</p>
+            </div>
+            <h3 style="margin-top: 40px; color: #8b795e; font-size: 1.1rem;">ご利用にあたって</h3>
+            <p style="font-size: 0.9rem; color: #666;">
+                ・当サイトはJavaScriptを使用して動作しています。正常に表示されない場合は、ブラウザの設定でJavaScriptをONにしてご覧ください。<br>
+                ・コンテンツの内容に関しては、その妥当性や正確性を保証するものではありません。当サイトの利用により発生したトラブル等について、管理人は一切の責任を負いかねますことを予めご了承ください。<br>
+                ・情報の間違いや、ご意見ご要望等がある方は、下記のメッセージフォームをご利用ください。
+            </p>
+            <hr style="border: none; border-top: 1px dashed #e2d7c5; margin: 20px 0;">
+            <div class="contact-section" style="margin-top: 30px;">
+        </div></div>
             
-            <p><strong>💡 動作が不安定なときは</strong><br>
-            ・リロード直後などはデータの準備を行っているため、詳細画面の画像切り替えが正しく動作しない場合があります。数秒待ってから再度お試しください。<br>
-            ・一度読み込みが完了すると、2回目以降はキャッシュ機能によりスムーズに閲覧いただけます。</p>
+        <!-- EN -->
+        <div class="about-content lang-en" style="display:none;">
+            <p style="background: rgba(139, 121, 94, 0.05); border: 1px dashed #d1c5b4; padding: 15px; border-radius: 8px; font-size: 0.9rem; color: #6d5b4b; line-height: 1.6;">
+                <strong>※ Loading Notice</strong><br>
+                This site retrieves the latest housing item data in real time, so the initial display may take around 3–5 seconds. Please wait a moment until the loading screen disappears.
+            </p> 
+            <p>
+                This site, "FF14 Housing," is an unofficial fan site that compiles housing items from FF14 (FINAL FANTASY XIV).<br>
+                It presents a catalog-style collection of screenshots featuring furnishings and outdoor items that decorate the world of Eorzea.
+            </p>
+            <p>
+                All images are individually captured by the site administrator, so updates may be gradual. However, we strive to create a site that is easy to use and browse, both for housing enthusiasts and for those new to housing.
+            </p>
+            <h3 style="margin-top: 40px; color: #8b795e; font-size: 1.1rem; border-left: 3px solid #e2d7c5; padding-left: 10px;">How to Use</h3>
+            <div class="how-to-item" style="margin-bottom: 20px;">
+                <p><strong>1. Browse by Category</strong><br>
+                <span style="font-size: 0.9rem;">Use the sidebar or Home screen icons to display lists by type, such as "Tabletop" or "Wall-mounted."</span></p>
+            </div>
+            <div class="how-to-item" style="margin-bottom: 20px;">
+                <p><strong>2. Subcategory Filter</strong><br>
+                <span style="font-size: 0.9rem;">Click the subcategory buttons at the top of the screen to easily refine your search.</span></p>
+            </div>
+            <div class="how-to-item" style="margin-bottom: 20px;">
+                <p><strong>3. Icon Badges</strong><br>
+                <span style="font-size: 0.9rem;">You can quickly check key details by looking at the icon badges at the bottom right of each item card.<br>
+                Hover over an icon badge to see what it represents. (On mobile devices, tap instead.)</span></p>
+            </div>
+            <div class="how-to-item" style="margin-bottom: 20px;">
+                <p><strong>4. Filter by Patch Release</strong><br>
+                <span style="font-size: 0.9rem;">You can search by specifying the patch in which the item was introduced, from the latest updates to older ones.</span></p>
+            </div>
+            <div style="font-size: 0.85rem; color: #8b795e; line-height: 1.7;">
+                <p><strong>💡 If the site behaves unexpectedly</strong><br>
+                ・Immediately after reloading, data may still be preparing, so image switching on detail pages might not function correctly. Please wait a few seconds and try again.<br>
+                ・Once loading is complete, subsequent visits will be smoother thanks to caching.</p>
+            </div>
+            <h3 style="margin-top: 40px; color: #8b795e; font-size: 1.1rem;">Before Using This Site</h3>
+            <p style="font-size: 0.9rem; color: #666;">
+                ・This site uses JavaScript. If it does not display correctly, please enable JavaScript in your browser settings.<br>
+                ・While we strive for accuracy, we do not guarantee the validity or completeness of the content. The administrator cannot be held responsible for any issues arising from the use of this site.<br>
+                ・If you find any errors or have feedback or requests, please use the message form below.
+            </p>
         </div>
-        <h3 style="margin-top: 40px; color: #8b795e; font-size: 1.1rem;">ご利用にあたって</h3>
-        <p style="font-size: 0.9rem; color: #666;">
-            ・当サイトはJavaScriptを使用して動作しています。正常に表示されない場合は、ブラウザの設定でJavaScriptをONにしてご覧ください。<br>
-            ・コンテンツの内容に関しては、その妥当性や正確性を保証するものではありません。当サイトの利用により発生したトラブル等について、管理人は一切の責任を負いかねますことを予めご了承ください。<br>
-            ・情報の間違いや、ご意見ご要望等がある方は、下記のメッセージフォームをご利用ください。
-        </p>
-        <hr style="border: none; border-top: 1px dashed #e2d7c5; margin: 20px 0;">
-        <div class="contact-section" style="margin-top: 30px;">
+            
+        <!-- FR -->
+        <div class="about-content lang-fr" style="display:none;">
+            <p style="background: rgba(139, 121, 94, 0.05); border: 1px dashed #d1c5b4; padding: 15px; border-radius: 8px; font-size: 0.9rem; color: #6d5b4b; line-height: 1.6;">
+                <strong>※ Informations de chargement</strong><br>
+                Ce site récupère les données de mobilier en temps réel. L’affichage initial peut donc prendre environ 3 à 5 secondes. Veuillez patienter jusqu’à la disparition de l’écran de chargement.
+            </p> 
+            <p>
+                Ce site « FF14 Housing » est un site de fans non officiel consacré au logement dans FF14 (FINAL FANTASY XIV).<br>
+                Il propose un catalogue de captures d’écran de meubles et d’objets d’extérieur qui embellissent le monde d’Éorzéa.
+            </p>
+            <p>
+                Toutes les images sont prises individuellement par l’administrateur, les mises à jour peuvent donc être progressives. Nous nous efforçons toutefois de proposer un site clair et agréable, aussi bien pour les passionnés que pour les débutants.
+            </p>
+            <h3 style="margin-top: 40px; color: #8b795e; font-size: 1.1rem; border-left: 3px solid #e2d7c5; padding-left: 10px;">Comment utiliser</h3>
+            <div class="how-to-item" style="margin-bottom: 20px;">
+                <p><strong>1. Rechercher par catégorie</strong><br>
+                <span style="font-size: 0.9rem;">Utilisez la barre latérale ou les icônes de l’accueil pour afficher les objets par type, comme « Tabletop » ou « Wall-mounted ».</span></p>
+            </div>
+            <div class="how-to-item" style="margin-bottom: 20px;">
+                <p><strong>2. Filtre de sous-catégorie</strong><br>
+                <span style="font-size: 0.9rem;">Cliquez sur les boutons en haut de l’écran pour affiner facilement les résultats.</span></p>
+            </div>
+            <div class="how-to-item" style="margin-bottom: 20px;">
+                <p><strong>3. Icônes d’information</strong><br>
+                <span style="font-size: 0.9rem;">Les icônes en bas à droite des cartes permettent de voir rapidement certaines informations.<br>
+                Survolez une icône pour afficher sa signification (ou touchez-la sur mobile).</span></p>
+            </div>
+            <div class="how-to-item" style="margin-bottom: 20px;">
+                <p><strong>4. Filtrer par mise à jour</strong><br>
+                <span style="font-size: 0.9rem;">Vous pouvez rechercher selon la version d’implémentation, des dernières mises à jour aux plus anciennes.</span></p>
+            </div>
+            <div style="font-size: 0.85rem; color: #8b795e; line-height: 1.7;">
+                <p><strong>💡 En cas de dysfonctionnement</strong><br>
+                ・Après un rechargement, certaines données peuvent encore être en préparation, ce qui peut empêcher le changement d’image. Veuillez patienter quelques secondes.<br>
+                ・Une fois les données chargées, la navigation sera plus fluide grâce au cache.</p>
+            </div>
+            <h3 style="margin-top: 40px; color: #8b795e; font-size: 1.1rem;">Conditions d’utilisation</h3>
+            <p style="font-size: 0.9rem; color: #666;">
+                ・Ce site utilise JavaScript. En cas de problème d’affichage, veuillez activer JavaScript dans votre navigateur.<br>
+                ・Nous ne garantissons pas l’exactitude ou la validité du contenu. L’administrateur décline toute responsabilité en cas de problème lié à l’utilisation du site.<br>
+                ・Pour toute erreur ou suggestion, merci d’utiliser le formulaire ci-dessous.
+            </p>
+        </div>
+
+        <!-- DE -->
+        <div class="about-content lang-de" style="display:none;">
+            <p style="background: rgba(139, 121, 94, 0.05); border: 1px dashed #d1c5b4; padding: 15px; border-radius: 8px; font-size: 0.9rem; color: #6d5b4b; line-height: 1.6;">
+                <strong>※ Hinweis zum Laden</strong><br>
+                Diese Website lädt die neuesten Housing-Daten in Echtzeit. Daher kann die erste Anzeige etwa 3–5 Sekunden dauern. Bitte warten Sie einen Moment, bis der Ladebildschirm verschwindet.
+            </p> 
+            <p>
+                Diese Seite „FF14 Housing“ ist eine inoffizielle Fanseite, die Housing-Gegenstände aus FF14 (FINAL FANTASY XIV) zusammenstellt.<br>
+                Sie bietet einen katalogartigen Überblick über Screenshots von Einrichtungs- und Außengegenständen aus der Welt von Eorzea.
+            </p>
+            <p>
+                Alle Bilder werden einzeln vom Administrator aufgenommen, daher erfolgen Updates schrittweise. Unser Ziel ist es jedoch, eine übersichtliche und benutzerfreundliche Seite für Einsteiger und erfahrene Housing-Fans bereitzustellen.
+            </p>
+            <h3 style="margin-top: 40px; color: #8b795e; font-size: 1.1rem; border-left: 3px solid #e2d7c5; padding-left: 10px;">Verwendung</h3>
+            <div class="how-to-item" style="margin-bottom: 20px;">
+                <p><strong>1. Nach Kategorie suchen</strong><br>
+                <span style="font-size: 0.9rem;">Über die Seitenleiste oder die Startseite können Sie Listen nach Typen wie „Tabletop“ oder „Wall-mounted“ anzeigen.</span></p>
+            </div>
+            <div class="how-to-item" style="margin-bottom: 20px;">
+                <p><strong>2. Unterkategorie-Filter</strong><br>
+                <span style="font-size: 0.9rem;">Nutzen Sie die Buttons am oberen Bildschirmrand, um Ergebnisse schnell zu filtern.</span></p>
+            </div>
+            <div class="how-to-item" style="margin-bottom: 20px;">
+                <p><strong>3. Icon-Badges</strong><br>
+                <span style="font-size: 0.9rem;">Die Icon-Badges unten rechts auf den Karten zeigen wichtige Informationen auf einen Blick.<br>
+                Bewegen Sie den Mauszeiger darüber, um Details zu sehen (auf mobilen Geräten antippen).</span></p>
+            </div>
+            <div class="how-to-item" style="margin-bottom: 20px;">
+                <p><strong>4. Nach Patch filtern</strong><br>
+                <span style="font-size: 0.9rem;">Sie können nach Veröffentlichungszeitraum filtern – von den neuesten bis zu älteren Updates.</span></p>
+            </div>
+            <div style="font-size: 0.85rem; color: #8b795e; line-height: 1.7;">
+                <p><strong>💡 Bei Problemen</strong><br>
+                ・Direkt nach dem Neuladen werden Daten vorbereitet, wodurch der Bildwechsel vorübergehend nicht korrekt funktioniert. Bitte warten Sie einige Sekunden.<br>
+                ・Nach dem ersten Laden sorgt der Cache für eine schnellere Anzeige bei weiteren Besuchen.</p>
+            </div>
+            <h3 style="margin-top: 40px; color: #8b795e; font-size: 1.1rem;">Hinweise zur Nutzung</h3>
+            <p style="font-size: 0.9rem; color: #666;">
+                ・Diese Seite verwendet JavaScript. Falls sie nicht korrekt angezeigt wird, aktivieren Sie bitte JavaScript in Ihrem Browser.<br>
+                ・Für die Richtigkeit der Inhalte wird keine Gewähr übernommen. Der Betreiber haftet nicht für Probleme, die durch die Nutzung entstehen.<br>
+                ・Bei Fehlern oder Feedback nutzen Sie bitte das untenstehende Formular.
+            </p>
+        </div>
+                        
     <h3 style="color: #8b795e; font-size: 1.1rem; margin-bottom: 20px; text-align: center;">Message Form</h3>
     
     <form id="message-form" class="custom-form">
         <div class="form-group">
-            <label>題名</label>
-            <select name="subject" required>
-                <option value="" disabled selected>選択してください</option>
-                <option value="ご意見">ご意見</option>
-                <option value="こんな機能が欲しい">こんな機能が欲しい</option>
-                <option value="その他">その他</option>
-            </select>
+            <label id="label-subject">題名</label>
+            <select name="subject" id="form-subject" required> ... </select>
         </div>
 
         <div class="form-group">
-            <label>メッセージ本文 (任意)</label>
-            <textarea name="message" rows="5" placeholder="こちらに入力してください"></textarea>
+            <label id="label-message">メッセージ本文 (任意)</label>
+            <textarea name="message" id="form-text" rows="5"></textarea>
         </div>
 
         <div style="text-align: center; margin-top: 20px;">
@@ -167,13 +319,11 @@
     <div id="form-response" style="display:none; text-align:center; color:#8b795e; margin-top:20px;">
         メッセージを送信しました。ありがとうございます！
     </div>
-</div>
 
         <hr style="border: none; border-top: 1px dashed #e2d7c5; margin: 40px 0;">
-
         <div class="copyright-section" style="font-size: 0.8rem; color: #888; line-height: 1.6;">
             <p>© SQUARE ENIX CO., LTD. All Rights Reserved.</p>
-            <p>
+            <p id="copyright-text">
                 記載されている会社名・製品名・システム名などは、各社の商標、または登録商標です。
             </p>
         </div>
@@ -210,15 +360,16 @@
         <hr class="modal-divider">
 
         <div class="status-grid">
-            <div class="status-item"><span>染色</span><span id="modalDye"></span></div>
-            <div class="status-item"><span>マケボ取引</span><span id="modalMarket"></span></div>
-            <div class="status-item"><span>製作</span><span id="modalCraft"></span></div>
+    <!-- 各ラベルに id を追加 -->
+            <div class="status-item"><span id="labelDye">染色</span><span id="modalDye"></span></div>
+            <div class="status-item"><span id="labelMarket">マケボ取引</span><span id="modalMarket"></span></div>
+            <div class="status-item"><span id="labelCraft">製作</span><span id="modalCraft"></span></div>
         </div>
 
         <div class="info-section">
             <h3 class="section-title">
-            <span class="symbol">✦</span> 入手方法 <span class="symbol">✦</span>
-        </h3>
+                <span class="symbol">✦</span> <span id="labelHowTo">入手方法</span> <span class="symbol">✦</span>
+            </h3>
             <div id="modalHowToGet" class="section-content"></div>
         </div>
 
@@ -226,11 +377,11 @@
 
         <div class="info-section">
             <h3 class="section-title">
-            <span class="symbol">✦</span> 備考 <span class="symbol">✦</span>
-        </h3>
+                <span class="symbol">✦</span> <span id="labelNote">備考</span> <span class="symbol">✦</span>
+            </h3>
             <div id="modalComment" class="section-content"></div>
         </div>
-    </div> </div> </div>
+        </div> </div> </div>
 
 <script src="script.js"></script>
     

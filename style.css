@@ -404,11 +404,9 @@ h1 {
 /* --- 新しいアイコン置き場（カード右下に配置） --- */
 .card-flags {
     display: flex;
-    justify-content: flex-end; /* 右寄せ */
-    gap: 0px;                 /* アイコン同士をキュッと詰める */
-    margin-top: auto;         /* 名前の長さに関わらず下の方に配置 */
-    padding-right: 0px;       /* 右に少し余裕をもたせる */
-    padding-top: 1px;      /* 下に少し余裕をもたせる */
+    justify-content: flex-end; 
+    margin-top: auto; 
+    padding-top: 1px; 
 }
 
 /* --- ひし形の設定（サイズ・色・形は前回のまま） --- */
@@ -453,7 +451,7 @@ h1 {
 .flag-drop {background: linear-gradient(135deg, #7d0f0f, #4e0114); width: 18px; height: 18px;}
 .flag-drop img {width: 25px; height: 25px; top: -1px; left: -1px;}    
 .flag-pvp {background: linear-gradient(135deg, #a52a2a, #800020); width: 18px; height: 18px;}
-.flag-pvp img {top: -1px;  left: 0px;}
+.flag-pvp img {top: -1px;}
 .flag-retainer {background: linear-gradient(135deg, #98a3ae, #36454f);}   
 .flag-retainer img {width: 23px; height: 23px;}   
 .flag-shop {background: linear-gradient(135deg, #ffcb4b, #c37547);}
@@ -738,12 +736,12 @@ h1 {
 
 .patch-separator span {
     display: inline-block;
-    padding: 2px 0px;
+    padding: 2px;
     border-radius: 4px;
 }
 /* --- 1. スマホ用メニューボタンの見た目 --- */
 #menu-toggle {
-    display: none; /* PCでは隠す */
+    display: none; 
     position: fixed;
     top: 15px;
     left: 15px;
@@ -759,14 +757,14 @@ h1 {
 
 /* --- 2. 背景の暗転用オーバーレイ --- */
 #sidebar-overlay {
-    display: none; /* 初期は隠す */
+    display: none; 
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
     background: rgba(0, 0, 0, 0.4);
-    z-index: 1500; /* サイドバーのすぐ下に配置 */
+    z-index: 1500; 
 }
 
 /* ============================================================
@@ -775,29 +773,21 @@ h1 {
 
 /* --- 1. PC版 (769px以上) の調整 --- */
 @media (min-width: 769px) {
-    /* PCではサイドバー内の閉じボタン（ヘッダーごと）を完全に消す */
-    .sidebar-mobile-header, #menu-close {
-        display: none !important;
-    }
-    /* PCではAmazon風ドットを隠す */
-    #modalDots {
-        display: none !important;
-    }
+    .sidebar-mobile-header, #menu-close {display: none !important;}
+    #modalDots {display: none !important;}
 }
 
 /* --- 2. スマホ・タブレット用 (768px以下) 最終確定版 --- */
 @media (max-width: 768px) {
-    /* 全体・サイドバー挙動 */
     body { display: block !important; }
     #main-content { margin-left: 0 !important; width: 100% !important; padding-top: 70px !important; }
-    
     #menu-toggle { display: flex !important; }
     #sidebar {
         position: fixed !important; top: 0; left: -260px !important;
         width: 260px !important; height: 100vh !important;
         z-index: 5000 !important; transition: transform 0.3s ease !important;
         display: block !important;
-        padding-bottom: 150px !important; /* サイドバー自体の底上げ */
+        padding-bottom: 150px !important; 
         overflow-y: auto;}
 
     #sidebar.active { transform: translateX(260px) !important; }
@@ -808,18 +798,17 @@ h1 {
         background: rgba(0, 0, 0, 0.5); z-index: 4000;
     }
 
-    /* サイドバーの閉じボタン(×)をスタイリッシュに */
     .sidebar-mobile-header {
-        display: flex !important;
-        justify-content: flex-end; /* 右寄せ */
+        display: flex !important; 
+        justify-content: flex-end; 
         padding: 15px;
     }
     #menu-close {
         display: block !important;
-        background: none !important; /* 武骨な背景を解除 */
-        border: none !important;     /* 枠線を解除 */
+        background: none !important; 
+        border: none !important;
         color: var(--primary-color) !important;
-        font-size: 2.2rem !important; /* 押しやすく大きく */
+        font-size: 2.2rem !important; 
         line-height: 1;
         cursor: pointer;
         padding: 0;
@@ -899,16 +888,16 @@ h1 {
     }
 }
 
-@media (max-width: 768px) {
+ /* @media (max-width: 768px) {
     /* 半円ボタンの共通設定 */
-    .modal-nav.semi-circle {
+    /*.modal-nav.semi-circle {
         position: absolute !important;
         top: 50% !important;
         transform: translateY(-50%) !important;
         width: 30px !important;  /* 幅を少し狭く */
-        height: 60px !important; /* 高さを出して縦長に */
-        background: rgba(125, 107, 93, 0.6) !important; /* var(--primary-color) の透明版 */
-        color: #fff !important;
+        /*height: 60px !important; /* 高さを出して縦長に */
+        /*background: rgba(125, 107, 93, 0.6) !important; /* var(--primary-color) の透明版 */
+        /*color: #fff !important;
         border: none !important;
         display: flex !important;
         align-items: center;
@@ -917,26 +906,26 @@ h1 {
         transition: opacity 0.3s;
     }
     /* 左側のボタン（右側が盛り上がっている半円） */
-    .nav-prev.semi-circle {
+    /*.nav-prev.semi-circle {
         left: 0 !important;
         border-radius: 0 40px 40px 0 !important; /* 右側だけ丸める */
-        padding-right: 5px;
-    }
+        /*padding-right: 5px;
+    /*}
     /* 右側のボタン（左側が盛り上がっている半円） */
-    .nav-next.semi-circle {
-        right: 0 !important;
+    /*.nav-next.semi-circle {
+        /*right: 0 !important;
         border-radius: 40px 0 0 40px !important; /* 左側だけ丸める */
-        padding-left: 5px;
+       /* padding-left: 5px;
     }
     /* アイコンのサイズ調整 */
-    .modal-nav.semi-circle span {
+    /*.modal-nav.semi-circle span {
         font-size: 20px !important;
     }
     /* 画像に被っても邪魔にならないよう、少し透かす */
-    .modal-nav.semi-circle:active {
+    /*.modal-nav.semi-circle:active {
         background: rgba(125, 107, 93, 0.9) !important;
     }
-}
+}*/
 
 /* --- ロード画面のスタイル --- */
 #loading-screen {
@@ -983,10 +972,9 @@ h1 {
     border: 1px solid #eee;
     border-radius: 8px;
     margin-bottom: 20px;
-    overflow: hidden; /* 中身がはみ出さないように */
+    overflow: hidden; 
 }
 
-/* 「カテゴリーを絞り込む」というヘッダー */
 .sub-cat-header {
     padding: 10px 15px;
     display: flex;
@@ -999,20 +987,19 @@ h1 {
     border-bottom: 1px solid #eee;
 }
 
-/* チップが入るエリア */
 .sub-cat-content {
-    display: flex; /* 常にflexにしておく */
+    display: flex; 
     flex-wrap: wrap;
     gap: 8px;
-    padding: 0; /* 閉じている時は0 */
-    max-height: 0; /* 最初は高さを0にする */
-    opacity: 0; /* 最初は透明 */
-    overflow: hidden; /* はみ出た分を隠す */
-    transition: max-height 0.5s ease, opacity 0.6s ease, padding 0.6s ease; /* ここで「ぬるっ」とさせる */
+    padding: 0; 
+    max-height: 0; 
+    opacity: 0; 
+    overflow: hidden; 
+    transition: max-height 0.5s ease, opacity 0.6s ease, padding 0.6s ease; 
 }
 
 .sub-cat-content.open {
-    max-height: 300px; /* 十分な高さを指定（中身に合わせて伸びます） */
+    max-height: 300px; 
     opacity: 1;
     padding: 10px 0;
 }
@@ -1021,7 +1008,7 @@ h1 {
 .sub-cat-toggle-bar {
     width: 100%;
     height: 20px;
-    background-color: rgba(230, 188, 86, 0.35); /* 画像のような落ち着いたベージュ・グレー系 */
+    background-color: rgba(230, 188, 86, 0.35); 
     display: flex;
     justify-content: center;
     align-items: center;
@@ -1031,59 +1018,27 @@ h1 {
     color: #7d6b5d;
     transition: background-color 0.4s;
 }
-    
-/* 矢印の回転アニメーション */
+
 #sub-cat-arrow {
     font-size: 1rem;
-    transition: transform 0.4s ease; /* ここで回転をぬるっとさせる */
-    display: inline-block; /* 回転させるために必要 */
+    transition: transform 0.4s ease; 
+    display: inline-block; 
 }
-    
-/* 回転状態（クラスが付いた時） */
-#sub-cat-arrow.is-rotated {
-    transform: rotate(180deg); /* 180度くるっと回す */
-}
-    
-/* 閉じている時は矢印を180度回転させる */
-.sub-cat-content:not(.open) + .sub-cat-toggle-bar #sub-cat-arrow {
-    transform: rotate(180deg);
-}
+#sub-cat-arrow.is-rotated {transform: rotate(180deg); }
+.sub-cat-content:not(.open) + .sub-cat-toggle-bar #sub-cat-arrow {transform: rotate(180deg);}
+.cheki-card {position: relative !important;}
+.tooltip-container, .flag-diamond {position: relative;}
 
-/* カード全体を基準にする */
-.cheki-card {
-    position: relative !important;
-}
-
-/* ツールチップを表示するためのコンテナ */
-.tooltip-container, .flag-diamond {
-    position: relative; /* バッジ自体の並びは維持 */
-}
-
-/* ★ここが解決策のコア！ */
 .fixed-tooltip-content::after, 
 .tooltip-trigger::after {
     content: attr(data-tooltip);
-    
-    /* 親（バッジ）の場所を無視して、カード基準で動くようにする */
     position: absolute; 
-    
-    /* --- ここが「文字に合わせる」ポイント --- */
-    width: max-content;       /* 文字の長さに幅を合わせる */
-    max-width: 170px;         /* ただし、長すぎるときはここで改行させる */
-    white-space: normal;      /* 基本は改行しない */
-    /* max-widthに達したときだけ改行を許可する設定 */
+    width: max-content; 
+    max-width: 170px; 
+    white-space: normal; 
     overflow-wrap: break-word;
-
-    /* 【固定位置の指定】カードの左下からのpxで指定 */
-    /* これで、バッジが右にあっても左にあっても、表示場所はここになります */
-    bottom: 25px;  /* アイテム名の横あたりの高さ */
-    right: 0%;    /* カードの左端からの距離 */
-    
-    /* 45度回転している世界から「0度」に戻す */
-    /* bottom/leftで斜めに動く場合は、ここで -45deg を調整 */
+    bottom: 25px; right: 0%; 
     transform: rotate(0deg) !important; 
-
-    /* --- 見た目（共通） --- */
     background-color: rgba(0, 0, 0, 0.7);
     color: #fff;
     padding: 6px 12px;
@@ -1091,7 +1046,6 @@ h1 {
     font-size: 11px;
     text-align: center;
     z-index: 10000;
-    
     opacity: 0;
     visibility: hidden;
     transition: opacity 0.2s;
@@ -1106,72 +1060,63 @@ h1 {
 
 /* --- About Me 全体の部屋 --- */
 #about-view {
-    position: relative; /* 子要素の基準にする */
+    position: relative; 
     width: 100%;
-    height: 100vh; /* 画面いっぱいの高さ */
-    overflow: hidden; /* 部屋全体はスクロールさせない */
-    background-color: #f7f3e8; /* 以前相談した手紙に合う背景色 */
+    height: 100vh; 
+    overflow: hidden; 
+    background-color: #f7f3e8; 
 }
-
-/* --- 1. 背面の固定文字 (Watermark) --- */
 .about-watermark {
-    position: fixed; /* ★画面に固定！ */
-    top: -47px;       /* 上からの位置（ヘッダーがあるなら調整） */
-    font-size: 9rem; /* 超巨大 */
+    position: fixed; 
+    top: -47px; 
+    font-size: 9rem; 
     font-weight: bold;
-    font-family: 'Patrick Hand', cursive; /* 手書き風 */
-    color: rgba(139, 121, 94, 0.17); /* ★超うすーいセピア色 */
-    white-space: nowrap; /* 改行しない */
-    z-index: 1; /* 手紙より下に置く */
-    pointer-events: none; /* 文字をクリックできないようにする（邪魔しない） */
+    font-family: 'Patrick Hand', cursive; 
+    color: rgba(139, 121, 94, 0.17); 
+    white-space: nowrap; 
+    z-index: 1; 
+    pointer-events: none; 
 }
 
-/* --- 2. スクロールする手紙エリア（外箱） --- */
 .about-letter-scaler {
     position: relative;
     z-index: 2; 
     height: 100%;
     padding: 91px 40px;
-    
-    /* ★ここが重要！中身が溢れたらスクロールさせる */
     overflow-y: auto; 
     
 }
 
-/* --- 2. 手紙の本体 (Card) --- */
 .about-letter-card {
     background: white;
-    max-width: 800px; /* 横に広がりすぎないように */
-    margin: 0 auto;  /* 中央寄せ */
+    max-width: 800px; 
+    margin: 0 auto; 
     padding: 50px;
-    border-radius: 8px; /* 角を少し丸める */
-    box-shadow: 0 10px 30px rgba(139, 121, 94, 0.1); /* ふんわりとした影 */
+    border-radius: 8px; 
+    box-shadow: 0 10px 30px rgba(139, 121, 94, 0.1); 
 }
 
-/* 手紙の中の見出しと本文 */
 .letter-title {
     font-family: 'Noto Sans JP', sans-serif;
     color: #8b795e;
-    border-bottom: 1px dashed #e2d7c5; /* 点線の区切り線 */
+    border-bottom: 1px dashed #e2d7c5; 
     padding-bottom: 15px;
     margin-bottom: 30px;
 }
 .letter-text {
     color: #4a433b;
-    line-height: 2; /* 行間を広げて読みやすく */
+    line-height: 2; 
     font-size: 1rem;
 }
 
 .copyright-section {
     margin-top: -50px;
     padding-top: 25px;
-    font-style: italic; /* 少し斜体にするのもお洒落 */
+    font-style: italic; 
 }
 
-/* styles.css に追加するとお洒落になる設定 */
-
 .how-to-item {
-    background-color: rgba(139, 121, 94, 0.03); /* ほんの少しだけ色をつける */
+    background-color: rgba(139, 121, 94, 0.03); 
     padding: 1px 17px 1px;
     border-radius: 6px;
     margin-top: 10px;
@@ -1179,16 +1124,9 @@ h1 {
 
 .how-to-item strong {
     color: #a8756b;
-    line-height: 25px; /* 高さと同じ数値にすると、文字が上下中央にきます */
-    text-align: center; /* 左右中央 */
+    line-height: 25px; 
+    text-align: center; 
 }
-
-/* リンクなどがある場合の色（もし将来的にGitHubやXを載せるなら） */
-/* .letter-text a {
-    color: #5a79a5;
-    text-decoration: underline;
-    text-underline-offset: 4px;
-}*/
 
 .custom-form {
     max-width: 500px;
@@ -1211,7 +1149,7 @@ h1 {
 .form-group textarea {
     width: 100%;
     padding: 9px;
-    border: 1px solid #ddd; /* 画像のような薄いグレーの枠 */
+    border: 1px solid #ddd; 
     border-radius: 4px;
     background-color: #fff;
     font-size: 1rem;
@@ -1222,11 +1160,11 @@ h1 {
 
 .form-group select:focus,
 .form-group textarea:focus {
-    border-color: #7d6b5d; /* フォーカス時にサイトのアクセントカラーに */
+    border-color: #7d6b5d; 
 }
 
 .form-submit-btn {
-    background-color: #e0e0e0; /* 画像のような薄いグレー */
+    background-color: #e0e0e0; 
     color: #666;
     border: none;
     padding: 10px 60px;
@@ -1237,9 +1175,132 @@ h1 {
 }
 
 .form-submit-btn:hover {
-    background-color: #7f3030; /* ホバーで色が変わる */
+    background-color: #7f3030; 
     color: #fff;
 }
 .sub-cat-toggle-bar:hover {
     background-color: #dcc6b6;
+}
+
+.modal-loading-spinner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 300px;
+}
+
+.spinning {
+    animation: spin 1s linear infinite;
+    font-size: 48px !important;
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+.lang-switcher {
+    display: flex;
+    flex-direction: column; /* 縦に並べる */
+}
+
+.lang-btn {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    padding: 5px 20px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    transition: background 0.2s;
+    text-align: left;
+}
+
+.lang-btn:hover {
+    background-color: #f8f0f2;
+}
+
+/* 国旗画像のスタイル */
+.flag-img {
+    width: 16px; /* お好みのサイズに */
+    height: auto;
+    margin-right: 15px; /* 文字との間隔 */
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.32); /* 軽い影 */
+    border-radius: 2px;
+}
+
+/* 言語名のテキスト */
+.lang-text {
+    font-size: 0.75rem;
+    color: #5b4f3e;
+    font-weight: 500;
+}
+
+.lang-accordion {
+    position: relative;
+    width: 90%;
+    margin: 3px auto 3px;
+    border: 1px solid #d1c5b4;
+    border-radius: 8px;
+    background: #fdfaf3;
+    overflow: hidden;
+}
+
+.selected-lang {
+    display: flex;
+    align-items: center;
+    padding: 6px 15px;
+    cursor: pointer;
+    background: #f8f5f0;
+    transition: background 0.3s;
+}
+
+.selected-lang:hover {
+    background: #f8f5f0;
+}
+
+.arrow-icon {
+    margin-left: auto;
+    font-size: 0.7rem;
+    color: #8b795e;
+    transition: transform 0.3s;
+}
+
+/* ドロップダウン部分（初期状態は隠す） */
+.lang-dropdown {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease-out;
+    background: #ffffff;
+}
+
+.lang-accordion.open .lang-dropdown {
+    max-height: 250px; /* 全言語が収まる高さ */
+}
+
+.lang-accordion.open .arrow-icon {
+    transform: rotate(180deg);
+}
+
+.lang-btn {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    padding: 7px 15px;
+    border: none;
+    background: none;
+    cursor: pointer;
+    border-top: 1px solid #f0edeb;
+}
+
+.lang-btn:hover {
+    background: #f1ede6;
+}
+
+.flag-img {
+    width: 15px;
+    margin-right: 10px;
+    border-radius: 2px;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.1);
 }
