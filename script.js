@@ -152,8 +152,7 @@ function loadMoreItems() {
         const itemName = item[`name_${currentLang}`] || item.name_ja;
         const dyeVal = (currentLang === 'ja') ? item.dyeable_ja : item.dyeable_en;
         const marketVal = (currentLang === 'ja') ? item.market_ja : item.market_en;
-        // 製作、ショップ等はフラグ管理なのでja版をそのまま流用（必要なら後で翻訳対応可）
-        const craftVal = item.recipe; 
+        const craftVal = item[`recipe_${currentLang}`] || item.recipe_ja || item.recipe_en; 
         const shopVal = (item.ショップ || "").toString().trim();
         const pvpVal = (item.PvP || "").toString().trim();
         const pveVal = (item.PvE || "").toString().trim();
